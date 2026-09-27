@@ -1,0 +1,9 @@
+build/
+build_*/
+JUCE/
+.DS_Store
+*.xcuserstate
+xcuserdata/
+Installer/staging/
+Installer/*.pkg
+Installer/component.plist
