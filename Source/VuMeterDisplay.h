@@ -10,7 +10,9 @@ class HarmonicCompressorAudioProcessor;
     smoothed level atomics (see PluginProcessor::processBlock) and draws two
     independent gauges side by side -- one per channel (Left, Right), each
     with its own needle and scale, like a hardware stereo VU pair -- plus a
-    pair of fast-attack/slow-release peak LEDs beneath them, and numeric peak
+    pair of Dorrough-style LED ladder bargraphs beneath them (a slower solid
+    average fill with a fast peak segment riding ahead of it, showing the
+    "gap" the way a real Dorrough meter does), and numeric peak
     (bottom left) / RMS (bottom right) readouts. Each readout shows two
     values: the current instantaneous value in black, and a 3-second
     peak-hold value in green. Click the mode label to cycle between Input,
@@ -30,7 +32,8 @@ private:
     void timerCallback() override;
     void drawGauge (juce::Graphics& g, juce::Rectangle<float> bounds, float valueDb,
                      bool isGr, juce::Colour needleColour, const juce::String& channelLabel);
-    void drawPeakLed (juce::Graphics& g, juce::Rectangle<float> bounds, float peakDb, const juce::String& label);
+    void drawDorroughBar (juce::Graphics& g, juce::Rectangle<float> bounds, float avgDb, float peakDb,
+                          bool isGr, const juce::String& channelLabel);
     static juce::String formatDb (float db, bool isGr);
 
     enum class Mode { Input, Output, GainReduction };

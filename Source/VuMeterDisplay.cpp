@@ -78,7 +78,7 @@ void VuMeterDisplay::resized()
 {
     auto area = getLocalBounds();
     modeButtonBounds = area.removeFromTop (16);
-    ledArea = area.removeFromBottom (14).reduced (16, 0).toFloat();
+    ledArea = area.removeFromBottom (30).reduced (10, 0).toFloat();
     area.removeFromBottom (4);
     meterArea = area.reduced (10, 2).toFloat();
 }
@@ -106,15 +106,27 @@ juce::String VuMeterDisplay::formatDb (float db, bool isGr)
 void VuMeterDisplay::drawGauge (juce::Graphics& g, juce::Rectangle<float> bounds, float valueDb,
                                  bool isGr, juce::Colour needleColour, const juce::String& channelLabel)
 {
-    // --- Meter face ---
-    g.setColour (juce::Colour (0xfff0e8d6));
-    g.fillRoundedRectangle (bounds, 6.0f);
-    g.setColour (LookAndFeelCustom::outlineColour);
-    g.drawRoundedRectangle (bounds, 6.0f, 1.2f);
+    // --- Chrome bezel ---
+    auto bezel = bounds;
+    juce::ColourGradient bezelGrad (juce::Colour (0xff6a6a6e), bezel.getTopLeft(),
+                                     juce::Colour (0xff222225), bezel.getBottomRight(), false);
+    bezelGrad.addColour (0.5, juce::Colour (0xff8a8a8e));
+    g.setGradientFill (bezelGrad);
+    g.fillRoundedRectangle (bezel, 7.0f);
 
-    const float pivotX = bounds.getCentreX();
-    const float pivotY = bounds.getBottom() - bounds.getHeight() * 0.14f;
-    const float radius = juce::jmin (bounds.getWidth() * 0.44f, bounds.getHeight() * 0.86f);
+    auto face = bezel.reduced (3.0f);
+
+    // --- Meter face (warm cream, subtle radial vignette like aged paper) ---
+    juce::ColourGradient faceGrad (juce::Colour (0xfffaf3e2), face.getCentreX(), face.getY() + face.getHeight() * 0.15f,
+                                    juce::Colour (0xffe2d8bd), face.getX(), face.getBottom(), true);
+    g.setGradientFill (faceGrad);
+    g.fillRoundedRectangle (face, 5.0f);
+    g.setColour (juce::Colours::black.withAlpha (0.35f));
+    g.drawRoundedRectangle (face, 5.0f, 1.0f);
+
+    const float pivotX = face.getCentreX();
+    const float pivotY = face.getBottom() - face.getHeight() * 0.12f;
+    const float radius = juce::jmin (face.getWidth() * 0.46f, face.getHeight() * 0.88f);
 
     float rangeMin, rangeMax;
     struct Tick { float value; const char* label; };
@@ -154,6 +166,18 @@ void VuMeterDisplay::drawGauge (juce::Graphics& g, juce::Rectangle<float> bounds
         g.strokePath (redArc, juce::PathStrokeType (3.0f));
     }
 
+    // Minor (unlabeled) ticks halfway between each pair of major ticks.
+    for (size_t i = 0; i + 1 < ticks.size(); ++i)
+    {
+        const float midVal = 0.5f * (ticks[i].value + ticks[i + 1].value);
+        const float angle = angleForValue (midVal);
+        const float sinA = std::sin (angle), cosA = std::cos (angle);
+        juce::Point<float> outer (pivotX + radius * sinA, pivotY - radius * cosA);
+        juce::Point<float> inner (pivotX + (radius - 3.5f) * sinA, pivotY - (radius - 3.5f) * cosA);
+        g.setColour (juce::Colours::black.withAlpha (0.4f));
+        g.drawLine (inner.x, inner.y, outer.x, outer.y, 1.0f);
+    }
+
     g.setFont (juce::Font (juce::FontOptions (8.0f, juce::Font::plain)));
     for (auto& tick : ticks)
     {
@@ -161,53 +185,110 @@ void VuMeterDisplay::drawGauge (juce::Graphics& g, juce::Rectangle<float> bounds
         const float sinA = std::sin (angle), cosA = std::cos (angle);
 
         juce::Point<float> outer (pivotX + radius * sinA, pivotY - radius * cosA);
-        juce::Point<float> inner (pivotX + (radius - 6.0f) * sinA, pivotY - (radius - 6.0f) * cosA);
+        juce::Point<float> inner (pivotX + (radius - 6.5f) * sinA, pivotY - (radius - 6.5f) * cosA);
 
-        g.setColour (juce::Colours::black.withAlpha (0.7f));
-        g.drawLine (inner.x, inner.y, outer.x, outer.y, 1.3f);
+        g.setColour (juce::Colours::black.withAlpha (0.8f));
+        g.drawLine (inner.x, inner.y, outer.x, outer.y, 1.6f);
 
-        juce::Point<float> labelPos (pivotX + (radius - 16.0f) * sinA, pivotY - (radius - 16.0f) * cosA);
+        juce::Point<float> labelPos (pivotX + (radius - 17.0f) * sinA, pivotY - (radius - 17.0f) * cosA);
         g.drawText (tick.label, juce::Rectangle<float> (20.0f, 10.0f).withCentre (labelPos),
                     juce::Justification::centred);
     }
 
-    // --- Needle ---
+    // --- Needle: tapered polygon with a short counterweight tail and a
+    // drop shadow, like a real analog meter movement. ---
     const float needleAngle = angleForValue (valueDb);
-    const float tipX = pivotX + radius * 0.92f * std::sin (needleAngle);
-    const float tipY = pivotY - radius * 0.92f * std::cos (needleAngle);
+    const float sinN = std::sin (needleAngle), cosN = std::cos (needleAngle);
+    const float tipLen = radius * 0.94f;
+    const float tailLen = radius * 0.14f;
+    const float baseHalfWidth = 2.6f;
+
+    auto buildNeedlePath = [&] (float ox, float oy)
+    {
+        juce::Path p;
+        juce::Point<float> tip  (pivotX + ox + tipLen  * sinN, pivotY + oy - tipLen  * cosN);
+        juce::Point<float> tail (pivotX + ox - tailLen * sinN, pivotY + oy + tailLen * cosN);
+        juce::Point<float> left  (pivotX + ox - baseHalfWidth * cosN, pivotY + oy - baseHalfWidth * sinN);
+        juce::Point<float> right (pivotX + ox + baseHalfWidth * cosN, pivotY + oy + baseHalfWidth * sinN);
+        p.addTriangle (tip, left, right);
+        p.addTriangle (tail, left, right);
+        return p;
+    };
+
+    g.setColour (juce::Colours::black.withAlpha (0.25f));
+    g.fillPath (buildNeedlePath (0.8f, 1.0f));
+
     g.setColour (needleColour);
-    g.drawLine (pivotX, pivotY, tipX, tipY, 2.2f);
-    g.setColour (LookAndFeelCustom::accentColour);
-    g.fillEllipse (juce::Rectangle<float> (5.5f, 5.5f).withCentre ({ pivotX, pivotY }));
+    g.fillPath (buildNeedlePath (0.0f, 0.0f));
+
+    // Pivot cap with a small metallic highlight.
+    juce::ColourGradient capGrad (juce::Colours::white.withAlpha (0.9f), pivotX - 2.0f, pivotY - 2.0f,
+                                   LookAndFeelCustom::accentColour.darker (0.4f), pivotX + 3.0f, pivotY + 3.0f, true);
+    g.setGradientFill (capGrad);
+    g.fillEllipse (juce::Rectangle<float> (6.5f, 6.5f).withCentre ({ pivotX, pivotY }));
+    g.setColour (juce::Colours::black.withAlpha (0.5f));
+    g.drawEllipse (juce::Rectangle<float> (6.5f, 6.5f).withCentre ({ pivotX, pivotY }), 0.8f);
 
     // --- Channel label ---
     g.setColour (needleColour);
     g.setFont (juce::Font (juce::FontOptions (9.0f, juce::Font::bold)));
-    g.drawText (channelLabel, juce::Rectangle<float> (18.0f, 12.0f).withPosition (bounds.getX() + 4.0f, bounds.getY() + 3.0f),
+    g.drawText (channelLabel, juce::Rectangle<float> (18.0f, 12.0f).withPosition (face.getX() + 4.0f, face.getY() + 3.0f),
                 juce::Justification::centred);
 }
 
 //==============================================================================
-void VuMeterDisplay::drawPeakLed (juce::Graphics& g, juce::Rectangle<float> bounds, float peakDb, const juce::String& label)
+// Dorrough-style LED ladder: a row of discrete segments filled solidly up to
+// the (slower) average level -- green/yellow/red by zone, like a classic
+// leveling bargraph -- plus a single bright segment riding at the (fast)
+// peak level. Because the peak ballistic reacts far quicker than the average
+// and releases slowly, it sits visibly ahead of the solid fill, showing the
+// peak/average "gap" that is the signature of the real Dorrough meter.
+void VuMeterDisplay::drawDorroughBar (juce::Graphics& g, juce::Rectangle<float> bounds, float avgDb, float peakDb,
+                                       bool isGr, const juce::String& channelLabel)
 {
-    // Dark bezel so the LED is visible as a shape even when "off".
-    g.setColour (juce::Colour (0xff1a1a1a));
-    g.fillRoundedRectangle (bounds, 2.0f);
+    const float rangeMin = -24.0f;
+    const float rangeMax = isGr ? 0.0f : 3.0f;
+    constexpr int numSegments = 26;
 
-    const float t = juce::jlimit (0.0f, 1.0f, (peakDb + 24.0f) / 27.0f); // -24..+3 dB range
-    juce::Colour ledColour = juce::Colours::darkgreen.interpolatedWith (juce::Colours::lime, juce::jlimit (0.0f, 1.0f, t * 1.4f));
-    if (peakDb > -3.0f)  ledColour = juce::Colours::yellow;
-    if (peakDb > 0.0f)   ledColour = juce::Colours::red;
-
-    const float brightness = juce::jmap (t, 0.35f, 1.0f);
-    g.setColour (ledColour.withAlpha (brightness));
-    g.fillRoundedRectangle (bounds.reduced (1.5f), 1.5f);
-    g.setColour (juce::Colours::black.withAlpha (0.6f));
-    g.drawRoundedRectangle (bounds, 2.0f, 1.0f);
-
+    auto labelArea = bounds.removeFromLeft (14.0f);
     g.setColour (LookAndFeelCustom::mutedTextColour);
-    g.setFont (juce::Font (juce::FontOptions (8.0f, juce::Font::bold)));
-    g.drawText (label, bounds.translated (0.0f, -11.0f), juce::Justification::centred);
+    g.setFont (juce::Font (juce::FontOptions (9.0f, juce::Font::bold)));
+    g.drawText (channelLabel, labelArea, juce::Justification::centred);
+
+    bounds.removeFromLeft (2.0f);
+    const float segGap = 1.3f;
+    const float segWidth = (bounds.getWidth() - segGap * (numSegments - 1)) / (float) numSegments;
+
+    auto colourForDb = [] (float db) -> juce::Colour
+    {
+        if (db > 0.0f)   return juce::Colours::red;
+        if (db > -6.0f)  return juce::Colours::yellow;
+        return juce::Colours::limegreen;
+    };
+
+    const int litSegments  = (int) std::round (juce::jlimit (0.0f, 1.0f, (avgDb  - rangeMin) / (rangeMax - rangeMin)) * numSegments);
+    const int peakSegment  = (int) std::round (juce::jlimit (0.0f, 1.0f, (peakDb - rangeMin) / (rangeMax - rangeMin)) * numSegments) - 1;
+
+    for (int i = 0; i < numSegments; ++i)
+    {
+        auto seg = juce::Rectangle<float> (bounds.getX() + i * (segWidth + segGap), bounds.getY(), segWidth, bounds.getHeight());
+        const float segDb = juce::jmap ((float) i / (float) (numSegments - 1), rangeMin, rangeMax);
+        const juce::Colour zoneColour = colourForDb (segDb);
+
+        const bool isLit  = i < litSegments;
+        const bool isPeak = i == peakSegment && ! isLit;
+
+        g.setColour (zoneColour.withAlpha (isLit ? 0.95f : 0.16f));
+        g.fillRoundedRectangle (seg, 0.6f);
+
+        if (isPeak)
+        {
+            g.setColour (juce::Colours::white);
+            g.fillRoundedRectangle (seg, 0.6f);
+            g.setColour (zoneColour);
+            g.drawRoundedRectangle (seg.reduced (0.3f), 0.6f, 0.8f);
+        }
+    }
 }
 
 //==============================================================================
@@ -236,15 +317,15 @@ void VuMeterDisplay::paint (juce::Graphics& g)
     drawGauge (g, faceL, displayedL, isGr, juce::Colours::black, "L");
     drawGauge (g, faceR, displayedR, isGr, juce::Colours::teal, "R");
 
-    // --- Peak LEDs (L/R) under the meter face ---
+    // --- Dorrough-style peak/average LED ladders (L on top, R below) ---
     if (! ledArea.isEmpty())
     {
-        auto ledRow = ledArea;
-        const float ledWidth = juce::jmin (36.0f, ledRow.getWidth() * 0.3f);
-        auto ledL = ledRow.removeFromLeft (ledWidth);
-        auto ledR = ledRow.removeFromRight (ledWidth);
-        drawPeakLed (g, ledL, peakL, "L PK");
-        drawPeakLed (g, ledR, peakR, "R PK");
+        auto rows = ledArea;
+        auto rowL = rows.removeFromTop ((rows.getHeight() - 3.0f) * 0.5f);
+        rows.removeFromTop (3.0f);
+        auto rowR = rows;
+        drawDorroughBar (g, rowL, displayedL, peakL, isGr, "L");
+        drawDorroughBar (g, rowR, displayedR, peakR, isGr, "R");
     }
 
     // --- Numeric readouts: peak (bottom-left), RMS (bottom-right).
