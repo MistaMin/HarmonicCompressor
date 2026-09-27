@@ -88,7 +88,7 @@ private:
         float thresholdDb, ratio, attackMs, releaseMs, kneeDb, makeupGainDb, mix;
         float harmonic2, harmonic3, harmonic4, harmonic5;
         float scHPFreq;
-        bool  scEnabled, scListen, autoRelease;
+        bool  scEnabled, scListen, autoRelease, autoAttack;
     };
 
     std::array<ModeSnapshot, (size_t) CompressorMode::Count> modeSnapshots;
@@ -150,6 +150,7 @@ private:
     std::atomic<float>* scListenParam = nullptr;
     std::atomic<float>* scHPFreqParam = nullptr;
     std::atomic<float>* autoReleaseParam = nullptr;
+    std::atomic<float>* autoAttackParam = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HarmonicCompressorAudioProcessor)
 };

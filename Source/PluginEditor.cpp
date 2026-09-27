@@ -14,7 +14,18 @@ HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (
     setSize (640, 480);
 
     // --- Algorithm selector: horizontal row of discrete toggle buttons ---
+    // Each mode gets its own accent colour, loosely evoking the tone of the
+    // classic hardware topology it emulates (warm gold opto cell, brushed
+    // VCA steel, blue FET stripe, red-enamel transformer unit, teal for the
+    // modern hybrid) without naming or copying any specific brand.
     const char* algorithmNames[numAlgorithms] = { "Opto", "VCA", "FET", "Red", "Hybrid" };
+    const juce::Colour algorithmColours[numAlgorithms] = {
+        juce::Colour (0xffcda434),   // Opto   -- warm gold
+        juce::Colour (0xffc9702e),   // VCA    -- brushed copper/wood
+        juce::Colour (0xff4a86c8),   // FET    -- steel blue
+        juce::Colour (0xffb3382c),   // Red    -- enamel red
+        juce::Colour (0xff3fa796),   // Hybrid -- teal
+    };
 
     for (int i = 0; i < numAlgorithms; ++i)
     {
@@ -23,6 +34,7 @@ HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (
         button.setRadioGroupId (1001);
         button.setClickingTogglesState (true);
         button.setColour (juce::TextButton::buttonColourId, LookAndFeelCustom::panelColour);
+        button.setColour (juce::TextButton::buttonOnColourId, algorithmColours[i]);
         button.onClick = [this, i]
         {
             if (algorithmAttachment != nullptr)
@@ -93,28 +105,44 @@ HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (
     scEnabledButton.setColour (juce::ToggleButton::textColourId, LookAndFeelCustom::textColour);
     addAndMakeVisible (scEnabledButton);
 
-    scHpFreqLabel.setText ("HP Freq", juce::dontSendNotification);
-    scHpFreqLabel.setJustificationType (juce::Justification::centredRight);
-    scHpFreqLabel.setFont (juce::Font (juce::FontOptions (14.0f, juce::Font::bold)));
+    scHpFreqLabel.setText ("Hz", juce::dontSendNotification);
+    scHpFreqLabel.setJustificationType (juce::Justification::centred);
+    scHpFreqLabel.setFont (juce::Font (juce::FontOptions (12.0f, juce::Font::bold)));
     addAndMakeVisible (scHpFreqLabel);
 
     scHpFreqSlider.setSliderStyle (juce::Slider::LinearHorizontal);
-    scHpFreqSlider.setTextBoxStyle (juce::Slider::TextBoxRight, false, 60, 16);
+    scHpFreqSlider.setTextBoxStyle (juce::Slider::TextBoxRight, false, 55, 16);
     addAndMakeVisible (scHpFreqSlider);
 
-    scListenButton.setButtonText ("Listen");
-    scListenButton.setColour (juce::ToggleButton::textColourId, LookAndFeelCustom::textColour);
+    // Drawn as a small headphone icon (see drawHeadphoneIcon) rather than
+    // a text label, so it reads clearly at the panel's small size.
+    scListenButton.setButtonText ("");
+    scListenButton.setTooltip ("Listen to sidechain signal");
     addAndMakeVisible (scListenButton);
 
     scEnabledAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (audioProcessor.apvts, ParamIDs::scEnabled, scEnabledButton);
     scListenAttachment  = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (audioProcessor.apvts, ParamIDs::scListen, scListenButton);
     scHpFreqAttachment  = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, ParamIDs::scHPFreq, scHpFreqSlider);
+    scListenButton.onClick = [this] { repaint(); };
 
-    // --- Auto Release ---
-    autoReleaseButton.setButtonText ("Auto");
-    autoReleaseButton.setColour (juce::ToggleButton::textColourId, LookAndFeelCustom::textColour);
-    addAndMakeVisible (autoReleaseButton);
+    // --- Auto Attack / Auto Release: independent small "AUTO" badge
+    // buttons at each knob's 4-o'clock position. When engaged, that knob's
+    // time becomes program-dependent in the DSP and the knob is disabled
+    // (greyed out) so the user can't fight the automatic behaviour. Attack
+    // and Release can be set to Auto independently of one another.
+    for (auto* b : { &autoAttackButton, &autoReleaseButton })
+    {
+        b->setButtonText ("AUTO");
+        b->setClickingTogglesState (true);
+        addAndMakeVisible (*b);
+    }
+    autoAttackButton.setTooltip ("Program-dependent attack time");
+    autoReleaseButton.setTooltip ("Program-dependent release time");
+    autoAttackAttachment  = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (audioProcessor.apvts, ParamIDs::autoAttack, autoAttackButton);
     autoReleaseAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (audioProcessor.apvts, ParamIDs::autoRelease, autoReleaseButton);
+    autoAttackButton.onClick  = [this] { updateAutoAttackReleaseUI(); };
+    autoReleaseButton.onClick = [this] { updateAutoAttackReleaseUI(); };
+    updateAutoAttackReleaseUI();
 
     // --- Display selector: switch between VU meter and transfer curve ---
     displaySelector.addItem ("VU Meter", 1);
@@ -144,6 +172,21 @@ void HarmonicCompressorAudioProcessorEditor::updateDisplaySelection()
     const bool showCurve = displaySelector.getSelectedId() == 2;
     vuMeter.setVisible (! showCurve);
     transferCurve.setVisible (showCurve);
+}
+
+//==============================================================================
+void HarmonicCompressorAudioProcessorEditor::updateAutoAttackReleaseUI()
+{
+    const bool attackAuto  = autoAttackButton.getToggleState();
+    const bool releaseAuto = autoReleaseButton.getToggleState();
+
+    attackSlider.setEnabled (! attackAuto);
+    attackSlider.setAlpha (attackAuto ? 0.35f : 1.0f);
+    attackLabel.setAlpha (attackAuto ? 0.5f : 1.0f);
+
+    releaseSlider.setEnabled (! releaseAuto);
+    releaseSlider.setAlpha (releaseAuto ? 0.35f : 1.0f);
+    releaseLabel.setAlpha (releaseAuto ? 0.5f : 1.0f);
 }
 
 //==============================================================================
@@ -201,7 +244,7 @@ void HarmonicCompressorAudioProcessorEditor::drawPanel (juce::Graphics& g, const
 }
 
 //==============================================================================
-void HarmonicCompressorAudioProcessorEditor::layoutKnobColumn (juce::Rectangle<int> column,
+juce::Rectangle<int> HarmonicCompressorAudioProcessorEditor::layoutKnobColumn (juce::Rectangle<int> column,
                                                                 juce::Slider& slider, juce::Label& label,
                                                                 int maxKnobSize)
 {
@@ -211,6 +254,7 @@ void HarmonicCompressorAudioProcessorEditor::layoutKnobColumn (juce::Rectangle<i
     const int knobSize = juce::jmin (maxKnobSize, column.getWidth() - 4, column.getHeight());
     auto knobArea = column.withSizeKeepingCentre (knobSize, knobSize);
     slider.setBounds (knobArea.getUnion (valueBox.withSizeKeepingCentre (60, valueBox.getHeight())));
+    return knobArea;
 }
 
 //==============================================================================
@@ -253,7 +297,21 @@ void HarmonicCompressorAudioProcessorEditor::resized()
         const int n = 7;
         const int w = content.getWidth() / n;
         for (int i = 0; i < n; ++i)
-            layoutKnobColumn (content.removeFromLeft (w), *mainSliders[i], *mainLabels[i], 38);
+        {
+            auto knobArea = layoutKnobColumn (content.removeFromLeft (w), *mainSliders[i], *mainLabels[i], 38);
+
+            // Attack and Release get a small "Auto" badge button sitting at
+            // the knob's "4 o'clock" position, just outside its rim.
+            if (mainSliders[i] == &attackSlider || mainSliders[i] == &releaseSlider)
+            {
+                auto& autoButton = (mainSliders[i] == &attackSlider) ? autoAttackButton : autoReleaseButton;
+                const int badgeW = 30, badgeH = 14;
+                const juce::Point<int> badgeCentre (knobArea.getCentreX() + (int) (knobArea.getWidth() * 0.40f),
+                                                     knobArea.getCentreY() + (int) (knobArea.getHeight() * 0.34f));
+                autoButton.setBounds (juce::Rectangle<int> (badgeW, badgeH).withCentre (badgeCentre));
+                autoButton.toFront (false);
+            }
+        }
     }
 
     harmonicsPanelBounds = bottomRow.removeFromLeft (bottomRow.getWidth() / 2 - 3);
@@ -275,15 +333,19 @@ void HarmonicCompressorAudioProcessorEditor::resized()
     {
         auto content = sidechainPanelBounds.reduced (6, 3);
         content.removeFromTop (14);
-        content = content.withSizeKeepingCentre (content.getWidth(), 20);
-        const float rowHeight = (float) content.getHeight();
-        juce::FlexBox scBox;
-        scBox.flexDirection = juce::FlexBox::Direction::row;
-        scBox.items.add (juce::FlexItem (autoReleaseButton).withWidth (60).withHeight (rowHeight));
-        scBox.items.add (juce::FlexItem (scEnabledButton).withWidth (80).withHeight (rowHeight));
-        scBox.items.add (juce::FlexItem (scHpFreqLabel).withWidth (40).withHeight (rowHeight));
-        scBox.items.add (juce::FlexItem (scHpFreqSlider).withFlex (1.0f).withHeight (rowHeight));
-        scBox.items.add (juce::FlexItem (scListenButton).withWidth (55).withHeight (rowHeight));
-        scBox.performLayout (content);
+
+        auto row1 = content.removeFromTop (18);
+        content.removeFromTop (3);
+        auto row2 = content.removeFromTop (20);
+
+        scEnabledButton.setBounds (row1.removeFromLeft (120));
+
+        juce::FlexBox row2Box;
+        row2Box.flexDirection = juce::FlexBox::Direction::row;
+        row2Box.alignItems = juce::FlexBox::AlignItems::center;
+        row2Box.items.add (juce::FlexItem (scHpFreqLabel).withWidth (22).withHeight ((float) row2.getHeight()));
+        row2Box.items.add (juce::FlexItem (scHpFreqSlider).withFlex (1.0f).withHeight ((float) row2.getHeight()).withMargin (juce::FlexItem::Margin (0, 6, 0, 4)));
+        row2Box.items.add (juce::FlexItem (scListenButton).withWidth (28).withHeight ((float) row2.getHeight()));
+        row2Box.performLayout (row2);
     }
 }

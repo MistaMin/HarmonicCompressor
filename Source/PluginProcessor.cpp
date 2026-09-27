@@ -27,6 +27,7 @@ HarmonicCompressorAudioProcessor::HarmonicCompressorAudioProcessor()
     scListenParam    = apvts.getRawParameterValue (ParamIDs::scListen);
     scHPFreqParam    = apvts.getRawParameterValue (ParamIDs::scHPFreq);
     autoReleaseParam = apvts.getRawParameterValue (ParamIDs::autoRelease);
+    autoAttackParam  = apvts.getRawParameterValue (ParamIDs::autoAttack);
 
     // Seed each mode's remembered parameters with that mode's hardware-style
     // defaults for attack/release/knee, and sensible shared defaults for
@@ -48,6 +49,7 @@ HarmonicCompressorAudioProcessor::HarmonicCompressorAudioProcessor()
         snap.scEnabled  = false;
         snap.scListen   = false;
         snap.autoRelease = false;
+        snap.autoAttack  = false;
     }
 
     apvts.addParameterListener (ParamIDs::algorithmMode, this);
@@ -77,6 +79,7 @@ void HarmonicCompressorAudioProcessor::saveSnapshot (int modeIndex)
     snap.scEnabled    = scEnabledParam->load (std::memory_order_relaxed) > 0.5f;
     snap.scListen     = scListenParam->load (std::memory_order_relaxed) > 0.5f;
     snap.autoRelease  = autoReleaseParam->load (std::memory_order_relaxed) > 0.5f;
+    snap.autoAttack   = autoAttackParam->load (std::memory_order_relaxed) > 0.5f;
 }
 
 void HarmonicCompressorAudioProcessor::loadSnapshot (int modeIndex)
@@ -104,6 +107,7 @@ void HarmonicCompressorAudioProcessor::loadSnapshot (int modeIndex)
     set (ParamIDs::scEnabled,   snap.scEnabled  ? 1.0f : 0.0f);
     set (ParamIDs::scListen,    snap.scListen   ? 1.0f : 0.0f);
     set (ParamIDs::autoRelease, snap.autoRelease ? 1.0f : 0.0f);
+    set (ParamIDs::autoAttack,  snap.autoAttack  ? 1.0f : 0.0f);
 }
 
 void HarmonicCompressorAudioProcessor::parameterChanged (const juce::String& parameterID, float newValue)
@@ -178,6 +182,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout HarmonicCompressorAudioProce
                                                              juce::NormalisableRange<float> (20.0f, 500.0f, 1.0f, 0.3f), 150.0f));
 
     layout.add (std::make_unique<juce::AudioParameterBool> (ParamIDs::autoRelease, "Auto Release", false));
+    layout.add (std::make_unique<juce::AudioParameterBool> (ParamIDs::autoAttack, "Auto Attack", false));
 
     return layout;
 }
@@ -277,6 +282,7 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     params.makeupGainDb = makeupGainParam->load (std::memory_order_relaxed);
     params.mix          = mixParam->load (std::memory_order_relaxed);
     params.autoRelease  = autoReleaseParam->load (std::memory_order_relaxed) > 0.5f;
+    params.autoAttack   = autoAttackParam->load (std::memory_order_relaxed) > 0.5f;
 
     const auto mode      = static_cast<CompressorMode> ((int) modeParam->load (std::memory_order_relaxed));
     const float scHpHz   = scHPFreqParam->load (std::memory_order_relaxed);

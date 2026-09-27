@@ -12,7 +12,7 @@ BUILD_DIR="${1:-$PROJECT_ROOT/build}"
 ARTEFACTS="$BUILD_DIR/HarmonicCompressor_artefacts/Release"
 
 PRODUCT_NAME="Harmonic Compressor"
-VERSION="1.3.0"
+VERSION="1.4.0"
 IDENTIFIER="com.mincomp.harmoniccompressor"
 OUT_DIR="$PROJECT_ROOT/Installer"
 STAGING="$OUT_DIR/staging"

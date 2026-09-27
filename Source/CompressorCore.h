@@ -30,6 +30,7 @@ namespace ParamIDs
     static constexpr auto scHPFreq        = "scHPFreq";        // Hz, 20-500
     static constexpr auto scListen        = "scListen";        // bool, audition sidechain
     static constexpr auto autoRelease     = "autoRelease";     // bool
+    static constexpr auto autoAttack      = "autoAttack";      // bool
 }
 
 /**
@@ -62,6 +63,7 @@ struct CompressorParams
     float makeupGainDb  = 0.0f;
     float mix           = 1.0f;
     bool  autoRelease   = false;
+    bool  autoAttack    = false;
 };
 
 struct AlgorithmDefaults
@@ -172,18 +174,23 @@ public:
         const bool rising = targetGrDb < envelopeDb_;
 
         float releaseCoeff;
-        if (params_.autoRelease)
+        float attackCoeff = fastAttackCoeff_;
+        if (params_.autoRelease || params_.autoAttack)
         {
             autoSlowEnv_ = 0.9998f * autoSlowEnv_ + 0.0002f * std::abs(envelopeDb_);
             float adaptFactor = juce::jlimit(0.0f, 1.0f, autoSlowEnv_ / 6.0f);
-            float adaptMs = juce::jmap(adaptFactor, params_.releaseMs * 0.15f, params_.releaseMs * 3.0f);
-            releaseCoeff = timeToCoeff(adaptMs);
+            if (params_.autoRelease)
+                releaseCoeff = timeToCoeff(juce::jmap(adaptFactor, params_.releaseMs * 0.15f, params_.releaseMs * 3.0f));
+            else
+                releaseCoeff = juce::jmap(memoryState_, slowReleaseCoeff_, fastReleaseCoeff_);
+            if (params_.autoAttack)
+                attackCoeff = timeToCoeff(juce::jmap(adaptFactor, params_.attackMs * 0.15f, params_.attackMs * 0.5f));
         }
         else
         {
             releaseCoeff = juce::jmap(memoryState_, slowReleaseCoeff_, fastReleaseCoeff_);
         }
-        const float coeff = rising ? fastAttackCoeff_ : releaseCoeff;
+        const float coeff = rising ? attackCoeff : releaseCoeff;
 
         envelopeDb_ = coeff * envelopeDb_ + (1.0f - coeff) * targetGrDb;
         memoryState_ = 0.995f * memoryState_ + 0.005f * (rising ? 1.0f : 0.0f);
@@ -262,15 +269,19 @@ public:
         const float targetGrDb = computeKneeGr(inputDb);
 
         float relCoeff = releaseCoeff_;
-        if (params_.autoRelease)
+        float attCoeff = attackCoeff_;
+        if (params_.autoRelease || params_.autoAttack)
         {
             autoSlowEnv_ = 0.9997f * autoSlowEnv_ + 0.0003f * std::abs(envelopeDb_);
             float adaptFactor = juce::jlimit(0.0f, 1.0f, autoSlowEnv_ / 8.0f);
-            relCoeff = timeToCoeff(juce::jmap(adaptFactor, params_.releaseMs * 0.5f, params_.releaseMs * 2.5f));
+            if (params_.autoRelease)
+                relCoeff = timeToCoeff(juce::jmap(adaptFactor, params_.releaseMs * 0.5f, params_.releaseMs * 2.5f));
+            if (params_.autoAttack)
+                attCoeff = timeToCoeff(juce::jmap(adaptFactor, params_.attackMs * 0.3f, params_.attackMs * 1.2f));
         }
 
         const bool rising = targetGrDb < envelopeDb_;
-        const float coeff = rising ? attackCoeff_ : relCoeff;
+        const float coeff = rising ? attCoeff : relCoeff;
         envelopeDb_ = coeff * envelopeDb_ + (1.0f - coeff) * targetGrDb;
         feedbackGrDb_ = envelopeDb_;
 
@@ -365,18 +376,26 @@ public:
         programDepState_ = 0.9995f * programDepState_ + 0.0005f * (rising ? 1.0f : 0.0f);
 
         float relCoeff;
-        if (params_.autoRelease)
+        float attCoeff = attackCoeff_;
+        if (params_.autoRelease || params_.autoAttack)
         {
             autoSlowEnv_ = 0.9996f * autoSlowEnv_ + 0.0004f * std::abs(envelopeDb_);
             float adaptFactor = juce::jlimit(0.0f, 1.0f, autoSlowEnv_ / 6.0f);
-            relCoeff = timeToCoeff(juce::jmap(adaptFactor, params_.releaseMs * 0.2f, params_.releaseMs * 2.0f));
+            if (params_.autoRelease)
+                relCoeff = timeToCoeff(juce::jmap(adaptFactor, params_.releaseMs * 0.2f, params_.releaseMs * 2.0f));
+            else
+                relCoeff = juce::jmap(programDepState_, fastReleaseCoeff_, releaseCoeff_);
+            if (params_.autoAttack)
+                attCoeff = timeToCoeff(juce::jmap(adaptFactor,
+                                                   juce::jmin(params_.attackMs, 1.0f) * 0.5f,
+                                                   juce::jmin(params_.attackMs, 1.0f) * 1.5f));
         }
         else
         {
             relCoeff = juce::jmap(programDepState_, fastReleaseCoeff_, releaseCoeff_);
         }
 
-        const float coeff = rising ? attackCoeff_ : relCoeff;
+        const float coeff = rising ? attCoeff : relCoeff;
         envelopeDb_ = coeff * envelopeDb_ + (1.0f - coeff) * targetGrDb;
         feedbackGrDb_ = envelopeDb_;
 
@@ -444,14 +463,18 @@ public:
         const bool rising = targetGrDb < envelopeDb_;
 
         float relCoeff = releaseCoeff_;
-        if (params_.autoRelease)
+        float attCoeff = attackCoeff_;
+        if (params_.autoRelease || params_.autoAttack)
         {
             autoSlowEnv_ = 0.9997f * autoSlowEnv_ + 0.0003f * std::abs(envelopeDb_);
             float adaptFactor = juce::jlimit(0.0f, 1.0f, autoSlowEnv_ / 6.0f);
-            relCoeff = timeToCoeff(juce::jmap(adaptFactor, params_.releaseMs * 0.4f, params_.releaseMs * 2.0f));
+            if (params_.autoRelease)
+                relCoeff = timeToCoeff(juce::jmap(adaptFactor, params_.releaseMs * 0.4f, params_.releaseMs * 2.0f));
+            if (params_.autoAttack)
+                attCoeff = timeToCoeff(juce::jmap(adaptFactor, params_.attackMs * 0.3f, params_.attackMs * 1.2f));
         }
 
-        const float coeff = rising ? attackCoeff_ : relCoeff;
+        const float coeff = rising ? attCoeff : relCoeff;
         envelopeDb_ = coeff * envelopeDb_ + (1.0f - coeff) * juce::jmin(0.0f, targetGrDb);
 
         lastGrDb_.store(envelopeDb_, std::memory_order_relaxed);
@@ -509,15 +532,19 @@ public:
         const float targetGrDb = overDb > 0.0f ? -overDb * compressorSlope(params_.ratio) : 0.0f;
 
         float relCoeff = releaseCoeff_;
-        if (params_.autoRelease)
+        float attCoeff = attackCoeff_;
+        if (params_.autoRelease || params_.autoAttack)
         {
             autoSlowEnv_ = 0.9997f * autoSlowEnv_ + 0.0003f * std::abs(feedforwardEnvDb_);
             float adaptFactor = juce::jlimit(0.0f, 1.0f, autoSlowEnv_ / 6.0f);
-            relCoeff = timeToCoeff(juce::jmap(adaptFactor, params_.releaseMs * 0.3f, params_.releaseMs * 2.5f));
+            if (params_.autoRelease)
+                relCoeff = timeToCoeff(juce::jmap(adaptFactor, params_.releaseMs * 0.3f, params_.releaseMs * 2.5f));
+            if (params_.autoAttack)
+                attCoeff = timeToCoeff(juce::jmap(adaptFactor, params_.attackMs * 0.3f, params_.attackMs * 1.2f));
         }
 
         const bool rising = targetGrDb < feedforwardEnvDb_;
-        const float coeff = rising ? attackCoeff_ : relCoeff;
+        const float coeff = rising ? attCoeff : relCoeff;
         feedforwardEnvDb_ = coeff * feedforwardEnvDb_ + (1.0f - coeff) * targetGrDb;
 
         const float amount = feedbackAmount_.load(std::memory_order_relaxed);

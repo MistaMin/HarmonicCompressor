@@ -3,6 +3,32 @@
 #include <cmath>
 
 //==============================================================================
+namespace
+{
+    void drawHeadphoneGlyph (juce::Graphics& g, juce::Rectangle<float> bounds, bool active)
+    {
+        auto r = bounds.reduced (2.0f);
+        g.setColour (active ? LookAndFeelCustom::accentColour : LookAndFeelCustom::mutedTextColour);
+
+        const float cx = r.getCentreX();
+        const float bandTop = r.getY() + 1.0f;
+        const float radiusX = r.getWidth() * 0.42f;
+        const float radiusY = r.getHeight() * 0.55f;
+
+        juce::Path band;
+        band.addCentredArc (cx, bandTop + radiusY, radiusX, radiusY, 0.0f,
+                             juce::degreesToRadians (-95.0f), juce::degreesToRadians (95.0f), true);
+        g.strokePath (band, juce::PathStrokeType (1.6f));
+
+        const float cupW = r.getWidth() * 0.3f;
+        const float cupH = r.getHeight() * 0.42f;
+        const float cupY = r.getBottom() - cupH * 0.55f;
+        g.fillRoundedRectangle (juce::Rectangle<float> (cupW, cupH).withCentre ({ r.getX() + cupW * 0.5f, cupY }), 2.0f);
+        g.fillRoundedRectangle (juce::Rectangle<float> (cupW, cupH).withCentre ({ r.getRight() - cupW * 0.5f, cupY }), 2.0f);
+    }
+}
+
+//==============================================================================
 const juce::Colour LookAndFeelCustom::bgColour          (10, 10, 11);
 const juce::Colour LookAndFeelCustom::panelColour       (36, 36, 38);
 const juce::Colour LookAndFeelCustom::panelHeaderColour (24, 25, 29);
@@ -131,7 +157,12 @@ void LookAndFeelCustom::drawButtonBackground (juce::Graphics& g, juce::Button& b
 
     if (button.getToggleState())
     {
-        g.setColour (accentColour);
+        // Algorithm buttons carry their own hardware-inspired accent colour
+        // (set explicitly per-button); everything else falls back to the
+        // shared amber accent.
+        g.setColour (button.isColourSpecified (juce::TextButton::buttonOnColourId)
+                         ? button.findColour (juce::TextButton::buttonOnColourId)
+                         : accentColour);
         g.fillRoundedRectangle (bounds, corner);
     }
     else
@@ -151,9 +182,11 @@ void LookAndFeelCustom::drawButtonText (juce::Graphics& g, juce::TextButton& but
 {
     juce::ignoreUnused (shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
 
-    g.setFont (juce::Font (juce::FontOptions (14.0f, juce::Font::bold)));
+    const auto bounds = button.getLocalBounds();
+    const float fontSize = bounds.getHeight() < 20 ? 9.0f : 14.0f;
+    g.setFont (juce::Font (juce::FontOptions (fontSize, juce::Font::bold)));
     g.setColour (button.getToggleState() ? bgColour : textColour);
-    g.drawText (button.getButtonText(), button.getLocalBounds().toFloat(), juce::Justification::centred);
+    g.drawText (button.getButtonText(), bounds.toFloat(), juce::Justification::centred);
 }
 
 //==============================================================================
@@ -164,6 +197,16 @@ void LookAndFeelCustom::drawToggleButton (juce::Graphics& g, juce::ToggleButton&
     juce::ignoreUnused (shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
 
     const auto bounds = button.getLocalBounds().toFloat();
+
+    // Icon-only toggle (e.g. the sidechain "listen" headphone button): no
+    // text, no checkbox -- just a small drawn glyph whose colour reflects
+    // the toggle state, filling the whole button bounds.
+    if (button.getButtonText().isEmpty())
+    {
+        drawHeadphoneGlyph (g, bounds, button.getToggleState());
+        return;
+    }
+
     const float boxSize = 16.0f;
     const juce::Rectangle<float> box (bounds.getX(),
                                       bounds.getY() + (bounds.getHeight() - boxSize) * 0.5f,

@@ -34,8 +34,9 @@ public:
 private:
     void addRotarySlider (juce::Slider& slider, juce::Label& label, const juce::String& name);
     void drawPanel (juce::Graphics& g, const juce::Rectangle<int>& bounds, const juce::String& title);
-    void layoutKnobColumn (juce::Rectangle<int> column, juce::Slider& slider, juce::Label& label, int maxKnobSize);
+    juce::Rectangle<int> layoutKnobColumn (juce::Rectangle<int> column, juce::Slider& slider, juce::Label& label, int maxKnobSize);
     void updateDisplaySelection();
+    void updateAutoAttackReleaseUI();
 
     HarmonicCompressorAudioProcessor& audioProcessor;
 
@@ -67,9 +68,11 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
         harmonic2Attachment, harmonic3Attachment, harmonic4Attachment, harmonic5Attachment;
 
-    // Auto Release
-    juce::ToggleButton autoReleaseButton;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> autoReleaseAttachment;
+    // Auto Attack / Auto Release: independent small buttons badged at the
+    // "4 o'clock" position of the Attack and Release knobs. Each greys out
+    // its own knob when on.
+    juce::TextButton autoAttackButton, autoReleaseButton;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> autoAttackAttachment, autoReleaseAttachment;
 
     // Sidechain
     juce::ToggleButton scEnabledButton, scListenButton;
