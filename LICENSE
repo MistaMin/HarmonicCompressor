@@ -25,5 +25,10 @@ SOFTWARE.
 NOTE: This license applies only to the Harmonic Compressor source code
 written for this repository. It does NOT cover the JUCE framework (included
 as a submodule in `JUCE/`), which is dual-licensed by Raw Material Software
-Limited. See the "Third-Party Licensing" section of README.md for details on
-how JUCE's license affects any binaries you build from this source.
+Limited. See the "Licensing" section of README.md for details on how JUCE's
+license affects any binaries you build from this source.
+
+If you received a pre-built binary (the .pkg installer, or the VST3/AU/
+Standalone files it installs) rather than this source code, see
+LICENSE-BINARIES.txt instead — it explains that the binaries are freeware
+and summarizes how the MIT and JUCE licenses apply to them.

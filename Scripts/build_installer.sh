@@ -21,6 +21,8 @@ VST3_SRC="$ARTEFACTS/VST3/$PRODUCT_NAME.vst3"
 AU_SRC="$ARTEFACTS/AU/$PRODUCT_NAME.component"
 AAX_SRC="$ARTEFACTS/AAX/$PRODUCT_NAME.aaxplugin"
 APP_SRC="$ARTEFACTS/Standalone/$PRODUCT_NAME.app"
+LICENSE_BINARIES_SRC="$PROJECT_ROOT/LICENSE-BINARIES.txt"
+LICENSE_MIT_SRC="$PROJECT_ROOT/LICENSE"
 
 echo "== Harmonic Compressor installer builder =="
 echo "Artefacts dir: $ARTEFACTS"
@@ -30,6 +32,22 @@ mkdir -p "$STAGING/Library/Audio/Plug-Ins/VST3"
 mkdir -p "$STAGING/Library/Audio/Plug-Ins/Components"
 mkdir -p "$STAGING/Library/Application Support/Avid/Audio/Plug-Ins"
 mkdir -p "$STAGING/Applications"
+
+# Licensing docs: always installed regardless of which formats were built,
+# so every install (VST3-only, AU-only, Standalone-only, or all of them) ends
+# up with on-disk documentation stating the binaries are freeware and
+# explaining how the MIT (plugin code) and JUCE (framework) licenses apply.
+DOCS_DEST="$STAGING/Library/Application Support/Harmonic Compressor"
+mkdir -p "$DOCS_DEST"
+if [ -f "$LICENSE_BINARIES_SRC" ]; then
+    cp "$LICENSE_BINARIES_SRC" "$DOCS_DEST/ReadMe - License (Freeware).txt"
+    echo "  + LICENSE-BINARIES.txt included"
+else
+    echo "  ! WARNING: LICENSE-BINARIES.txt not found at $LICENSE_BINARIES_SRC - installer will ship without it" >&2
+fi
+if [ -f "$LICENSE_MIT_SRC" ]; then
+    cp "$LICENSE_MIT_SRC" "$DOCS_DEST/LICENSE (MIT, source code).txt"
+fi
 
 FOUND_ANY=0
 
@@ -107,11 +125,47 @@ pkgbuild \
     --install-location "/" \
     "$COMPONENT_PKG"
 
+# Show the freeware/licensing text as a License + ReadMe pane in the
+# installer itself (in addition to the copy left on disk in
+# /Library/Application Support/Harmonic Compressor above), so it's visible
+# even to someone who clicks through the installer without digging into the
+# install location afterwards.
+RESOURCES_DIR="$OUT_DIR/resources"
+mkdir -p "$RESOURCES_DIR"
+DISTRIBUTION_XML="$OUT_DIR/distribution.xml"
+
+if [ -f "$LICENSE_BINARIES_SRC" ]; then
+    cp "$LICENSE_BINARIES_SRC" "$RESOURCES_DIR/License.txt"
+    cp "$LICENSE_BINARIES_SRC" "$RESOURCES_DIR/ReadMe.txt"
+fi
+
+productbuild --synthesize --package "$COMPONENT_PKG" "$DISTRIBUTION_XML"
+
+if [ -f "$RESOURCES_DIR/License.txt" ]; then
+    /usr/bin/python3 - "$DISTRIBUTION_XML" <<'PYEOF'
+import sys
+path = sys.argv[1]
+with open(path, "r") as f:
+    xml = f.read()
+insert = '    <license file="License.txt" mime-type="text/plain"/>\n    <readme file="ReadMe.txt" mime-type="text/plain"/>\n'
+marker = "<installer-gui-script"
+idx = xml.find(marker)
+if idx == -1:
+    raise SystemExit("could not find <installer-gui-script> root element")
+end_of_open_tag = xml.find(">", idx) + 1
+xml = xml[:end_of_open_tag] + "\n" + insert + xml[end_of_open_tag:]
+with open(path, "w") as f:
+    f.write(xml)
+PYEOF
+fi
+
 productbuild \
-    --package "$COMPONENT_PKG" \
+    --distribution "$DISTRIBUTION_XML" \
+    --package-path "$OUT_DIR" \
+    --resources "$RESOURCES_DIR" \
     "$FINAL_PKG"
 
-rm -rf "$STAGING" "$COMPONENT_PKG" "$COMPONENT_PLIST"
+rm -rf "$STAGING" "$COMPONENT_PKG" "$COMPONENT_PLIST" "$DISTRIBUTION_XML" "$RESOURCES_DIR"
 
 echo ""
 echo "== Done =="

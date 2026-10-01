@@ -1,0 +1,48 @@
+Harmonic Compressor — License & Readme for installed binaries
+================================================================
+
+This copy of Harmonic Compressor (VST3 / Audio Unit / Standalone app) is
+FREEWARE: it is provided to you free of charge, for any use, personal or
+commercial. You do not need to pay for it or register it.
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. Use it at your own
+risk; the author is not liable for any damages arising from its use.
+
+------------------------------------------------------------------------
+How the licensing works
+------------------------------------------------------------------------
+
+Harmonic Compressor is built from two parts with two different licenses:
+
+1. The Harmonic Compressor source code (the plugin's own DSP and UI code)
+   is released under the MIT License. See LICENSE.txt in this same folder
+   (or the project's source repository) for the full text. In short: you
+   are free to use, copy, modify, and redistribute the source code, with
+   attribution and without warranty.
+
+2. Harmonic Compressor is built on the JUCE framework (juce.com), which is
+   owned and separately licensed by Raw Material Software Limited. JUCE is
+   NOT covered by the MIT License above — it is dual-licensed under either
+   the GNU AGPLv3 (free/open-source) or a commercial JUCE license. This
+   binary was built under a JUCE Starter license, which is free but
+   requires that the JUCE splash screen be shown when the app/plugin
+   starts up — that is why you see it, and it is expected/compliant
+   behavior, not a bug or nag screen demanding payment.
+
+This binary (the compiled plugin/app you installed) is distributed to you
+as freeware under these terms: free to use, free to redistribute as-is,
+but not to be sold, and provided with no warranty, consistent with both
+the MIT license on the Harmonic Compressor code and the JUCE Starter
+license's requirements.
+
+If you want to build Harmonic Compressor yourself from source, see the
+project's README.md for full build instructions and the complete
+licensing breakdown, including what license terms apply to binaries YOU
+compile (which depend on which JUCE license you personally hold).
+
+------------------------------------------------------------------------
+Where to get the source / report issues
+------------------------------------------------------------------------
+https://github.com/MistaMin/HarmonicCompressor

@@ -14,6 +14,17 @@ A packaged macOS installer can be produced with `Scripts/build_installer.sh`.
 
 ## Licensing
 
+### If you're just installing the binaries (the .pkg installer / Standalone app)
+
+The compiled plugin and app are distributed as **freeware**: free to use,
+personally or commercially, at no cost, with no registration required.
+A plain-language copy of this is also installed alongside the app — see
+`LICENSE-BINARIES.txt` in this repository, which is copied into
+`/Applications` by the installer so it's available on disk after install.
+The binaries carry no warranty of any kind.
+
+### If you're building from source
+
 The source code in this repository (everything outside the `JUCE/`
 submodule) is released under the **MIT License** — see [LICENSE](LICENSE).
 
@@ -34,6 +45,11 @@ you build it under:
   source remain Starter-license compliant out of the box. Removing the
   splash screen requires upgrading to an Indie or Pro JUCE license.
 
+The official pre-built binaries distributed from this repository's GitHub
+Releases are built under a JUCE Starter license and released as freeware
+under the terms above (MIT code + JUCE Starter splash screen + no warranty).
+
 In short: the Harmonic Compressor code itself is free to use, modify, and
 redistribute under MIT, but JUCE's own license terms travel with any binary
-you compile from it.
+you compile from it — and the official pre-built binaries are free to use
+as-is.
