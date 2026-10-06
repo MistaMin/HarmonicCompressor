@@ -12,12 +12,36 @@ set(AAX_SDK_PATH "" CACHE PATH "Path to the AAX SDK (optional)")
 
 add_subdirectory(JUCE)
 
+# GoodLookinUI (toolkit repo, checked out separately; this project holds no copy of it).
+set(GOODLOOKINUI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../HybridEQ/third_party/GoodLookinUI" CACHE PATH "GoodLookinUI toolkit location")
+add_subdirectory("${GOODLOOKINUI_ROOT}" "${CMAKE_CURRENT_BINARY_DIR}/goodlookinui")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Designs/HarmonicCompressor.csv")
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/Designs/HarmonicCompressor.csv" HC_DESIGN_TEXT)
+configure_file(Designs/EmbeddedDesign.h.in generated/EmbeddedDesign.h @ONLY)
+
+# Developer mode: builds a separate "Harmonic Compressor Dev" VST3 (own plugin code, so it can sit
+# next to the release plugin in a DAW) with the GoodLookinUI inspector and look menus compiled in.
+# Build it optimised (Release) so PluginDoctor measures the real DSP.
+option(HARMONIC_DEV_MODE "Developer build: GoodLookinUI inspector, VST3 only, installed after build" OFF)
+
 # ---------------------------------------------------------------------------
 # Plugin formats: VST3, AU and Standalone are always built. AAX is added only
 # when AAX_SDK_PATH points at a valid AAX SDK (juce_set_aax_sdk_path must be
 # called BEFORE juce_add_plugin, as required by JUCE's CMake API).
 # ---------------------------------------------------------------------------
-set(HARMONIC_COMPRESSOR_FORMATS VST3 AU Standalone)
+if(HARMONIC_DEV_MODE)
+    set(HARMONIC_COMPRESSOR_FORMATS VST3)
+    option(HARMONIC_DEV_STANDALONE "Also build a Standalone app in developer mode (for looking at the UI)" OFF)
+    if(HARMONIC_DEV_STANDALONE)
+        list(APPEND HARMONIC_COMPRESSOR_FORMATS Standalone)
+    endif()
+    set(HC_PRODUCT_NAME "Harmonic Compressor Dev")
+    set(HC_PLUGIN_CODE Hcmd)
+else()
+    set(HARMONIC_COMPRESSOR_FORMATS VST3 AU Standalone)
+    set(HC_PRODUCT_NAME "Harmonic Compressor")
+    set(HC_PLUGIN_CODE Hcmp)
+endif()
 
 if(AAX_SDK_PATH AND EXISTS "${AAX_SDK_PATH}/Interfaces/ACF")
     juce_set_aax_sdk_path(${AAX_SDK_PATH})
@@ -30,8 +54,9 @@ endif()
 juce_add_plugin(HarmonicCompressor
     FORMATS ${HARMONIC_COMPRESSOR_FORMATS}
     PLUGIN_MANUFACTURER_CODE Mncp
-    PLUGIN_CODE Hcmp
-    PRODUCT_NAME "Harmonic Compressor"
+    PLUGIN_CODE ${HC_PLUGIN_CODE}
+    PRODUCT_NAME "${HC_PRODUCT_NAME}"
+    COPY_PLUGIN_AFTER_BUILD ${HARMONIC_DEV_MODE}
     COMPANY_NAME "MinComp"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
@@ -49,15 +74,19 @@ target_sources(HarmonicCompressor
         Source/PluginEditor.cpp
         Source/PluginEditor.h
         Source/CompressorCore.h
-        Source/LookAndFeelCustom.h
-        Source/LookAndFeelCustom.cpp
-        Source/VuMeterDisplay.h
-        Source/VuMeterDisplay.cpp
+        Source/UI/Toolkit.h
+        Source/UI/Panel.h
+        Source/UI/Knob.h
+        Source/UI/KeyButton.h
+        Source/UI/MeterPanel.h
         Source/TransferCurveDisplay.h
         Source/TransferCurveDisplay.cpp)
 
+target_include_directories(HarmonicCompressor PRIVATE Source "${CMAKE_CURRENT_BINARY_DIR}/generated")
+
 target_link_libraries(HarmonicCompressor
     PRIVATE
+        goodlookinui_juce
         juce::juce_audio_utils
         juce::juce_dsp
         juce::juce_recommended_config_flags
@@ -67,8 +96,9 @@ target_link_libraries(HarmonicCompressor
 # This is a brand-new plugin with no VST2 release, so the VST3 parameter-ID
 # migration warning (JUCE_VST3_CAN_REPLACE_VST2) does not apply.
 target_compile_definitions(HarmonicCompressor PRIVATE
-    JUCE_IGNORE_VST3_MISMATCHED_PARAMETER_ID_WARNING=1)
+    JUCE_IGNORE_VST3_MISMATCHED_PARAMETER_ID_WARNING=1
+    GOODLOOKINUI_ENABLE_EDITOR=$<BOOL:${HARMONIC_DEV_MODE}>)
 
 set_target_properties(HarmonicCompressor PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED TRUE)

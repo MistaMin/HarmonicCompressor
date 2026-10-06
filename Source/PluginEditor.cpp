@@ -1,351 +1,400 @@
 #include "PluginEditor.h"
+#include "EmbeddedDesign.h"
+#include <sstream>
+
+namespace
+{
+    constexpr int canvasWidth = 800;
+    constexpr int panelsHeight = 516;
+#if GOODLOOKINUI_ENABLE_EDITOR
+    constexpr int devStripHeight = 34;
+#else
+    constexpr int devStripHeight = 0;
+#endif
+    constexpr int canvasHeight = panelsHeight + devStripHeight;
+
+    const char* const algorithmNames[] = { "OPTO", "VCA", "FET", "RED", "HYBRID" };
+    // Each mode keeps the lamp colour it had before the redesign.
+    const juce::uint32 algorithmColours[] = { 0xffcda434, 0xffc9702e, 0xff4a86c8, 0xffb3382c, 0xff3fa796 };
+
+    juce::String ratioText (double v)
+    {
+        if (v >= 99.5) return juce::String (juce::CharPointer_UTF8 ("\xe2\x88\x9e")) + ":1";
+        return juce::String (v, 1) + ":1";
+    }
+    juce::String msText (double v)
+    {
+        if (v >= 1000.0) return juce::String (v / 1000.0, 2) + " s";
+        return v >= 100.0 ? juce::String (juce::roundToInt (v)) + " ms" : juce::String (v, 1) + " ms";
+    }
+    juce::String dbText (double v, bool sign = false) { return (sign && v > 0.0 ? "+" : "") + juce::String (v, 1) + " dB"; }
+    juce::String percentText (double v, int decimals) { return juce::String (v, decimals) + "%"; }
+
+    // Readable names for the developer tools.
+    const char* knobName (const std::string& id)
+    {
+        static const std::pair<const char*, const char*> names[] = {
+            { "threshold", "Compression: Threshold" }, { "ratio", "Compression: Ratio" },
+            { "attack", "Compression: Attack" }, { "release", "Compression: Release" },
+            { "knee", "Compression: Knee" }, { "makeupGain", "Compression: Makeup gain" }, { "mix", "Compression: Mix" },
+            { "harmonic2", "Harmonics: 2nd" }, { "harmonic3", "Harmonics: 3rd" },
+            { "harmonic4", "Harmonics: 4th" }, { "harmonic5", "Harmonics: 5th" },
+            { "scHPFreq", "Sidechain: HP frequency" } };
+        for (auto& n : names) if (id == n.first) return n.second;
+        return "";
+    }
+}
+
+//==============================================================================
+void HarmonicCompressorAudioProcessorEditor::Surface::paint (juce::Graphics& g)
+{
+    const auto& p = *skin.plate;
+    auto b = getLocalBounds().toFloat();
+    g.setGradientFill (juce::ColourGradient (juce::Colour (p.bgTop), 0, 0, juce::Colour (p.bgBottom), 0, b.getHeight(), false));
+    g.fillRect (b);
+    gj::drawFinish (g, b, p.finish);
+
+    // title bar
+    auto bar = b.removeFromTop (44.0f);
+    g.setColour (juce::Colour (p.titleBar)); g.fillRect (bar);
+    g.setColour (juce::Colour (p.border)); g.drawHorizontalLine (43, 0.0f, bar.getWidth());
+    g.setColour (juce::Colour (p.accent)); g.fillRect (12.0f, 12.0f, 4.0f, 20.0f);
+    g.setColour (juce::Colour (p.text)); g.setFont (juce::FontOptions (15.0f, juce::Font::bold));
+    g.drawText ("HARMONIC COMPRESSOR", 24, 6, 270, 22, juce::Justification::centredLeft);
+    g.setColour (juce::Colour (p.textMid)); g.setFont (juce::FontOptions (9.0f));
+    g.drawText ("MULTI-MODE HARMONIC COLOUR", 24, 25, 270, 12, juce::Justification::centredLeft);
+    for (auto pt : { juce::Point<float> (8, 8), { bar.getWidth() - 8, 8 }, { 8, float (panelsHeight) - 8 }, { bar.getWidth() - 8, float (panelsHeight) - 8 } })
+        gj::drawScrew (g, pt.x, pt.y);
+}
+
+//==============================================================================
+HarmonicCompressorAudioProcessorEditor::KeyBinding::KeyBinding (HarmonicCompressorAudioProcessor& p, const char* paramID,
+                                                                  KeyButton& b, std::function<void (bool)> onChange)
+    : button (b), changed (std::move (onChange)),
+      attachment (*p.apvts.getParameter (paramID), [this] (float v)
+      {
+          const bool on = v > 0.5f;
+          button.setToggleState (on, juce::dontSendNotification);
+          if (changed) changed (on);
+      })
+{
+    button.onClick = [this] { attachment.setValueAsCompleteGesture (button.getToggleState() ? 1.0f : 0.0f); };
+    attachment.sendInitialUpdate();
+}
+
+//==============================================================================
+Knob& HarmonicCompressorAudioProcessorEditor::addKnob (Panel& parent, const char* id, const char* label, juce::Colour colour,
+                                                       Knob::Formatter fmt, juce::Rectangle<int> defaultBounds)
+{
+    auto k = std::make_unique<Knob> (label, colour, std::move (fmt));
+    auto& ref = *k;
+    parent.addAndMakeVisible (ref);
+    ref.setBounds (defaultBounds);
+    sliderAttachments.push_back (std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, id, ref));
+    knobById[id] = &ref;
+
+    auto item = ref.getDesign();
+    item.id = id; item.parameter = id;
+    item.x = float (defaultBounds.getX()); item.y = float (defaultBounds.getY());
+    item.width = float (defaultBounds.getWidth()); item.height = float (defaultBounds.getHeight());
+    designItems[id] = item;
+    knobs.push_back (std::move (k));
+    return ref;
+}
 
 //==============================================================================
 HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (HarmonicCompressorAudioProcessor& p)
-    : AudioProcessorEditor (&p),
-      audioProcessor (p),
-      vuMeter (p),
-      transferCurve (p)
+    : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    setLookAndFeel (&lookAndFeel);
-    setResizable (true, true);
-    setResizeLimits (480, 360, 1280, 960);
-    getConstrainer()->setFixedAspectRatio (640.0 / 480.0);
-    setSize (640, 480);
+    loadLookState();
 
-    // --- Algorithm selector: horizontal row of discrete toggle buttons ---
-    // Each mode gets its own accent colour, loosely evoking the tone of the
-    // classic hardware topology it emulates (warm gold opto cell, brushed
-    // VCA steel, blue FET stripe, red-enamel transformer unit, teal for the
-    // modern hybrid) without naming or copying any specific brand.
-    const char* algorithmNames[numAlgorithms] = { "Opto", "VCA", "FET", "Red", "Hybrid" };
-    const juce::Colour algorithmColours[numAlgorithms] = {
-        juce::Colour (0xffcda434),   // Opto   -- warm gold
-        juce::Colour (0xffc9702e),   // VCA    -- brushed copper/wood
-        juce::Colour (0xff4a86c8),   // FET    -- steel blue
-        juce::Colour (0xffb3382c),   // Red    -- enamel red
-        juce::Colour (0xff3fa796),   // Hybrid -- teal
-    };
+    // --- Panels on the design canvas ---
+    addAndMakeVisible (surface);
+    for (auto* c : std::initializer_list<juce::Component*> { &compPanel, &harmPanel, &scPanel, &curvePanel, &meterPanel })
+        surface.addAndMakeVisible (c);
+    compPanel.setBounds (12, 52, 470, 280);
+    curvePanel.setBounds (494, 52, 294, 280);
+    harmPanel.setBounds (12, 344, 330, 160);
+    scPanel.setBounds (354, 344, 190, 160);
+    meterPanel.setBounds (556, 344, 232, 160);
+    compPanel.setAccent (juce::Colour (0xffc7a66a));
+    curvePanel.setAccent (juce::Colour (0xff39f2ff));
+    harmPanel.setAccent (juce::Colour (0xffb3382c));
+    scPanel.setAccent (juce::Colour (0xff4a86c8));
+    meterPanel.setAccent (juce::Colour (0xff3ccf5a));
 
+    curvePanel.addAndMakeVisible (transferCurve);
+    transferCurve.setBounds (10, 46, 274, 224);
+
+    // --- Algorithm keys (radio), synced to the algorithmMode parameter ---
     for (int i = 0; i < numAlgorithms; ++i)
     {
-        auto& button = algorithmButtons[(size_t) i];
-        button.setButtonText (algorithmNames[i]);
-        button.setRadioGroupId (1001);
-        button.setClickingTogglesState (true);
-        button.setColour (juce::TextButton::buttonColourId, LookAndFeelCustom::panelColour);
-        button.setColour (juce::TextButton::buttonOnColourId, algorithmColours[i]);
-        button.onClick = [this, i]
+        auto key = std::make_unique<KeyButton> (algorithmNames[i], juce::Colour (algorithmColours[i]));
+        key->setRadioGroupId (1001);
+        key->setBounds (300 + i * 80, 8, 76, 28);
+        key->onClick = [this, i]
         {
-            if (algorithmAttachment != nullptr)
-                algorithmAttachment->setValueAsCompleteGesture ((float) i);
+            if (algorithmAttachment != nullptr) algorithmAttachment->setValueAsCompleteGesture ((float) i);
         };
-        addAndMakeVisible (button);
+        surface.addAndMakeVisible (*key);
+        algorithmKeys[(size_t) i] = std::move (key);
     }
-
-    // Sync the buttons to the algorithmMode parameter (host automation and
-    // preset recall move the buttons too). The callback runs on the message
-    // thread, so updating button states here is safe.
     algorithmAttachment = std::make_unique<juce::ParameterAttachment> (
         *audioProcessor.apvts.getParameter (ParamIDs::algorithmMode),
-        [this] (float newValue)
+        [this] (float v)
         {
-            // Restoring each mode's own remembered parameter values (attack,
-            // release, knee, threshold, ratio, etc.) on mode switch is
-            // handled centrally by the processor (see
-            // HarmonicCompressorAudioProcessor::parameterChanged), so the
-            // editor only needs to keep the button highlighting in sync.
-            const int index = juce::roundToInt (newValue);
-            for (int i = 0; i < numAlgorithms; ++i)
-                algorithmButtons[(size_t) i].setToggleState (i == index, juce::dontSendNotification);
+            // Each mode's remembered parameter values are restored by the processor; here we only mirror the selection.
+            const int index = juce::roundToInt (v);
+            for (int i = 0; i < numAlgorithms; ++i) algorithmKeys[(size_t) i]->setToggleState (i == index, juce::dontSendNotification);
         });
-
-    // --- Main rotary sliders ---
-    addRotarySlider (thresholdSlider, thresholdLabel, "Threshold");
-    addRotarySlider (ratioSlider, ratioLabel, "Ratio");
-    ratioSlider.textFromValueFunction = [] (double v)
-    {
-        if (v >= 99.5) return juce::String (juce::CharPointer_UTF8 ("\xe2\x88\x9e")) + ":1";
-        if (v < 0.0)   return juce::String (v, 1) + ":1";
-        return juce::String (v, 1) + ":1";
-    };
-    ratioSlider.valueFromTextFunction = [] (const juce::String& text)
-    {
-        if (text.containsIgnoreCase ("inf") || text.contains (juce::CharPointer_UTF8 ("\xe2\x88\x9e")))
-            return 100.0;
-        return text.upToFirstOccurrenceOf (":", false, true).getDoubleValue();
-    };
-    addRotarySlider (attackSlider, attackLabel, "Attack");
-    addRotarySlider (releaseSlider, releaseLabel, "Release");
-    addRotarySlider (kneeSlider, kneeLabel, "Knee");
-    addRotarySlider (makeupGainSlider, makeupGainLabel, "Makeup");
-    addRotarySlider (mixSlider, mixLabel, "Mix");
-
-    thresholdAttachment  = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, ParamIDs::threshold, thresholdSlider);
-    ratioAttachment      = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, ParamIDs::ratio, ratioSlider);
-    attackAttachment     = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, ParamIDs::attack, attackSlider);
-    releaseAttachment    = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, ParamIDs::release, releaseSlider);
-    kneeAttachment       = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, ParamIDs::knee, kneeSlider);
-    makeupGainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, ParamIDs::makeupGain, makeupGainSlider);
-    mixAttachment        = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, ParamIDs::mix, mixSlider);
-
-    // --- Harmonic sliders ---
-    addRotarySlider (harmonic2Slider, harmonic2Label, "2nd");
-    addRotarySlider (harmonic3Slider, harmonic3Label, "3rd");
-    addRotarySlider (harmonic4Slider, harmonic4Label, "4th");
-    addRotarySlider (harmonic5Slider, harmonic5Label, "5th");
-
-    harmonic2Attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, ParamIDs::harmonic2, harmonic2Slider);
-    harmonic3Attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, ParamIDs::harmonic3, harmonic3Slider);
-    harmonic4Attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, ParamIDs::harmonic4, harmonic4Slider);
-    harmonic5Attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, ParamIDs::harmonic5, harmonic5Slider);
-
-    // --- Sidechain row ---
-    scEnabledButton.setButtonText ("Sidechain");
-    scEnabledButton.setColour (juce::ToggleButton::textColourId, LookAndFeelCustom::textColour);
-    addAndMakeVisible (scEnabledButton);
-
-    scHpFreqLabel.setText ("Hz", juce::dontSendNotification);
-    scHpFreqLabel.setJustificationType (juce::Justification::centred);
-    scHpFreqLabel.setFont (juce::Font (juce::FontOptions (12.0f, juce::Font::bold)));
-    addAndMakeVisible (scHpFreqLabel);
-
-    scHpFreqSlider.setSliderStyle (juce::Slider::LinearHorizontal);
-    scHpFreqSlider.setTextBoxStyle (juce::Slider::TextBoxRight, false, 55, 16);
-    addAndMakeVisible (scHpFreqSlider);
-
-    // Drawn as a small headphone icon (see drawHeadphoneIcon) rather than
-    // a text label, so it reads clearly at the panel's small size.
-    scListenButton.setButtonText ("");
-    scListenButton.setTooltip ("Listen to sidechain signal");
-    addAndMakeVisible (scListenButton);
-
-    scEnabledAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (audioProcessor.apvts, ParamIDs::scEnabled, scEnabledButton);
-    scListenAttachment  = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (audioProcessor.apvts, ParamIDs::scListen, scListenButton);
-    scHpFreqAttachment  = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.apvts, ParamIDs::scHPFreq, scHpFreqSlider);
-    scListenButton.onClick = [this] { repaint(); };
-
-    // --- Auto Attack / Auto Release: independent small "AUTO" badge
-    // buttons at each knob's 4-o'clock position. When engaged, that knob's
-    // time becomes program-dependent in the DSP and the knob is disabled
-    // (greyed out) so the user can't fight the automatic behaviour. Attack
-    // and Release can be set to Auto independently of one another.
-    for (auto* b : { &autoAttackButton, &autoReleaseButton })
-    {
-        b->setButtonText ("AUTO");
-        b->setClickingTogglesState (true);
-        addAndMakeVisible (*b);
-    }
-    autoAttackButton.setTooltip ("Program-dependent attack time");
-    autoReleaseButton.setTooltip ("Program-dependent release time");
-    autoAttackAttachment  = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (audioProcessor.apvts, ParamIDs::autoAttack, autoAttackButton);
-    autoReleaseAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (audioProcessor.apvts, ParamIDs::autoRelease, autoReleaseButton);
-    autoAttackButton.onClick  = [this] { updateAutoAttackReleaseUI(); };
-    autoReleaseButton.onClick = [this] { updateAutoAttackReleaseUI(); };
-    updateAutoAttackReleaseUI();
-
-    // --- Display selector: switch between VU meter and transfer curve ---
-    displaySelector.addItem ("VU Meter", 1);
-    displaySelector.addItem ("Transfer Curve", 2);
-    displaySelector.setSelectedId (1, juce::dontSendNotification);
-    displaySelector.onChange = [this] { updateDisplaySelection(); };
-    addAndMakeVisible (displaySelector);
-
-    addChildComponent (vuMeter);
-    addChildComponent (transferCurve);
-    updateDisplaySelection();
-
-    // Sync button highlighting to whatever mode is already active (state
-    // restore or the default Opto on first load) without disturbing any
-    // per-mode parameter values.
     algorithmAttachment->sendInitialUpdate();
+
+    // --- Knobs: same parameters as before, drawn by the toolkit ---
+    const juce::Colour gold (0xffc7a66a), blue (0xff7fb3d5);
+    addKnob (compPanel, ParamIDs::threshold, "THRESHOLD", gold, [] (double v) { return dbText (v); }, { 12, 50, 108, 108 });
+    addKnob (compPanel, ParamIDs::ratio, "RATIO", gold, ratioText, { 126, 50, 108, 108 });
+    addKnob (compPanel, ParamIDs::attack, "ATTACK", gold, msText, { 240, 50, 108, 108 });
+    addKnob (compPanel, ParamIDs::release, "RELEASE", gold, msText, { 354, 50, 108, 108 });
+    addKnob (compPanel, ParamIDs::knee, "KNEE", blue, [] (double v) { return dbText (v); }, { 12, 160, 108, 108 });
+    addKnob (compPanel, ParamIDs::makeupGain, "MAKEUP", blue, [] (double v) { return dbText (v, true); }, { 126, 160, 108, 108 });
+    addKnob (compPanel, ParamIDs::mix, "MIX", blue, [] (double v) { return percentText (v * 100.0, 0); }, { 240, 160, 108, 108 });
+    addKnob (harmPanel, ParamIDs::harmonic2, "2ND", juce::Colour (0xffcda434), [] (double v) { return percentText (v, 1); }, { 8, 56, 76, 106 });
+    addKnob (harmPanel, ParamIDs::harmonic3, "3RD", juce::Colour (0xffc9702e), [] (double v) { return percentText (v, 1); }, { 86, 56, 76, 106 });
+    addKnob (harmPanel, ParamIDs::harmonic4, "4TH", juce::Colour (0xffb3382c), [] (double v) { return percentText (v, 1); }, { 164, 56, 76, 106 });
+    addKnob (harmPanel, ParamIDs::harmonic5, "5TH", juce::Colour (0xff3fa796), [] (double v) { return percentText (v, 1); }, { 242, 56, 76, 106 });
+    addKnob (scPanel, ParamIDs::scHPFreq, "HP FREQ", juce::Colour (0xff4a86c8),
+             [] (double v) { return juce::String (juce::roundToInt (v)) + " Hz"; }, { 8, 56, 84, 106 });
+
+    // --- Keys: auto attack / release grey their own knob, sidechain enable / listen ---
+    compPanel.addAndMakeVisible (autoAttackKey);
+    compPanel.addAndMakeVisible (autoReleaseKey);
+    scPanel.addAndMakeVisible (scEnableKey);
+    scPanel.addAndMakeVisible (scListenKey);
+    autoAttackKey.setBounds (356, 176, 104, 30);
+    autoReleaseKey.setBounds (356, 216, 104, 30);
+    scEnableKey.setBounds (100, 64, 82, 34);
+    scListenKey.setBounds (100, 108, 82, 34);
+    autoAttackKey.setTooltip ("Program-dependent attack");
+    autoReleaseKey.setTooltip ("Program-dependent release");
+    scListenKey.setTooltip ("Listen to the sidechain signal");
+    keyBindings.push_back (std::make_unique<KeyBinding> (audioProcessor, ParamIDs::autoAttack, autoAttackKey,
+                                                         [this] (bool on) { knobById["attack"]->setActive (! on); }));
+    keyBindings.push_back (std::make_unique<KeyBinding> (audioProcessor, ParamIDs::autoRelease, autoReleaseKey,
+                                                         [this] (bool on) { knobById["release"]->setActive (! on); }));
+    keyBindings.push_back (std::make_unique<KeyBinding> (audioProcessor, ParamIDs::scEnabled, scEnableKey,
+                                                         [this] (bool on) { knobById["scHPFreq"]->setActive (on); }));
+    keyBindings.push_back (std::make_unique<KeyBinding> (audioProcessor, ParamIDs::scListen, scListenKey));
+
+    applyBakedDesign();
+    if (knobStyleOverride.isNotEmpty()) applyKnobStyle (knobStyleOverride);
+
+#if GOODLOOKINUI_ENABLE_EDITOR
+    for (auto& [id, knob] : knobById)
+    {
+        designStudio.add (designItems[id], *knob, [this, k = knob] (const glui::Item& v) { onKnobDesignEdited (*k, v); }, knobName (id));
+        knob->setTooltip (juce::String (knobName (id)) + "   [" + id + "]");
+        knob->onSelect = [this, k = knob] { if (designStudio.isVisible()) designStudio.select (k); };
+    }
+    addChildComponent (designStudio);
+    designStudio.onSelect = [this] (juce::Component* c) { highlightKnob (c); };
+    surface.addChildComponent (ring);
+    for (auto* b : { &designButton, &plateButton, &knobsButton, &metersButton, &keysButton, &glowButton })
+        surface.addAndMakeVisible (*b);
+    designButton.onClick = [this]
+    {
+        const bool show = ! designStudio.isVisible();
+        designStudio.setVisible (show);
+        designStudio.toFront (false);
+        highlightKnob (designStudio.selected());
+    };
+    plateButton.onClick  = [this] { showPlateMenu(); };
+    knobsButton.onClick  = [this] { showKnobMenu(); };
+    metersButton.onClick = [this] { showMeterMenu(); };
+    keysButton.onClick   = [this] { showKeyMenu(); };
+    glowButton.setClickingTogglesState (true);
+    glowButton.setToggleState (gj::retro::glowEnabled, juce::dontSendNotification);
+    glowButton.onClick = [this] { gj::retro::glowEnabled = glowButton.getToggleState(); saveLookState(); repaint(); };
+    plateButton.setTooltip ("Faceplate: colour, finish and text of every panel");
+    knobsButton.setTooltip ("Try a knob class on every knob");
+    metersButton.setTooltip ("Meter face: cream VU, black VU, LED ladders");
+    keysButton.setTooltip ("Push-key style for the algorithm and switch keys");
+#endif
+
+    setResizable (true, true);
+    setResizeLimits (560, int (560.0 * canvasHeight / canvasWidth), 1600, int (1600.0 * canvasHeight / canvasWidth));
+    getConstrainer()->setFixedAspectRatio ((double) canvasWidth / canvasHeight);
+    const int savedWidth = juce::jlimit (560, 1600, (int) audioProcessor.apvts.state.getProperty ("editorWidth", canvasWidth));
+    setSize (savedWidth, juce::roundToInt (savedWidth * (double) canvasHeight / canvasWidth));
+    applySkin();
 }
 
 HarmonicCompressorAudioProcessorEditor::~HarmonicCompressorAudioProcessorEditor()
 {
-    setLookAndFeel (nullptr);
+    audioProcessor.apvts.state.setProperty ("editorWidth", getWidth(), nullptr);
+    keyBindings.clear();
+    algorithmAttachment.reset();
+    sliderAttachments.clear();
 }
 
 //==============================================================================
-void HarmonicCompressorAudioProcessorEditor::updateDisplaySelection()
+void HarmonicCompressorAudioProcessorEditor::applyBakedDesign()
 {
-    const bool showCurve = displaySelector.getSelectedId() == 2;
-    vuMeter.setVisible (! showCurve);
-    transferCurve.setVisible (showCurve);
+    try
+    {
+        std::istringstream in (harmonicCompressorDesign);
+        for (auto& item : glui::readDesign (in))
+        {
+            auto it = knobById.find (item.id);
+            if (it == knobById.end() || item.parameter != item.id) continue;
+            designItems[item.id] = item;
+            it->second->applyDesign (item);
+            it->second->setBounds (juce::roundToInt (item.x), juce::roundToInt (item.y), juce::roundToInt (item.width), juce::roundToInt (item.height));
+        }
+    }
+    catch (const std::exception&) { /* keep the built-in layout */ }
+}
+
+void HarmonicCompressorAudioProcessorEditor::applySkin()
+{
+    for (auto& k : knobs) k->setTextColours (skin.text(), skin.mid());
+    for (auto& key : algorithmKeys) key->setStyle (skin.pushStyle);
+    for (auto* key : { &autoAttackKey, &autoReleaseKey, &scEnableKey, &scListenKey }) key->setStyle (skin.pushStyle);
+    surface.repaint();
+    for (auto* c : std::initializer_list<juce::Component*> { &compPanel, &harmPanel, &scPanel, &curvePanel, &meterPanel }) c->repaint();
+    repaint();
+}
+
+void HarmonicCompressorAudioProcessorEditor::applyKnobStyle (const juce::String& code)
+{
+    knobStyleOverride = code;
+    for (auto& [id, knob] : knobById)
+    {
+        auto item = designItems[id];
+        if (code.isNotEmpty()) item.style = code.toStdString();
+        knob->applyDesign (item);
+    }
+    saveLookState();
+}
+
+void HarmonicCompressorAudioProcessorEditor::onKnobDesignEdited (Knob& knob, const glui::Item& item)
+{
+    designItems[item.id] = item;
+    knob.applyDesign (item);
 }
 
 //==============================================================================
-void HarmonicCompressorAudioProcessorEditor::updateAutoAttackReleaseUI()
+// Look choices are UI-only: saved in the plugin state next to the parameters, never read by the DSP.
+void HarmonicCompressorAudioProcessorEditor::saveLookState()
 {
-    const bool attackAuto  = autoAttackButton.getToggleState();
-    const bool releaseAuto = autoReleaseButton.getToggleState();
-
-    attackSlider.setEnabled (! attackAuto);
-    attackSlider.setAlpha (attackAuto ? 0.35f : 1.0f);
-    attackLabel.setAlpha (attackAuto ? 0.5f : 1.0f);
-
-    releaseSlider.setEnabled (! releaseAuto);
-    releaseSlider.setAlpha (releaseAuto ? 0.35f : 1.0f);
-    releaseLabel.setAlpha (releaseAuto ? 0.5f : 1.0f);
+    auto& s = audioProcessor.apvts.state;
+    s.setProperty ("plate", juce::String (skin.plate->code), nullptr);
+    s.setProperty ("meterFace", skin.meterFace, nullptr);
+    s.setProperty ("pushStyle", skin.pushStyle, nullptr);
+    s.setProperty ("knobStyle", knobStyleOverride, nullptr);
+    s.setProperty ("glow", gj::retro::glowEnabled ? "on" : "off", nullptr);
 }
 
-//==============================================================================
-void HarmonicCompressorAudioProcessorEditor::addRotarySlider (juce::Slider& slider, juce::Label& label, const juce::String& name)
+void HarmonicCompressorAudioProcessorEditor::loadLookState()
 {
-    slider.setSliderStyle (juce::Slider::RotaryVerticalDrag);
-    slider.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 60, 16);
-    addAndMakeVisible (slider);
-
-    label.setText (name, juce::dontSendNotification);
-    label.setJustificationType (juce::Justification::centred);
-    label.setFont (juce::Font (juce::FontOptions (14.0f, juce::Font::bold)));
-    addAndMakeVisible (label);
+    auto& s = audioProcessor.apvts.state;
+    if (auto* f = glui::findFaceplate (s.getProperty ("plate", "Graphite").toString().toStdString())) skin.plate = f;
+    skin.meterFace = juce::jlimit (0, 2, (int) s.getProperty ("meterFace", 0));
+    skin.pushStyle = juce::jlimit (0, gj::switches::numPushStyles - 1, (int) s.getProperty ("pushStyle", 0));
+    knobStyleOverride = s.getProperty ("knobStyle", "").toString();
+    gj::retro::glowEnabled = s.getProperty ("glow", "on").toString() != "off";
 }
 
 //==============================================================================
 void HarmonicCompressorAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll (LookAndFeelCustom::bgColour);
-
-    g.setColour (LookAndFeelCustom::textColour);
-    g.setFont (juce::Font (juce::FontOptions (12.0f, juce::Font::bold)));
-    g.drawText ("HARMONIC COMPRESSOR", getLocalBounds().removeFromTop (18).reduced (10, 0),
-                juce::Justification::centredLeft);
-
-    drawPanel (g, algorithmPanelBounds, "");
-    drawPanel (g, curvePanelBounds, "");
-    drawPanel (g, controlsPanelBounds, "");
-    drawPanel (g, harmonicsPanelBounds, "HARMONICS");
-    drawPanel (g, sidechainPanelBounds, "SIDECHAIN");
+    g.fillAll (juce::Colour (skin.plate->bgFill));
 }
 
-//==============================================================================
-void HarmonicCompressorAudioProcessorEditor::drawPanel (juce::Graphics& g, const juce::Rectangle<int>& bounds, const juce::String& title)
-{
-    // Subtle raised control-panel surface (Flux-style): a faint charcoal
-    // fill with a thin border, distinct from the near-black background.
-    if (bounds.isEmpty())
-        return;
-
-    const float corner = 4.0f;
-    auto fb = bounds.toFloat();
-
-    g.setColour (LookAndFeelCustom::panelColour.withAlpha (0.6f));
-    g.fillRoundedRectangle (fb, corner);
-    g.setColour (LookAndFeelCustom::outlineColour);
-    g.drawRoundedRectangle (fb, corner, 1.0f);
-
-    if (title.isNotEmpty())
-    {
-        g.setColour (LookAndFeelCustom::mutedTextColour);
-        g.setFont (juce::Font (juce::FontOptions (9.5f, juce::Font::bold)));
-        g.drawText (title, bounds.getX() + 6, bounds.getY() + 3, 200, 12, juce::Justification::centredLeft);
-    }
-}
-
-//==============================================================================
-juce::Rectangle<int> HarmonicCompressorAudioProcessorEditor::layoutKnobColumn (juce::Rectangle<int> column,
-                                                                juce::Slider& slider, juce::Label& label,
-                                                                int maxKnobSize)
-{
-    label.setBounds (column.removeFromTop (18));
-    auto valueBox = column.removeFromBottom (18);
-
-    const int knobSize = juce::jmin (maxKnobSize, column.getWidth() - 4, column.getHeight());
-    auto knobArea = column.withSizeKeepingCentre (knobSize, knobSize);
-    slider.setBounds (knobArea.getUnion (valueBox.withSizeKeepingCentre (60, valueBox.getHeight())));
-    return knobArea;
-}
-
-//==============================================================================
 void HarmonicCompressorAudioProcessorEditor::resized()
 {
-    auto area = getLocalBounds().reduced (6);
-    area.removeFromTop (18);
-
-    algorithmPanelBounds = area.removeFromTop (20);
+    const float scale = juce::jmin (float (getWidth()) / canvasWidth, float (getHeight()) / canvasHeight);
+    surface.setBounds (0, 0, canvasWidth, canvasHeight);
+    surface.setTransform (juce::AffineTransform::scale (scale).translated ((getWidth() - canvasWidth * scale) * 0.5f,
+                                                                           (getHeight() - canvasHeight * scale) * 0.5f));
+#if GOODLOOKINUI_ENABLE_EDITOR
+    int x = 12;
+    for (auto* b : { &designButton, &plateButton, &knobsButton, &metersButton, &keysButton, &glowButton })
     {
-        auto content = algorithmPanelBounds;
-        juce::FlexBox algoBox;
-        algoBox.flexDirection = juce::FlexBox::Direction::row;
-        algoBox.justifyContent = juce::FlexBox::JustifyContent::spaceBetween;
-        for (auto& button : algorithmButtons)
-            algoBox.items.add (juce::FlexItem (button).withFlex (1.0f).withMargin (juce::FlexItem::Margin (0, 2, 0, 2)));
-        algoBox.performLayout (content);
+        b->setBounds (x, panelsHeight + 5, 88, 24);
+        x += 96;
     }
-    area.removeFromTop (4);
-
-    auto bottomRow = area.removeFromBottom (72);
-    area.removeFromBottom (4);
-
-    controlsPanelBounds = area.removeFromBottom (78);
-    area.removeFromBottom (4);
-
-    curvePanelBounds = area;
-    {
-        auto content = curvePanelBounds.reduced (3);
-        displaySelector.setBounds (content.removeFromTop (16).reduced (30, 0));
-        vuMeter.setBounds (content);
-        transferCurve.setBounds (content);
-    }
-    {
-        auto content = controlsPanelBounds.reduced (6, 3);
-        juce::Slider* mainSliders[] = { &thresholdSlider, &ratioSlider, &attackSlider,
-                                        &releaseSlider, &kneeSlider, &makeupGainSlider, &mixSlider };
-        juce::Label* mainLabels[] = { &thresholdLabel, &ratioLabel, &attackLabel,
-                                      &releaseLabel, &kneeLabel, &makeupGainLabel, &mixLabel };
-        const int n = 7;
-        const int w = content.getWidth() / n;
-        for (int i = 0; i < n; ++i)
-        {
-            auto knobArea = layoutKnobColumn (content.removeFromLeft (w), *mainSliders[i], *mainLabels[i], 38);
-
-            // Attack and Release get a small "Auto" badge button sitting at
-            // the knob's "4 o'clock" position, just outside its rim.
-            if (mainSliders[i] == &attackSlider || mainSliders[i] == &releaseSlider)
-            {
-                auto& autoButton = (mainSliders[i] == &attackSlider) ? autoAttackButton : autoReleaseButton;
-                const int badgeW = 30, badgeH = 14;
-                const juce::Point<int> badgeCentre (knobArea.getCentreX() + (int) (knobArea.getWidth() * 0.40f),
-                                                     knobArea.getCentreY() + (int) (knobArea.getHeight() * 0.34f));
-                autoButton.setBounds (juce::Rectangle<int> (badgeW, badgeH).withCentre (badgeCentre));
-                autoButton.toFront (false);
-            }
-        }
-    }
-
-    harmonicsPanelBounds = bottomRow.removeFromLeft (bottomRow.getWidth() / 2 - 3);
-    bottomRow.removeFromLeft (6);
-    sidechainPanelBounds = bottomRow;
-
-    {
-        auto content = harmonicsPanelBounds.reduced (6, 3);
-        content.removeFromTop (14);
-        juce::Slider* harmSliders[] = { &harmonic2Slider, &harmonic3Slider,
-                                        &harmonic4Slider, &harmonic5Slider };
-        juce::Label* harmLabels[] = { &harmonic2Label, &harmonic3Label,
-                                      &harmonic4Label, &harmonic5Label };
-        const int w = content.getWidth() / 4;
-        for (int i = 0; i < 4; ++i)
-            layoutKnobColumn (content.removeFromLeft (w), *harmSliders[i], *harmLabels[i], 32);
-    }
-
-    {
-        auto content = sidechainPanelBounds.reduced (6, 3);
-        content.removeFromTop (14);
-
-        auto row1 = content.removeFromTop (18);
-        content.removeFromTop (3);
-        auto row2 = content.removeFromTop (20);
-
-        scEnabledButton.setBounds (row1.removeFromLeft (120));
-
-        juce::FlexBox row2Box;
-        row2Box.flexDirection = juce::FlexBox::Direction::row;
-        row2Box.alignItems = juce::FlexBox::AlignItems::center;
-        row2Box.items.add (juce::FlexItem (scHpFreqLabel).withWidth (22).withHeight ((float) row2.getHeight()));
-        row2Box.items.add (juce::FlexItem (scHpFreqSlider).withFlex (1.0f).withHeight ((float) row2.getHeight()).withMargin (juce::FlexItem::Margin (0, 6, 0, 4)));
-        row2Box.items.add (juce::FlexItem (scListenButton).withWidth (28).withHeight ((float) row2.getHeight()));
-        row2Box.performLayout (row2);
-    }
+    designStudio.setBounds (8, 8, getWidth() - 16, 114);
+#endif
 }
+
+//==============================================================================
+#if GOODLOOKINUI_ENABLE_EDITOR
+void HarmonicCompressorAudioProcessorEditor::highlightKnob (juce::Component* c)
+{
+    if (c == nullptr || ! designStudio.isVisible()) { ring.setVisible (false); return; }
+    ring.setBounds (surface.getLocalArea (c->getParentComponent(), c->getBounds()).expanded (2));
+    ring.setVisible (true);
+    ring.toFront (false);
+}
+
+void HarmonicCompressorAudioProcessorEditor::showPlateMenu()
+{
+    juce::PopupMenu menu;
+    int id = 1;
+    for (const auto& f : glui::faceplates)
+        menu.addItem (id++, juce::String (f.name), true, skin.plate == &f);
+    menu.showMenuAsync (juce::PopupMenu::Options().withTargetComponent (&plateButton),
+        [safe = juce::Component::SafePointer<HarmonicCompressorAudioProcessorEditor> (this)] (int r)
+        {
+            if (safe == nullptr || r <= 0) return;
+            safe->skin.plate = &glui::faceplates[r - 1];
+            safe->saveLookState();
+            safe->applySkin();
+        });
+}
+
+void HarmonicCompressorAudioProcessorEditor::showKnobMenu()
+{
+    juce::PopupMenu menu;
+    menu.addItem (1, "DESIGN (as saved)", true, knobStyleOverride.isEmpty());
+    menu.addSeparator();
+    int id = 2;
+    for (const auto& s : glui::knobStyles)
+        menu.addItem (id++, juce::String (s.code) + "  -  " + s.description, true, knobStyleOverride == s.code);
+    menu.showMenuAsync (juce::PopupMenu::Options().withTargetComponent (&knobsButton),
+        [safe = juce::Component::SafePointer<HarmonicCompressorAudioProcessorEditor> (this)] (int r)
+        {
+            if (safe == nullptr || r <= 0) return;
+            safe->applyKnobStyle (r == 1 ? juce::String() : juce::String (glui::knobStyles[r - 2].code));
+        });
+}
+
+void HarmonicCompressorAudioProcessorEditor::showMeterMenu()
+{
+    juce::PopupMenu menu;
+    const char* names[] = { "Cream VU needles", "Black VU needles", "LED ladders" };
+    for (int i = 0; i < 3; ++i) menu.addItem (i + 1, names[i], true, skin.meterFace == i);
+    menu.showMenuAsync (juce::PopupMenu::Options().withTargetComponent (&metersButton),
+        [safe = juce::Component::SafePointer<HarmonicCompressorAudioProcessorEditor> (this)] (int r)
+        {
+            if (safe == nullptr || r <= 0) return;
+            safe->skin.meterFace = r - 1;
+            safe->saveLookState();
+            safe->applySkin();
+        });
+}
+
+void HarmonicCompressorAudioProcessorEditor::showKeyMenu()
+{
+    juce::PopupMenu menu;
+    for (int i = 0; i < gj::switches::numPushStyles; ++i) menu.addItem (i + 1, gj::switches::pushNames[i], true, skin.pushStyle == i);
+    menu.showMenuAsync (juce::PopupMenu::Options().withTargetComponent (&keysButton),
+        [safe = juce::Component::SafePointer<HarmonicCompressorAudioProcessorEditor> (this)] (int r)
+        {
+            if (safe == nullptr || r <= 0) return;
+            safe->skin.pushStyle = r - 1;
+            safe->saveLookState();
+            safe->applySkin();
+        });
+}
+#endif

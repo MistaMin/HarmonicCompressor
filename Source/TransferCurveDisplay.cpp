@@ -1,6 +1,5 @@
 #include "TransferCurveDisplay.h"
 #include "PluginProcessor.h"
-#include "LookAndFeelCustom.h"
 
 namespace
 {
@@ -9,8 +8,8 @@ namespace
 }
 
 //==============================================================================
-TransferCurveDisplay::TransferCurveDisplay (HarmonicCompressorAudioProcessor& p)
-    : processor (p)
+TransferCurveDisplay::TransferCurveDisplay (HarmonicCompressorAudioProcessor& p, Skin& s)
+    : processor (p), skin (s)
 {
     thresholdParam = processor.apvts.getRawParameterValue (ParamIDs::threshold);
     ratioParam     = processor.apvts.getRawParameterValue (ParamIDs::ratio);
@@ -76,11 +75,13 @@ void TransferCurveDisplay::paint (juce::Graphics& g)
     if (curveArea.isEmpty())
         return;
 
-    g.setColour (juce::Colours::black.withAlpha (0.25f));
+    g.setColour (juce::Colour (0xff0b0c0d));
     g.fillRoundedRectangle (curveArea, 4.0f);
+    g.setColour (juce::Colour (0xff2a3033));
+    g.drawRoundedRectangle (curveArea, 4.0f, 1.0f);
 
     // Grid
-    g.setColour (LookAndFeelCustom::outlineColour.withAlpha (0.4f));
+    g.setColour (juce::Colour (0xff485156).withAlpha (0.4f));
     for (float db = kMinDb; db <= kMaxDb; db += 12.0f)
     {
         const float x = juce::jmap (db, kMinDb, kMaxDb, curveArea.getX(), curveArea.getRight());
@@ -96,7 +97,7 @@ void TransferCurveDisplay::paint (juce::Graphics& g)
     float dashLengths[] = { 3.0f, 3.0f };
     juce::Path dashedUnity;
     juce::PathStrokeType (1.0f).createDashedStroke (dashedUnity, unity, dashLengths, 2);
-    g.setColour (LookAndFeelCustom::mutedTextColour.withAlpha (0.5f));
+    g.setColour (skin.mid().withAlpha (0.5f));
     g.fillPath (dashedUnity);
 
     // Transfer curve
@@ -108,14 +109,14 @@ void TransferCurveDisplay::paint (juce::Graphics& g)
         if (first) { curve.startNewSubPath (pt); first = false; }
         else       curve.lineTo (pt);
     }
-    g.setColour (LookAndFeelCustom::accentColour);
+    g.setColour (skin.accent());
     g.strokePath (curve, juce::PathStrokeType (2.0f));
 
     // Knee/ratio handle
     const float threshold = thresholdParam->load (std::memory_order_relaxed);
     handlePos = pointForDb (threshold, computeOutputDb (threshold));
 
-    g.setColour (hovering || dragging ? juce::Colours::white : LookAndFeelCustom::accentColour);
+    g.setColour (hovering || dragging ? juce::Colours::white : skin.accent());
     g.fillEllipse (juce::Rectangle<float> (9.0f, 9.0f).withCentre (handlePos));
     g.setColour (juce::Colours::black.withAlpha (0.6f));
     g.drawEllipse (juce::Rectangle<float> (9.0f, 9.0f).withCentre (handlePos), 1.2f);
@@ -127,7 +128,7 @@ void TransferCurveDisplay::paint (juce::Graphics& g)
     g.setColour (juce::Colours::orange);
     g.fillEllipse (juce::Rectangle<float> (6.0f, 6.0f).withCentre (livePt));
 
-    g.setColour (LookAndFeelCustom::textColour);
+    g.setColour (skin.text());
     g.setFont (juce::Font (juce::FontOptions (10.0f, juce::Font::bold)));
     auto grLabelArea = curveArea.withHeight (14.0f).reduced (4.0f, 0.0f);
     g.drawText (juce::String (-processor.lastGrDbForUI.load (std::memory_order_relaxed), 1) + " dB GR",

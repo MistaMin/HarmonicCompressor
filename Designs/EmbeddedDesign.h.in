@@ -1,0 +1,2 @@
+#pragma once
+inline constexpr const char* harmonicCompressorDesign = R"huidesign(@HC_DESIGN_TEXT@)huidesign";

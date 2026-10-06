@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "UI/Toolkit.h"
 
 class HarmonicCompressorAudioProcessor;
 
@@ -18,7 +19,7 @@ class HarmonicCompressorAudioProcessor;
 class TransferCurveDisplay : public juce::Component, private juce::Timer
 {
 public:
-    explicit TransferCurveDisplay (HarmonicCompressorAudioProcessor& processor);
+    TransferCurveDisplay (HarmonicCompressorAudioProcessor& processor, Skin& skin);
     ~TransferCurveDisplay() override;
 
     void paint (juce::Graphics& g) override;
@@ -37,6 +38,7 @@ private:
     juce::Point<float> pointForDb (float inputDb, float outputDb) const;
 
     HarmonicCompressorAudioProcessor& processor;
+    Skin& skin;
 
     std::atomic<float>* thresholdParam = nullptr;
     std::atomic<float>* ratioParam = nullptr;
