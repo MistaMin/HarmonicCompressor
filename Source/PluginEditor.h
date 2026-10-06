@@ -55,6 +55,8 @@ private:
                    juce::Rectangle<int> defaultBounds);
     void applyBakedDesign();
     void applySkin();
+    void applyModeLook (int mode);
+    void saveModeLook (const char* what, const juce::String& value);
     void applyKnobStyle (const juce::String& code);
     void onKnobDesignEdited (Knob&, const glui::Item&);
     void saveLookState();
@@ -83,7 +85,10 @@ private:
     std::map<std::string, Knob*> knobById;
     std::map<std::string, glui::Item> designItems;     // as saved / as edited in the inspector
     std::vector<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>> sliderAttachments;
-    juce::String knobStyleOverride;
+    std::map<std::string, std::string> bakedStyle;      // style from the embedded design, per knob
+    juce::String knobStyleOverride;                     // knob class chosen by the current algorithm; empty = design
+    int currentMode = 0;
+    bool lookApplied = false;
 
 #if GOODLOOKINUI_ENABLE_EDITOR
     gj::Studio designStudio;

@@ -17,6 +17,16 @@ namespace
     // Each mode keeps the lamp colour it had before the redesign.
     const juce::uint32 algorithmColours[] = { 0xffcda434, 0xffc9702e, 0xff4a86c8, 0xffb3382c, 0xff3fa796 };
 
+    // Each algorithm has its own plate, knob class and key style (built-in defaults). Developer mode can
+    // change them per algorithm; the choices are saved in the plugin state as plate<i> / knob<i> / push<i>.
+    struct ModeLook { const char* plate; const char* knob; int push; };
+    const ModeLook modeLooks[] = {
+        { "Champagne", "Brz", 0 },   // Opto:   warm gold plate, polished brass knobs
+        { "Steel",     "Mtl", 0 },   // VCA:    brushed steel plate, knurled aluminium knobs
+        { "Slate",     "Snk", 3 },   // FET:    rack slate plate, matte black knobs
+        { "Scarlet",   "Pie", 1 },   // Red:    signal scarlet plate, serrated skirt knobs
+        { "Cyber",     "Neo", 4 } }; // Hybrid: cyber cyan plate, neon ring knobs
+
     juce::String ratioText (double v)
     {
         if (v >= 99.5) return juce::String (juce::CharPointer_UTF8 ("\xe2\x88\x9e")) + ":1";
@@ -98,6 +108,7 @@ Knob& HarmonicCompressorAudioProcessorEditor::addKnob (Panel& parent, const char
     item.x = float (defaultBounds.getX()); item.y = float (defaultBounds.getY());
     item.width = float (defaultBounds.getWidth()); item.height = float (defaultBounds.getHeight());
     designItems[id] = item;
+    bakedStyle[id] = item.style;
     knobs.push_back (std::move (k));
     return ref;
 }
@@ -146,8 +157,9 @@ HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (
             // Each mode's remembered parameter values are restored by the processor; here we only mirror the selection.
             const int index = juce::roundToInt (v);
             for (int i = 0; i < numAlgorithms; ++i) algorithmKeys[(size_t) i]->setToggleState (i == index, juce::dontSendNotification);
+            if (index != currentMode || ! lookApplied) { lookApplied = true; applyModeLook (index); }
         });
-    algorithmAttachment->sendInitialUpdate();
+    // The first update below fires before the knobs exist, so it only records the mode.
 
     // --- Knobs: same parameters as before, drawn by the toolkit ---
     const juce::Colour gold (0xffc7a66a), blue (0xff7fb3d5);
@@ -186,7 +198,7 @@ HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (
     keyBindings.push_back (std::make_unique<KeyBinding> (audioProcessor, ParamIDs::scListen, scListenKey));
 
     applyBakedDesign();
-    if (knobStyleOverride.isNotEmpty()) applyKnobStyle (knobStyleOverride);
+    algorithmAttachment->sendInitialUpdate();
 
 #if GOODLOOKINUI_ENABLE_EDITOR
     for (auto& [id, knob] : knobById)
@@ -214,10 +226,10 @@ HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (
     glowButton.setClickingTogglesState (true);
     glowButton.setToggleState (gj::retro::glowEnabled, juce::dontSendNotification);
     glowButton.onClick = [this] { gj::retro::glowEnabled = glowButton.getToggleState(); saveLookState(); repaint(); };
-    plateButton.setTooltip ("Faceplate: colour, finish and text of every panel");
-    knobsButton.setTooltip ("Try a knob class on every knob");
+    plateButton.setTooltip ("Faceplate for the current algorithm");
+    knobsButton.setTooltip ("Knob class for the current algorithm");
     metersButton.setTooltip ("Meter face: cream VU, black VU, LED ladders");
-    keysButton.setTooltip ("Push-key style for the algorithm and switch keys");
+    keysButton.setTooltip ("Push-key style for the current algorithm");
 #endif
 
     setResizable (true, true);
@@ -247,6 +259,7 @@ void HarmonicCompressorAudioProcessorEditor::applyBakedDesign()
             auto it = knobById.find (item.id);
             if (it == knobById.end() || item.parameter != item.id) continue;
             designItems[item.id] = item;
+            bakedStyle[item.id] = item.style;
             it->second->applyDesign (item);
             it->second->setBounds (juce::roundToInt (item.x), juce::roundToInt (item.y), juce::roundToInt (item.width), juce::roundToInt (item.height));
         }
@@ -273,13 +286,33 @@ void HarmonicCompressorAudioProcessorEditor::applyKnobStyle (const juce::String&
         if (code.isNotEmpty()) item.style = code.toStdString();
         knob->applyDesign (item);
     }
-    saveLookState();
+}
+
+// Switching algorithm switches the plate, the knob set and the key style.
+void HarmonicCompressorAudioProcessorEditor::applyModeLook (int mode)
+{
+    mode = juce::jlimit (0, numAlgorithms - 1, mode);
+    currentMode = mode;
+    auto& s = audioProcessor.apvts.state;
+    const auto n = juce::String (mode);
+    const auto& d = modeLooks[mode];
+    if (auto* f = glui::findFaceplate (s.getProperty ("plate" + n, d.plate).toString().toStdString())) skin.plate = f;
+    skin.pushStyle = juce::jlimit (0, gj::switches::numPushStyles - 1, (int) s.getProperty ("push" + n, d.push));
+    const auto knob = s.getProperty ("knob" + n, d.knob).toString();
+    applyKnobStyle (knob == "design" ? juce::String() : knob);
+    const juce::Colour lamp (algorithmColours[mode]);
+    compPanel.setAccent (lamp);
+    for (auto* key : { &autoAttackKey, &autoReleaseKey }) key->setLamp (lamp.brighter (0.2f));
+    applySkin();
 }
 
 void HarmonicCompressorAudioProcessorEditor::onKnobDesignEdited (Knob& knob, const glui::Item& item)
 {
+    auto shown = item;
+    // Studio keeps the style it was registered with; a knob whose style was not changed there follows the algorithm.
+    if (knobStyleOverride.isNotEmpty() && item.style == bakedStyle[item.id]) shown.style = knobStyleOverride.toStdString();
     designItems[item.id] = item;
-    knob.applyDesign (item);
+    knob.applyDesign (shown);
 }
 
 //==============================================================================
@@ -287,20 +320,20 @@ void HarmonicCompressorAudioProcessorEditor::onKnobDesignEdited (Knob& knob, con
 void HarmonicCompressorAudioProcessorEditor::saveLookState()
 {
     auto& s = audioProcessor.apvts.state;
-    s.setProperty ("plate", juce::String (skin.plate->code), nullptr);
     s.setProperty ("meterFace", skin.meterFace, nullptr);
-    s.setProperty ("pushStyle", skin.pushStyle, nullptr);
-    s.setProperty ("knobStyle", knobStyleOverride, nullptr);
     s.setProperty ("glow", gj::retro::glowEnabled ? "on" : "off", nullptr);
+}
+
+// Developer menus change the look of the algorithm that is currently selected.
+void HarmonicCompressorAudioProcessorEditor::saveModeLook (const char* what, const juce::String& value)
+{
+    audioProcessor.apvts.state.setProperty (juce::String (what) + juce::String (currentMode), value, nullptr);
 }
 
 void HarmonicCompressorAudioProcessorEditor::loadLookState()
 {
     auto& s = audioProcessor.apvts.state;
-    if (auto* f = glui::findFaceplate (s.getProperty ("plate", "Graphite").toString().toStdString())) skin.plate = f;
     skin.meterFace = juce::jlimit (0, 2, (int) s.getProperty ("meterFace", 0));
-    skin.pushStyle = juce::jlimit (0, gj::switches::numPushStyles - 1, (int) s.getProperty ("pushStyle", 0));
-    knobStyleOverride = s.getProperty ("knobStyle", "").toString();
     gj::retro::glowEnabled = s.getProperty ("glow", "on").toString() != "off";
 }
 
@@ -348,7 +381,7 @@ void HarmonicCompressorAudioProcessorEditor::showPlateMenu()
         {
             if (safe == nullptr || r <= 0) return;
             safe->skin.plate = &glui::faceplates[r - 1];
-            safe->saveLookState();
+            safe->saveModeLook ("plate", glui::faceplates[r - 1].code);
             safe->applySkin();
         });
 }
@@ -365,7 +398,9 @@ void HarmonicCompressorAudioProcessorEditor::showKnobMenu()
         [safe = juce::Component::SafePointer<HarmonicCompressorAudioProcessorEditor> (this)] (int r)
         {
             if (safe == nullptr || r <= 0) return;
-            safe->applyKnobStyle (r == 1 ? juce::String() : juce::String (glui::knobStyles[r - 2].code));
+            const juce::String code = r == 1 ? juce::String() : juce::String (glui::knobStyles[r - 2].code);
+            safe->saveModeLook ("knob", code.isEmpty() ? juce::String ("design") : code);
+            safe->applyKnobStyle (code);
         });
 }
 
@@ -393,7 +428,7 @@ void HarmonicCompressorAudioProcessorEditor::showKeyMenu()
         {
             if (safe == nullptr || r <= 0) return;
             safe->skin.pushStyle = r - 1;
-            safe->saveLookState();
+            safe->saveModeLook ("push", juce::String (r - 1));
             safe->applySkin();
         });
 }
