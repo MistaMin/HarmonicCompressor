@@ -73,7 +73,7 @@ private:
     MeterPanel meterPanel { skin, audioProcessor };
     TransferCurveDisplay transferCurve { audioProcessor, skin };
 
-    static constexpr int numAlgorithms = 5;
+    static constexpr int numAlgorithms = (int) CompressorMode::Count;
     std::array<std::unique_ptr<KeyButton>, (size_t) numAlgorithms> algorithmKeys;
     std::unique_ptr<juce::ParameterAttachment> algorithmAttachment;
 

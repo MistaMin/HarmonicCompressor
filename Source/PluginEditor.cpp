@@ -13,9 +13,9 @@ namespace
 #endif
     constexpr int canvasHeight = panelsHeight + devStripHeight;
 
-    const char* const algorithmNames[] = { "OPTO", "VCA", "FET", "RED", "HYBRID" };
+    const char* const algorithmNames[] = { "OPTO", "VCA", "FET", "RED", "HYBRID", "BRIDGE", "BUS", "FET C" };
     // Each mode keeps the lamp colour it had before the redesign.
-    const juce::uint32 algorithmColours[] = { 0xffcda434, 0xffc9702e, 0xff4a86c8, 0xffb3382c, 0xff3fa796 };
+    const juce::uint32 algorithmColours[] = { 0xffcda434, 0xffc9702e, 0xff4a86c8, 0xffb3382c, 0xff3fa796, 0xffcda434, 0xffc9702e, 0xff4a86c8 };
 
     // Each algorithm has its own plate, knob class and key style (built-in defaults). Developer mode can
     // change them per algorithm; the choices are saved in the plugin state as plate<i> / knob<i> / push<i>.
@@ -25,7 +25,7 @@ namespace
         { "Steel",     "Mtl", 0 },   // VCA:    brushed steel plate, knurled aluminium knobs
         { "Slate",     "Snk", 3 },   // FET:    rack slate plate, matte black knobs
         { "Scarlet",   "Pie", 1 },   // Red:    signal scarlet plate, serrated skirt knobs
-        { "Cyber",     "Neo", 4 } }; // Hybrid: cyber cyan plate, neon ring knobs
+        { "Cyber",     "Neo", 4 }, { "Champagne", "Brz", 0 }, { "Steel", "Mtl", 0 }, { "Slate", "Snk", 3 } }; // Hybrid: cyber cyan plate, neon ring knobs
 
     juce::String ratioText (double v)
     {
@@ -141,8 +141,9 @@ HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (
     for (int i = 0; i < numAlgorithms; ++i)
     {
         auto key = std::make_unique<KeyButton> (algorithmNames[i], juce::Colour (algorithmColours[i]));
+        if (i >= 5) key->setTooltip ("Provisional circuit mode: DSP audit pending");
         key->setRadioGroupId (1001);
-        key->setBounds (300 + i * 80, 8, 76, 28);
+        key->setBounds (300 + i * 61, 8, 58, 28);
         key->onClick = [this, i]
         {
             if (algorithmAttachment != nullptr) algorithmAttachment->setValueAsCompleteGesture ((float) i);

@@ -44,6 +44,9 @@ enum class CompressorMode : int
     FET,
     RedStyle,
     Hybrid,
+    Bridge,
+    BusVCA,
+    FETCircuit,
     Count
 };
 
@@ -84,6 +87,9 @@ struct AlgorithmDefaults
             case CompressorMode::FET:      return {  0.2f, 200.0f,  3.0f, 0.10f, 0.12f, true  };
             case CompressorMode::RedStyle: return { 10.0f, 300.0f,  6.0f, 0.02f, 0.02f, false };
             case CompressorMode::Hybrid:   return {  5.0f, 150.0f,  6.0f, 0.05f, 0.05f, false };
+            case CompressorMode::Bridge: return { 2.0f, 400.0f, 0.0f, 0.0f, 0.0f, true };
+            case CompressorMode::BusVCA: return { 3.0f, 100.0f, 0.0f, 0.0f, 0.0f, true };
+            case CompressorMode::FETCircuit: return { 0.2f, 200.0f, 0.0f, 0.0f, 0.0f, true };
             default:                       return { 10.0f, 100.0f,  6.0f, 0.0f,  0.0f,  false };
         }
     }
@@ -119,6 +125,7 @@ public:
     // Computes the linear gain-reduction multiplier for a single sidechain
     // sample. Implementations own their own envelope-follower state.
     virtual float processSidechain(float sidechainSample) = 0;
+    virtual float processAudio(float x, float gain, int) { return x * gain; }
 
     // Exposes the last computed gain reduction in dB, purely for the UI
     // meter/curve display. Safe to read from the message thread as a
@@ -580,6 +587,74 @@ private:
     std::atomic<float> feedbackAmount_{0.25f};
 };
 
+// Provisional reduced circuit engines. These are integration candidates, not
+// validated equivalents of the source netlists. See dsp/CIRCUIT_INTEGRATION.md.
+class CircuitAlgorithm final : public CompressorAlgorithm
+{
+public:
+    explicit CircuitAlgorithm(CompressorMode kind) : kind_(kind) {}
+    void prepare(const juce::dsp::ProcessSpec& spec) override { sampleRate_ = spec.sampleRate; reset(); }
+    void reset() override { envelope_ = memory_ = 0.0f; gain_ = 1.0f; lastGrDb_.store(0.0f); }
+    void updateParameters(const CompressorParams& p) override
+    {
+        params_ = p;
+        attack_ = coefficient(p.autoAttack ? defaultAttack() : p.attackMs);
+        release_ = coefficient(p.releaseMs);
+        // Bridge C36/R81 recovery memory: 47uF * 120kOhm.
+        memoryCoeff_ = coefficient(kind_ == CompressorMode::Bridge ? 5640.0f : 1200.0f);
+        drive_ = juce::Decibels::decibelsToGain(-p.thresholdDb);
+    }
+    float processSidechain(float x) override
+    {
+        const float ratio = juce::jlimit(1.0f, 100.0f, params_.ratio);
+        float detected = std::abs(x) * drive_;
+        if (kind_ == CompressorMode::FETCircuit)
+        {
+            // Source deck: preamp feedback rectifier, ratio-dependent GR gain,
+            // -3.5V quiescent bias, 1.6V/V envelope-to-gate drive.
+            const float grGain = ratio >= 99 ? 10.15f : ratio >= 20 ? 9.08f : ratio >= 12 ? 5.23f
+                               : ratio >= 8 ? 3.23f : ratio >= 4 ? 2.0f : 1.0f;
+            detected *= gain_ * grGain;
+        }
+        else
+        {
+            // Bus model sidechain/main control tracking = 8.89/9.53.
+            detected *= kind_ == CompressorMode::BusVCA ? std::pow(gain_, 8.89f / 9.53f) : gain_;
+        }
+        memory_ = memoryCoeff_ * memory_ + (1.0f - memoryCoeff_) * envelope_;
+        float target = detected;
+        if (params_.autoRelease && target < envelope_) target = juce::jmax(target, memory_);
+        const float c = target > envelope_ ? attack_ : release_;
+        envelope_ = c * envelope_ + (1.0f - c) * target;
+        if (kind_ == CompressorMode::FETCircuit)
+        {
+            // Small-signal BF245B channel conductance, R3 27k and R4 180R.
+            // Finite-signal JFET junctions and transformer networks remain to audit.
+            const float gate = juce::jlimit(-3.5f, 0.0f, -3.5f + 1.6f * envelope_);
+            const float conductance = 2.0f * 0.0012f * juce::jmax(0.0f, gate + 2.5f);
+            gain_ = 1.0f / (1.0f + 27000.0f * conductance / (1.0f + 180.0f * conductance));
+        }
+        else
+        {
+            // Provisional feedback control law; replace with the audited
+            // rectifier/clamp network and calibrated CV conversion.
+            const float over = juce::jmax(0.0f, juce::Decibels::gainToDecibels(envelope_, -120.0f));
+            const float tracking = kind_ == CompressorMode::BusVCA ? 8.89f / 9.53f : 1.0f;
+            const float slope = (ratio - 1.0f) / tracking;
+            gain_ = juce::Decibels::decibelsToGain(-juce::jmin(80.0f, over * slope));
+        }
+        lastGrDb_.store(juce::Decibels::gainToDecibels(gain_, -120.0f), std::memory_order_relaxed);
+        return gain_;
+    }
+private:
+    float coefficient(float ms) const { return std::exp(-1.0f / ((float)sampleRate_ * 0.001f * juce::jmax(0.02f, ms))); }
+    float defaultAttack() const { return kind_ == CompressorMode::FETCircuit ? 0.2f : kind_ == CompressorMode::Bridge ? 2.0f : 3.0f; }
+    CompressorMode kind_;
+    CompressorParams params_;
+    float envelope_ = 0, memory_ = 0, gain_ = 1, drive_ = 1;
+    float attack_ = 0, release_ = 0, memoryCoeff_ = 0;
+};
+
 //==============================================================================
 // HarmonicsEngine: post-compression waveshaping with independent 2nd/3rd/
 // 4th/5th harmonic mix controls (each 0..1, mapped from a 0-100% slider).
@@ -670,6 +745,9 @@ public:
         algorithmPool_[(size_t)CompressorMode::FET]      = &fet_;
         algorithmPool_[(size_t)CompressorMode::RedStyle] = &red_;
         algorithmPool_[(size_t)CompressorMode::Hybrid]   = &hybrid_;
+        algorithmPool_[(size_t)CompressorMode::Bridge] = &bridge_;
+        algorithmPool_[(size_t)CompressorMode::BusVCA] = &busVca_;
+        algorithmPool_[(size_t)CompressorMode::FETCircuit] = &fetCircuit_;
     }
 
     void prepare(const juce::dsp::ProcessSpec& spec)
@@ -727,6 +805,9 @@ private:
     FETAlgorithm       fet_;
     RedStyleAlgorithm  red_;
     HybridAlgorithm    hybrid_;
+    CircuitAlgorithm bridge_{CompressorMode::Bridge};
+    CircuitAlgorithm busVca_{CompressorMode::BusVCA};
+    CircuitAlgorithm fetCircuit_{CompressorMode::FETCircuit};
 
     std::array<CompressorAlgorithm*, (size_t)CompressorMode::Count> algorithmPool_{};
 

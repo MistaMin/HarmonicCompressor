@@ -139,7 +139,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout HarmonicCompressorAudioProce
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
     layout.add (std::make_unique<juce::AudioParameterChoice> (ParamIDs::algorithmMode, "Algorithm",
-                                                              juce::StringArray { "Opto", "VCA", "FET", "Red", "Hybrid" },
+                                                              juce::StringArray { "Opto", "VCA", "FET", "Red", "Hybrid", "Bridge (Provisional)", "Bus VCA (Provisional)", "FET Circuit (Provisional)" },
                                                               0));
 
     layout.add (std::make_unique<juce::AudioParameterFloat> (ParamIDs::threshold, "Threshold",
@@ -350,7 +350,24 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     const int osNumSamples  = (int) oversampledBlock.getNumSamples();
     const int osNumChannels = (int) oversampledBlock.getNumChannels();
 
-    for (int ch = 0; ch < osNumChannels; ++ch)
+    if (mode >= CompressorMode::Bridge)
+    {
+        // Advance linked circuit state once per sample, regardless of channel count.
+        for (int s = 0; s < osNumSamples; ++s)
+        {
+            float detector = 0.0f;
+            for (int ch = 0; ch < osNumChannels; ++ch)
+                detector = juce::jmax(detector, std::abs(oversampledBlock.getChannelPointer(ch)[s]));
+            const float gr = alg->processSidechain(detector);
+            for (int ch = 0; ch < osNumChannels; ++ch)
+            {
+                auto* data = oversampledBlock.getChannelPointer(ch);
+                const float y = alg->processAudio(data[s], gr, ch) * makeupGainLinear;
+                data[s] = harmonics.processSample(y, h2, h3, h4, h5);
+            }
+        }
+    }
+    else for (int ch = 0; ch < osNumChannels; ++ch)
     {
         auto* data = oversampledBlock.getChannelPointer (ch);
 
@@ -358,7 +375,7 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
         {
             const float scSample = data[s];
             const float gr = alg->processSidechain (scSample);
-            float y = data[s] * gr * makeupGainLinear;
+            float y = alg->processAudio(data[s], gr, ch) * makeupGainLinear;
             y = harmonics.processSample (y, h2, h3, h4, h5);
             data[s] = y;
         }
