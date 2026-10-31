@@ -168,7 +168,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout HarmonicCompressorAudioProce
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
     layout.add (std::make_unique<juce::AudioParameterChoice> (ParamIDs::algorithmMode, "Algorithm",
-                                                              juce::StringArray { "Opto", "VCA", "FET", "Red", "Hybrid", "Bridge (Provisional)", "Bus VCA (Provisional)", "FET Circuit (Provisional)", "Opto Leveler (Provisional)", "RMS VCA Dynamics (Provisional)" },
+                                                              juce::StringArray { "Red", "Hybrid", "Bridge", "Bus VCA", "76", "Opto Leveler", "VCA 160" },
                                                               0));
 
     layout.add (std::make_unique<juce::AudioParameterFloat> (ParamIDs::threshold, "Threshold",

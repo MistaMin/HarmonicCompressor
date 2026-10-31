@@ -14,12 +14,10 @@ namespace
     constexpr int canvasHeight = panelsHeight + devStripHeight;
 
     const char* const algorithmNames[] = {
-        "Optical", "VCA", "FET", "Red", "Hybrid",
-        "Transistor Bridge", "Bus VCA", "FET Circuit", "Opto Leveler", "RMS VCA Dynamics"
+        "Red", "Hybrid", "Bridge", "Bus VCA", "76", "Opto Leveler", "VCA 160"
     };
     const juce::uint32 algorithmColours[] = {
-        0xffcda434, 0xffc9702e, 0xff4a86c8, 0xffb3382c, 0xff3fa796,
-        0xffcda434, 0xffc9702e, 0xff4a86c8, 0xffb58a47, 0xff377f9d
+        0xffb3382c, 0xff3fa796, 0xffcda434, 0xffc9702e, 0xff4a86c8, 0xffb58a47, 0xff377f9d
     };
 
     const char* const kOversampleNames[] = { "1x", "2x", "4x", "8x" };
@@ -868,7 +866,7 @@ void HarmonicCompressorAudioProcessorEditor::applyModeLook (int mode)
 {
     mode = juce::jlimit (0, numAlgorithms - 1, mode);
     currentMode = mode;
-    const bool circuitTiming = mode == (int) CompressorMode::OptoLeveler || mode == (int) CompressorMode::RMSVCADynamics;
+    const bool circuitTiming = mode == (int) CompressorMode::OptoLeveler || mode == (int) CompressorMode::VCA160;
     for (const char* id : { ParamIDs::attack, ParamIDs::release, ParamIDs::knee })
         if (auto* k = findControl (id))
         {
