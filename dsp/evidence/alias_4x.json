@@ -1,0 +1,11 @@
+{
+  "file": "/Volumes/Developer/OpenGrid/HarmonicCompressor/dsp/evidence/out_alias_4x.wav",
+  "f0_hz": 12000.0,
+  "fundamental_dbfs": -8.00123164158575,
+  "highest_nonharmonic_hz": 11992.0,
+  "highest_nonharmonic_dbc": -127.35370827690119,
+  "median_floor_dbc": -204.86089074351295,
+  "folded_harmonic_order": null,
+  "definition": "largest bin outside +-6 bins of every harmonic below Nyquist, relative to the fundamental; 'folded order' is the lowest harmonic >= Nyquist that folds onto it",
+  "pass": true
+}

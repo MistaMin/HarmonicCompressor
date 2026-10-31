@@ -489,6 +489,8 @@ public:
     {
         for (auto& s : shaperAdaa_) s.reset();
         for (auto& r : railAdaa_)   r.reset();
+        dcX1_.fill (0.0f);
+        dcY1_.fill (0.0f);
     }
 
     // Per-channel ADAA harmonic waveshaper + smooth rail limiter.
@@ -504,17 +506,17 @@ public:
         const bool active = (c2 + c3 + c4 + c5) > 1.0e-7;
 
         // C1-continuous zero-at-origin harmonic shaper p(x) = x + g(x) and exact antiderivative P(x).
-        // Within [-1, 1], g(x) = c2*x|x| + c3*(x^3 - x) + c4*x^3|x| + c5*(x^5 - x).
-        // At x = +-1, t3(+-1) = 0 and t5(+-1) = 0, so g'(+-1) smoothly transitions to constant +-(c2 + c4).
+        // Within [-1, 1], g(x) = c2*x^2 + c3*(x^3 - x) + c4*x^4 + c5*(x^5 - x).
+        // For even orders (c2, c4), g(-1) = g(1) = c2 + c4.
+        // For odd orders (c3, c5), t3(+-1) = 0 and t5(+-1) = 0.
         const double slope = 1.0 - c3 - c5;
         auto g0Antideriv = [&](double u) noexcept -> double
         {
-            const double au = std::abs(u);
             const double u2 = u * u;
             const double u4 = u2 * u2;
-            return (c2 / 3.0) * (au * u2)
+            return (c2 / 3.0) * (u2 * u)
                  + c3 * (0.25 * u4 - 0.5 * u2)
-                 + (c4 / 5.0) * (au * u4)
+                 + (c4 / 5.0) * (u4 * u)
                  + c5 * ((u4 * u2) / 6.0 - 0.5 * u2);
         };
 
@@ -529,15 +531,14 @@ public:
             }
             else if (xd < -1.0)
             {
-                gVal = -(c2 + c4);
-                gInt = g0Antideriv(-1.0) - (c2 + c4) * (xd + 1.0);
+                gVal = c2 + c4;
+                gInt = g0Antideriv(-1.0) + (c2 + c4) * (xd + 1.0);
             }
             else
             {
-                const double ax = std::abs(xd);
                 const double x2 = xd * xd;
                 const double x3 = x2 * xd;
-                gVal = c2 * (xd * ax) + c3 * (x3 - xd) + c4 * (x3 * ax) + c5 * (x3 * x2 - xd);
+                gVal = c2 * x2 + c3 * (x3 - xd) + c4 * (x2 * x2) + c5 * (x3 * x2 - xd);
                 gInt = g0Antideriv(xd);
             }
         }
@@ -553,13 +554,22 @@ public:
                                                  hcdsp::adaa::railLimit(shaped, 1.0),
                                                  hcdsp::adaa::railLimitF(shaped, 1.0),
                                                  1.0);
-        return active ? static_cast<float>(limited) : x;
+
+        // Stage 3: Gentle sub-audio DC-blocker (fc ~ 3.5 Hz) for asymmetric even harmonic terms
+        const float dcR = static_cast<float>(std::exp(-2.0 * juce::MathConstants<double>::pi * 3.5 / sampleRate_));
+        const float inS = static_cast<float>(limited);
+        const float outS = inS - dcX1_[ch] + dcR * dcY1_[ch];
+        dcX1_[ch] = inS;
+        dcY1_[ch] = outS;
+
+        return active ? outS : x;
     }
 
 private:
     double sampleRate_ = 44100.0;
     std::array<hcdsp::adaa::ZeroDelayResidual, 2> shaperAdaa_{};
     std::array<hcdsp::adaa::ZeroDelayResidual, 2> railAdaa_{};
+    std::array<float, 2> dcX1_{ 0.0f, 0.0f }, dcY1_{ 0.0f, 0.0f };
 };
 
 //==============================================================================

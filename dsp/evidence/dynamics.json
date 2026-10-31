@@ -1,0 +1,14 @@
+{
+  "input": "/Volumes/Developer/OpenGrid/HarmonicCompressor/dsp/evidence/burst_in.wav",
+  "output": "/Volumes/Developer/OpenGrid/HarmonicCompressor/dsp/evidence/burst_out.wav",
+  "window_ms": 5.0,
+  "pre_burst_gain_db": -8.227818420455977e-09,
+  "max_gain_reduction_db": 7.1204705275982105,
+  "settled_gain_reduction_db": 7.114999128940007,
+  "attack_63pct_s": 0.012499999999999956,
+  "release_63pct_s": 0.05250000000000021,
+  "end_gain_db": -8.227818420455977e-09,
+  "recovery_error_db": 0.0,
+  "definition": "gain = windowed output RMS / input RMS in dB; attack/release are times to 63.2 %% of the move between the pre-burst gain and the settled in-burst gain (release: back to the pre-burst gain); recovery error is the gain left in the last 0.2 s versus pre-burst",
+  "pass": true
+}

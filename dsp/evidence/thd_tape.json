@@ -1,0 +1,16 @@
+{
+  "file": "/Volumes/Developer/OpenGrid/HarmonicCompressor/dsp/evidence/out_tape.wav",
+  "f0_hz": 1000.0,
+  "fundamental_dbfs": -19.969086671167904,
+  "harmonics_dbc": {
+    "2": -152.2330865018054,
+    "3": -61.20406548351888,
+    "4": -168.5308800942817,
+    "5": -125.0210433705029
+  },
+  "thd_percent": 0.08705562066325029,
+  "thd_db": -61.20406367663516,
+  "thd_n_db": -61.20283139434371,
+  "definition": "harmonic amplitudes are windowed-FFT band sums relative to the fundamental; THD uses harmonics 2..5 below Nyquist; THD+N uses all bins outside +-4 bins of the fundamental",
+  "pass": true
+}

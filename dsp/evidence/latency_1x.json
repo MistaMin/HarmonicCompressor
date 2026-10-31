@@ -1,0 +1,9 @@
+{
+  "file": "/Volumes/Developer/OpenGrid/HarmonicCompressor/dsp/evidence/imp_1x.wav",
+  "impulse_at": 0,
+  "peak_delay_samples": 0,
+  "energy_centroid_samples": 0.0,
+  "reported_samples": 0.0,
+  "mode": "linear",
+  "pass": true
+}
