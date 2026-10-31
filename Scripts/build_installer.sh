@@ -13,7 +13,7 @@ ARTEFACTS="$BUILD_DIR/HarmonicCompressor_artefacts/Release"
 
 PRODUCT_NAME="Harmonic Compressor"
 VERSION="1.5.0"
-IDENTIFIER="com.mincomp.harmoniccompressor"
+IDENTIFIER="com.opengrid.harmoniccompressor"
 OUT_DIR="$PROJECT_ROOT/Installer"
 STAGING="$OUT_DIR/staging"
 
