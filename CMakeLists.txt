@@ -13,7 +13,7 @@ set(AAX_SDK_PATH "" CACHE PATH "Path to the AAX SDK (optional)")
 add_subdirectory(JUCE)
 
 # GoodLookinUI (toolkit repo, checked out separately; this project holds no copy of it).
-set(GOODLOOKINUI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../HybridEQ/third_party/GoodLookinUI" CACHE PATH "GoodLookinUI toolkit location")
+set(GOODLOOKINUI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../HybridEQ/third_party/GoodLookinUI" CACHE PATH "GoodLookinUI toolkit location")
 add_subdirectory("${GOODLOOKINUI_ROOT}" "${CMAKE_CURRENT_BINARY_DIR}/goodlookinui")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Designs/HarmonicCompressor.csv")
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/Designs/HarmonicCompressor.csv" HC_DESIGN_TEXT)
@@ -23,6 +23,22 @@ configure_file(Designs/EmbeddedDesign.h.in generated/EmbeddedDesign.h @ONLY)
 # next to the release plugin in a DAW) with the GoodLookinUI inspector and look menus compiled in.
 # Build it optimised (Release) so PluginDoctor measures the real DSP.
 option(HARMONIC_DEV_MODE "Developer build: GoodLookinUI inspector, VST3 only, installed after build" OFF)
+
+include(FetchContent)
+option(HARMONIC_BUILD_CLAP "Build the CLAP plugin" ON)
+if(HARMONIC_BUILD_CLAP AND NOT HARMONIC_DEV_MODE)
+    set(HARMONIC_CLAP_EXT_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/../clap-juce-extensions" CACHE PATH "Use an existing clap-juce-extensions checkout")
+    if(EXISTS "${HARMONIC_CLAP_EXT_SOURCE}/CMakeLists.txt")
+        set(FETCHCONTENT_SOURCE_DIR_CLAP-JUCE-EXTENSIONS "${HARMONIC_CLAP_EXT_SOURCE}")
+    endif()
+    FetchContent_Declare(
+        clap-juce-extensions
+        GIT_REPOSITORY https://github.com/free-audio/clap-juce-extensions.git
+        GIT_TAG        55525c9858d4b25687be7759a5e0f70eccef218e
+        GIT_SUBMODULES_RECURSE TRUE
+    )
+    FetchContent_MakeAvailable(clap-juce-extensions)
+endif()
 
 # ---------------------------------------------------------------------------
 # Plugin formats: VST3, AU and Standalone are always built. AAX is added only
@@ -38,7 +54,7 @@ if(HARMONIC_DEV_MODE)
     set(HC_PRODUCT_NAME "Harmonic Compressor Dev")
     set(HC_PLUGIN_CODE Hcmd)
 else()
-    set(HARMONIC_COMPRESSOR_FORMATS VST3 AU Standalone)
+    set(HARMONIC_COMPRESSOR_FORMATS VST3 AU Standalone LV2)
     set(HC_PRODUCT_NAME "Harmonic Compressor")
     set(HC_PLUGIN_CODE Hcmp)
 endif()
@@ -61,9 +77,12 @@ juce_add_plugin(HarmonicCompressor
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
+    ICON_BIG "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icon-512.png"
+    ICON_SMALL "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icon-128.png"
     VST3_CATEGORIES "Fx Dynamics"
     AU_MAIN_TYPE kAudioUnitType_Effect
-    AAX_CATEGORY Dynamics)
+    AAX_CATEGORY Dynamics
+    LV2URI "urn:opengrid:harmoniccompressor")
 
 juce_generate_juce_header(HarmonicCompressor)
 
@@ -96,6 +115,14 @@ target_link_libraries(HarmonicCompressor
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags)
+
+if(HARMONIC_BUILD_CLAP AND NOT HARMONIC_DEV_MODE)
+    clap_juce_extensions_plugin(TARGET HarmonicCompressor
+        CLAP_ID "com.opengrid.harmoniccompressor"
+        CLAP_FEATURES audio-effect compressor dynamics
+        CLAP_MANUAL_URL ""
+        CLAP_SUPPORT_URL "")
+endif()
 
 # This is a brand-new plugin with no VST2 release, so the VST3 parameter-ID
 # migration warning (JUCE_VST3_CAN_REPLACE_VST2) does not apply.
