@@ -2,6 +2,8 @@
 
 #include <JuceHeader.h>
 #include "CompressorCore.h"
+#include "DSP/Resampler.h"
+#include "DSP/TransientDesigner.h"
 
 //==============================================================================
 /**
@@ -24,6 +26,7 @@ public:
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
+    void reset() override;
 
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
 
@@ -77,13 +80,17 @@ public:
     std::atomic<float> peakInputDbL  { -60.0f }, peakInputDbR  { -60.0f };
     std::atomic<float> peakOutputDbL { -60.0f }, peakOutputDbR { -60.0f };
     std::atomic<float> vuGrDb     { 0.0f };
+    std::atomic<float> lastTransientGainDb { 0.0f };
 
 private:
     //==============================================================================
     CompressorEngine engine;
-    juce::dsp::Oversampling<float> oversampling { 2, 1, juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR, true };
+    hcdsp::MultirateEngine multirate;
+    hcdsp::TransientDesigner transientDesigner;
     juce::AudioBuffer<float> dryBuffer;
-    int oversamplingMaxBlockSize = 0;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> inputGainSmoothed;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> outputGainSmoothed;
+    void updateReportedLatency();
 
     // --- Per-algorithm-mode parameter memory ---
     // Every parameter except algorithmMode itself is remembered per mode, so
@@ -99,6 +106,7 @@ private:
 
     std::array<ModeSnapshot, (size_t) CompressorMode::Count> modeSnapshots;
     int currentModeIndex = 0;
+    std::atomic<bool> restoringState { false };
 
     // --- VU meter ballistics state (audio thread only) ---
     // Two cascaded one-pole smoothers approximate the ~300 ms, slightly
@@ -157,6 +165,14 @@ private:
     std::atomic<float>* scHPFreqParam = nullptr;
     std::atomic<float>* autoReleaseParam = nullptr;
     std::atomic<float>* autoAttackParam = nullptr;
+    std::atomic<float>* inputGainParam = nullptr;
+    std::atomic<float>* outputGainParam = nullptr;
+    std::atomic<float>* oversampleModeParam = nullptr;
+    std::atomic<float>* oversampleFilterParam = nullptr;
+    std::atomic<float>* transientEnabledParam = nullptr;
+    std::atomic<float>* transientAttackParam = nullptr;
+    std::atomic<float>* transientSustainParam = nullptr;
+    std::atomic<float>* transientSpeedParam = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HarmonicCompressorAudioProcessor)
 };

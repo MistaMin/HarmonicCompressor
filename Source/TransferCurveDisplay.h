@@ -7,23 +7,26 @@ class HarmonicCompressorAudioProcessor;
 
 //==============================================================================
 /**
-    Compressor transfer-curve display (input dB vs output dB), with a
-    draggable threshold/ratio handle at the knee corner and a live moving dot
-    showing the current input level and gain reduction.
-
-    Dragging the handle horizontally changes threshold, vertically changes
-    ratio; both drive beginChangeGesture()/setValueNotifyingHost()/
-    endChangeGesture() on the corresponding RangedAudioParameter so the APVTS
-    and the rotary knobs in the editor stay in sync.
+    Compressor transfer-curve display (input dB vs output dB), integrated
+    directly as a transparent overlay inside the unlabeled Compression History
+    plot so both share the exact auto-ranging vertical axis (-18 dBFS = 0 dBu).
 */
 class TransferCurveDisplay : public juce::Component, private juce::Timer
 {
 public:
+    static constexpr float kPadLeft   = 12.0f;
+    static constexpr float kPadTop    = 12.0f;
+    static constexpr float kPadRight  = 40.0f;
+    static constexpr float kPadBottom = 24.0f;
+
     TransferCurveDisplay (HarmonicCompressorAudioProcessor& processor, Skin& skin);
     ~TransferCurveDisplay() override;
 
+    void setDisplayRange (float minDb, float maxDb) noexcept;
+
     void paint (juce::Graphics& g) override;
     void resized() override;
+    bool hitTest (int x, int y) override;
 
     void mouseDown (const juce::MouseEvent&) override;
     void mouseDrag (const juce::MouseEvent&) override;
@@ -35,8 +38,8 @@ private:
     void timerCallback() override;
 
     enum class Handle { none, combined, makeup, threshold };
-    juce::Point<float> positionForHandle(Handle) const;
-    Handle hitTestHandle(juce::Point<float>) const;
+    juce::Point<float> positionForHandle (Handle) const;
+    Handle hitTestHandle (juce::Point<float>) const;
     void endDrag();
     float computeOutputDb (float inputDb) const;
     juce::Point<float> pointForDb (float inputDb, float outputDb) const;
@@ -53,14 +56,13 @@ private:
     juce::RangedAudioParameter* ratioParamObj = nullptr;
     juce::RangedAudioParameter* makeupParamObj = nullptr;
 
-    juce::Rectangle<float> curveArea;
-    juce::Point<float> handlePos { -1000.0f, -1000.0f };
+    float displayMinDb = -60.0f;
+    float displayMaxDb = 0.0f;
 
+    juce::Rectangle<float> curveArea;
     Handle dragging = Handle::none;
     Handle hovering = Handle::none;
-    float dragStartMakeup = 0.0f;
-    float dragStartThreshold = 0.0f;
-    float dragStartRatio = 1.0f;
+    float dragStartThreshold = 0.0f, dragStartRatio = 1.0f, dragStartMakeup = 0.0f;
     juce::Point<float> dragStartPos;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TransferCurveDisplay)

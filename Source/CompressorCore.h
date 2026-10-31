@@ -6,13 +6,14 @@
 #include <array>
 #include <atomic>
 #include <cmath>
+#include "DSP/Adaa.h"
 
 //==============================================================================
 // Parameter IDs (used for both APVTS registration and atomic lookups)
 //==============================================================================
 namespace ParamIDs
 {
-    static constexpr auto algorithmMode   = "algorithmMode";   // choice: 0..4, see CompressorMode
+    static constexpr auto algorithmMode   = "algorithmMode";   // choice: 0..9, see CompressorMode
     static constexpr auto threshold       = "threshold";       // dB
     static constexpr auto ratio           = "ratio";           // x:1
     static constexpr auto attack          = "attack";          // ms
@@ -31,6 +32,16 @@ namespace ParamIDs
     static constexpr auto scListen        = "scListen";        // bool, audition sidechain
     static constexpr auto autoRelease     = "autoRelease";     // bool
     static constexpr auto autoAttack      = "autoAttack";      // bool
+
+    // Appended v1.5 parameters (preserving indices 0..16 for existing sessions)
+    static constexpr auto inputGain        = "inputGain";        // -24..+24 dB
+    static constexpr auto outputGain       = "outputGain";       // -24..+24 dB
+    static constexpr auto oversampleMode   = "oversampleMode";   // 1x, 2x, 4x, 8x
+    static constexpr auto oversampleFilter = "oversampleFilter"; // Min Phase, Lin Phase
+    static constexpr auto transientEnabled = "transientEnabled"; // bool modifier
+    static constexpr auto transientAttack  = "transientAttack";  // -100..+100 %
+    static constexpr auto transientSustain = "transientSustain"; // -100..+100 %
+    static constexpr auto transientSpeed   = "transientSpeed";   // 0.5..50 ms
 }
 
 /**
@@ -110,6 +121,25 @@ inline float compressorSlope (float ratio) noexcept
     return 1.0f - 1.0f / ratio;
 }
 
+inline float computeSoftKneeGr (float inputDb, const CompressorParams& p) noexcept
+{
+    const float slope  = compressorSlope (p.ratio);
+    const float knee   = juce::jmax (0.0f, p.kneeDb);
+    const float overDb = inputDb - p.thresholdDb;
+
+    if (knee <= 0.0001f)
+        return overDb > 0.0f ? -overDb * slope : 0.0f;
+
+    const float halfKnee = knee * 0.5f;
+    if (overDb <= -halfKnee)
+        return 0.0f;
+    if (overDb >= halfKnee)
+        return -overDb * slope;
+
+    const float x = overDb + halfKnee;
+    return -(slope * x * x) / (2.0f * knee);
+}
+
 //==============================================================================
 // Abstract algorithm interface
 //==============================================================================
@@ -177,10 +207,7 @@ public:
         // LA-2A feedback topology: detector sees gain-reduced signal
         const float feedbackSample = x * juce::Decibels::decibelsToGain(feedbackGrDb_);
         const float inputDb = juce::Decibels::gainToDecibels(std::abs(feedbackSample) + 1.0e-12f);
-        const float overDb  = inputDb - params_.thresholdDb;
-        const float targetGrDb = overDb > 0.0f
-            ? -overDb * compressorSlope(params_.ratio)
-            : 0.0f;
+        const float targetGrDb = computeSoftKneeGr(inputDb, params_);
 
         const bool rising = targetGrDb < envelopeDb_;
 
@@ -735,7 +762,9 @@ private:
 
 //==============================================================================
 // HarmonicsEngine: post-compression waveshaping with independent 2nd/3rd/
-// 4th/5th harmonic mix controls (each 0..1, mapped from a 0-100% slider).
+// 4th/5th harmonic mix controls (each 0..1, mapped from a 0-100% slider),
+// anti-aliased using first-order residual ADAA + smooth Hermite rail limiting
+// matching the HybridEQ ADAA architecture.
 //==============================================================================
 class HarmonicsEngine
 {
@@ -743,69 +772,172 @@ public:
     void prepare(const juce::dsp::ProcessSpec& spec)
     {
         sampleRate_ = spec.sampleRate;
-        juce::ignoreUnused(sampleRate_);
+        (void) hcdsp::adaa::railTable(); // touch static Simpson/Hermite table during prepare
+        reset();
     }
 
-    void reset() {}
-
-    // h2/h4 = asymmetric curves (even harmonics), h3/h5 = symmetric curves
-    // (odd harmonics). All coefficients pre-normalised so 100% mix stays
-    // within +/-1 for a full-scale input.
-    inline float processSample(float x, float h2, float h3, float h4, float h5) const noexcept
+    void reset() noexcept
     {
-        float shaped = x;
+        for (auto& s : shaperAdaa_) s.reset();
+        for (auto& r : railAdaa_)   r.reset();
+    }
 
-        // 2nd harmonic: asymmetric soft clip -- adds even-order content by
-        // biasing the curve differently for positive/negative half-cycles.
-        shaped += h2 * 0.5f * (x * x) * (x >= 0.0f ? 1.0f : -1.0f);
+    // Per-channel ADAA harmonic waveshaper + smooth rail limiter.
+    inline float processSample(float x, float h2, float h3, float h4, float h5, int channel = 0) noexcept
+    {
+        const size_t ch = static_cast<size_t>(juce::jlimit(0, 1, channel));
+        const double xd = static_cast<double>(x);
 
-        // 3rd harmonic: symmetric soft clip (classic tanh-style odd curve).
-        shaped += h3 * (x * x * x - x) * 0.5f;
+        const double c2 = 0.50 * static_cast<double>(h2);
+        const double c3 = 0.50 * static_cast<double>(h3);
+        const double c4 = 0.25 * static_cast<double>(h4);
+        const double c5 = 0.20 * static_cast<double>(h5);
+        const bool active = (c2 + c3 + c4 + c5) > 1.0e-7;
 
-        // 4th harmonic: asymmetric higher-order curve.
-        shaped += h4 * 0.25f * (x * x * x * x) * (x >= 0.0f ? 1.0f : -1.0f);
+        // C1-continuous zero-at-origin harmonic shaper p(x) = x + g(x) and exact antiderivative P(x).
+        // Within [-1, 1], g(x) = c2*x|x| + c3*(x^3 - x) + c4*x^3|x| + c5*(x^5 - x).
+        // At x = +-1, t3(+-1) = 0 and t5(+-1) = 0, so g'(+-1) smoothly transitions to constant +-(c2 + c4).
+        const double slope = 1.0 - c3 - c5;
+        auto g0Antideriv = [&](double u) noexcept -> double
+        {
+            const double au = std::abs(u);
+            const double u2 = u * u;
+            const double u4 = u2 * u2;
+            return (c2 / 3.0) * (au * u2)
+                 + c3 * (0.25 * u4 - 0.5 * u2)
+                 + (c4 / 5.0) * (au * u4)
+                 + c5 * ((u4 * u2) / 6.0 - 0.5 * u2);
+        };
 
-        // 5th harmonic: symmetric higher-order curve.
-        shaped += h5 * 0.2f * (x * x * x * x * x - x);
+        double gVal = 0.0;
+        double gInt = 0.0;
+        if (active)
+        {
+            if (xd > 1.0)
+            {
+                gVal = c2 + c4;
+                gInt = g0Antideriv(1.0) + (c2 + c4) * (xd - 1.0);
+            }
+            else if (xd < -1.0)
+            {
+                gVal = -(c2 + c4);
+                gInt = g0Antideriv(-1.0) - (c2 + c4) * (xd + 1.0);
+            }
+            else
+            {
+                const double ax = std::abs(xd);
+                const double x2 = xd * xd;
+                const double x3 = x2 * xd;
+                gVal = c2 * (xd * ax) + c3 * (x3 - xd) + c4 * (x3 * ax) + c5 * (x3 * x2 - xd);
+                gInt = g0Antideriv(xd);
+            }
+        }
 
-        return juce::jlimit(-1.0f, 1.0f, shaped);
+        const double pVal = xd + gVal;
+        const double pInt = 0.5 * xd * xd + gInt;
+        const double shaped = shaperAdaa_[ch].step(xd, pVal, pInt, slope);
+
+        // Stage 2: HybridEQ smooth rail limiter f(v) = v / (1 + |v|^8)^(1/8) with ADAA.
+        // Keep railAdaa_ primed when harmonics are off so automation transitions are click-free,
+        // while returning bit-exact unity x when all harmonic sliders are at 0%.
+        const double limited = railAdaa_[ch].step(shaped,
+                                                 hcdsp::adaa::railLimit(shaped, 1.0),
+                                                 hcdsp::adaa::railLimitF(shaped, 1.0),
+                                                 1.0);
+        return active ? static_cast<float>(limited) : x;
     }
 
 private:
     double sampleRate_ = 44100.0;
+    std::array<hcdsp::adaa::ZeroDelayResidual, 2> shaperAdaa_{};
+    std::array<hcdsp::adaa::ZeroDelayResidual, 2> railAdaa_{};
 };
 
 //==============================================================================
-// Sidechain conditioning: internal HPF (20-500 Hz) + listen/audition mode.
+// Sidechain conditioning: internal/external 2nd-order Butterworth HPF (20-500 Hz)
+// + listen/audition mode. Zero-allocation per-sample biquad + block wrapper.
 //==============================================================================
 class SidechainProcessor
 {
 public:
-    void prepare(const juce::dsp::ProcessSpec& spec)
+    void prepare(const juce::dsp::ProcessSpec& spec) noexcept
     {
-        spec_ = spec;
-        filter_.prepare(spec);
-        setFrequency(150.0f);
+        sampleRate_ = juce::jmax(8000.0, spec.sampleRate);
+        lastHz_ = -1.0f;
+        lastSr_ = -1.0;
+        reset();
+        setFrequency(targetHz_);
     }
 
-    void reset() { filter_.reset(); }
-
-    void setFrequency(float hz)
+    void reset() noexcept
     {
-        *filter_.state = *juce::dsp::IIR::Coefficients<float>::makeHighPass(
-            spec_.sampleRate, juce::jlimit(20.0f, 500.0f, hz));
+        z1_ = { 0.0f, 0.0f };
+        z2_ = { 0.0f, 0.0f };
     }
 
-    void process(juce::dsp::AudioBlock<float>& block)
+    void setSampleRate(double sr) noexcept
     {
-        juce::dsp::ProcessContextReplacing<float> ctx(block);
-        filter_.process(ctx);
+        const double clamped = juce::jmax(8000.0, sr);
+        if (std::abs(clamped - sampleRate_) > 0.5)
+        {
+            sampleRate_ = clamped;
+            updateCoeffs();
+        }
+    }
+
+    void setFrequency(float hz) noexcept
+    {
+        const float clamped = juce::jlimit(20.0f, 500.0f, hz);
+        if (std::abs(clamped - targetHz_) > 0.01f || std::abs(sampleRate_ - lastSr_) > 0.5)
+        {
+            targetHz_ = clamped;
+            updateCoeffs();
+        }
+    }
+
+    inline float processSample(int channel, float x) noexcept
+    {
+        const size_t ch = static_cast<size_t>(juce::jlimit(0, 1, channel));
+        const float y = b0_ * x + z1_[ch];
+        z1_[ch] = b1_ * x - a1_ * y + z2_[ch];
+        z2_[ch] = b2_ * x - a2_ * y;
+        return y;
+    }
+
+    void process(juce::dsp::AudioBlock<float>& block) noexcept
+    {
+        const int numCh = juce::jmin(2, static_cast<int>(block.getNumChannels()));
+        const int numSamp = static_cast<int>(block.getNumSamples());
+        for (int ch = 0; ch < numCh; ++ch)
+        {
+            float* d = block.getChannelPointer(static_cast<size_t>(ch));
+            for (int i = 0; i < numSamp; ++i)
+                d[i] = processSample(ch, d[i]);
+        }
     }
 
 private:
-    juce::dsp::ProcessSpec spec_;
-    juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>,
-                                    juce::dsp::IIR::Coefficients<float>> filter_;
+    void updateCoeffs() noexcept
+    {
+        lastHz_ = targetHz_;
+        lastSr_ = sampleRate_;
+        const double w0 = 2.0 * juce::MathConstants<double>::pi * static_cast<double>(targetHz_) / sampleRate_;
+        const double cosw = std::cos(w0);
+        const double alpha = std::sin(w0) / std::sqrt(2.0); // Butterworth Q = 1/sqrt(2)
+        const double a0 = 1.0 + alpha;
+        b0_ = static_cast<float>(((1.0 + cosw) * 0.5) / a0);
+        b1_ = static_cast<float>(-(1.0 + cosw) / a0);
+        b2_ = b0_;
+        a1_ = static_cast<float>((-2.0 * cosw) / a0);
+        a2_ = static_cast<float>((1.0 - alpha) / a0);
+    }
+
+    double sampleRate_ = 48000.0;
+    double lastSr_ = -1.0;
+    float targetHz_ = 150.0f;
+    float lastHz_ = -1.0f;
+    float b0_ = 1.0f, b1_ = 0.0f, b2_ = 0.0f, a1_ = 0.0f, a2_ = 0.0f;
+    std::array<float, 2> z1_{ 0.0f, 0.0f }, z2_{ 0.0f, 0.0f };
 };
 
 //==============================================================================
@@ -845,6 +977,18 @@ public:
             alg->reset();
         harmonics_.reset();
         sidechain_.reset();
+    }
+
+    void ensureSampleRate(double effectiveSampleRate)
+    {
+        if (std::abs(effectiveSampleRate - spec_.sampleRate) > 0.5)
+        {
+            spec_.sampleRate = effectiveSampleRate;
+            for (auto* alg : algorithmPool_)
+                alg->prepare(spec_);
+            harmonics_.prepare(spec_);
+            sidechain_.setSampleRate(effectiveSampleRate);
+        }
     }
 
     // Called once per block from processBlock() with values pulled from the

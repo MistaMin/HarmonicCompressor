@@ -1,14 +1,19 @@
 GoodLookinUI design version 1
 id,parameter,label,style,colour,x,y,width,height,font size
-threshold,threshold,THRESHOLD,Mtl,#C7A66A,20,58,120,112,10
-ratio,ratio,RATIO,Mtl,#C7A66A,160,58,120,112,10
-attack,attack,ATTACK,Mtl,#C7A66A,300,58,120,112,10
-release,release,RELEASE,Mtl,#C7A66A,440,58,120,112,10
-knee,knee,KNEE,Mtl,#7FB3D5,20,178,120,112,10
-makeupGain,makeupGain,MAKEUP,Mtl,#7FB3D5,160,178,120,112,10
-mix,mix,MIX,Mtl,#7FB3D5,300,178,120,112,10
-harmonic2,harmonic2,2ND,Mtl,#CDA434,6,54,68,110,10
-harmonic3,harmonic3,3RD,Mtl,#C9702E,76,54,68,110,10
-harmonic4,harmonic4,4TH,Mtl,#B3382C,146,54,68,110,10
-harmonic5,harmonic5,5TH,Mtl,#3FA796,216,54,68,110,10
-scHPFreq,scHPFreq,HP FREQ,Mtl,#4A86C8,22,48,108,96,10
+threshold,threshold,THRESHOLD,Mtl,#C7A66A,19,6,196,64,9.5
+ratio,ratio,RATIO,Mtl,#C7A66A,237,6,196,64,9.5
+makeupGain,makeupGain,MAKEUP,Mtl,#5899C4,455,6,196,64,9.5
+mix,mix,MIX,Mtl,#5899C4,673,6,196,64,9.5
+inputGain,inputGain,GAIN,Mtl,#2E86C1,6,26,84,44,9.0
+outputGain,outputGain,GAIN,Mtl,#3CCF5A,6,26,84,44,9.0
+attack,attack,ATTACK,Mtl,#C7A66A,10,6,122,42,9.5
+release,release,RELEASE,Mtl,#C7A66A,142,6,122,42,9.5
+knee,knee,KNEE,Mtl,#5899C4,274,6,122,42,9.5
+harmonic2,harmonic2,2ND,Mtl,#CDA434,166,5,122,42,9.5
+harmonic3,harmonic3,3RD,Mtl,#C9702E,298,5,122,42,9.5
+harmonic4,harmonic4,4TH,Mtl,#B3382C,166,51,122,42,9.5
+harmonic5,harmonic5,5TH,Mtl,#3FA796,298,51,122,42,9.5
+scHPFreq,scHPFreq,HP FREQ,Mtl,#4A86C8,152,6,144,42,9.5
+transientAttack,transientAttack,ATTACK,Mtl,#2C9973,88,7,112,42,9.5
+transientSustain,transientSustain,SUSTAIN,Mtl,#2D8BBA,208,7,112,42,9.5
+transientSpeed,transientSpeed,SPEED,Mtl,#6A8CAF,328,7,116,42,9.5

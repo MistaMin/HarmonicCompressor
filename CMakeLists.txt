@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "Build architecture for macOS")
 set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS deployment target")
 
-project(HarmonicCompressor VERSION 1.4.0)
+project(HarmonicCompressor VERSION 1.5.0)
 
 # Optional AAX SDK path. When set to a valid AAX SDK tree, the AAX format is
 # added to the build; otherwise the project still configures cleanly without it.
@@ -74,10 +74,14 @@ target_sources(HarmonicCompressor
         Source/PluginEditor.cpp
         Source/PluginEditor.h
         Source/CompressorCore.h
+        Source/DSP/Adaa.h
+        Source/DSP/Resampler.h
+        Source/DSP/TransientDesigner.h
         Source/UI/Toolkit.h
         Source/UI/Panel.h
         Source/UI/Knob.h
         Source/UI/KeyButton.h
+        Source/UI/FloatingModule.h
         Source/UI/MeterPanel.h
         Source/TransferCurveDisplay.h
         Source/TransferCurveDisplay.cpp)

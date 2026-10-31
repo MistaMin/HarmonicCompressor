@@ -3,14 +3,17 @@
 
 namespace
 {
-    constexpr float kMinDb = -60.0f;
-    constexpr float kMaxDb = 0.0f;
+    constexpr float kParamMinDb = -60.0f;
+    constexpr float kParamMaxDb = 0.0f;
+    constexpr int   kDbuOffset  = 18; // -18 dBFS = 0 dBu
 }
 
 //==============================================================================
 TransferCurveDisplay::TransferCurveDisplay (HarmonicCompressorAudioProcessor& p, Skin& s)
     : processor (p), skin (s)
 {
+    setOpaque (false);
+
     thresholdParam = processor.apvts.getRawParameterValue (ParamIDs::threshold);
     ratioParam     = processor.apvts.getRawParameterValue (ParamIDs::ratio);
     kneeParam      = processor.apvts.getRawParameterValue (ParamIDs::knee);
@@ -18,8 +21,8 @@ TransferCurveDisplay::TransferCurveDisplay (HarmonicCompressorAudioProcessor& p,
     thresholdParamObj = processor.apvts.getParameter (ParamIDs::threshold);
     ratioParamObj     = processor.apvts.getParameter (ParamIDs::ratio);
 
-    makeupParam = processor.apvts.getRawParameterValue(ParamIDs::makeupGain);
-    makeupParamObj = processor.apvts.getParameter(ParamIDs::makeupGain);
+    makeupParam    = processor.apvts.getRawParameterValue (ParamIDs::makeupGain);
+    makeupParamObj = processor.apvts.getParameter (ParamIDs::makeupGain);
 
     setInterceptsMouseClicks (true, false);
     startTimerHz (30);
@@ -31,16 +34,41 @@ TransferCurveDisplay::~TransferCurveDisplay()
     stopTimer();
 }
 
+void TransferCurveDisplay::setDisplayRange (float minDb, float maxDb) noexcept
+{
+    const float clampedMax = juce::jlimit (-30.0f, 12.0f, maxDb);
+    const float clampedMin = juce::jlimit (-78.0f, clampedMax - 18.0f, minDb);
+    if (std::abs (clampedMin - displayMinDb) > 0.02f || std::abs (clampedMax - displayMaxDb) > 0.02f)
+    {
+        displayMinDb = clampedMin;
+        displayMaxDb = clampedMax;
+        repaint();
+    }
+}
+
 //==============================================================================
 void TransferCurveDisplay::timerCallback()
 {
-    repaint();
+    if (isShowing())
+        repaint();
 }
 
 //==============================================================================
 void TransferCurveDisplay::resized()
 {
-    curveArea = getLocalBounds().toFloat().withTrimmedLeft(12).withTrimmedTop(16).withTrimmedRight(36).withTrimmedBottom(32);
+    curveArea = getLocalBounds().toFloat()
+                    .withTrimmedLeft (kPadLeft)
+                    .withTrimmedTop (kPadTop)
+                    .withTrimmedRight (kPadRight)
+                    .withTrimmedBottom (kPadBottom);
+}
+
+bool TransferCurveDisplay::hitTest (int x, int y)
+{
+    const juce::Point<float> pt { static_cast<float> (x), static_cast<float> (y) };
+    // Only capture mouse events directly on the draggable handles so floating modules
+    // and background areas remain effortless to interact with.
+    return hitTestHandle (pt) != Handle::none;
 }
 
 //==============================================================================
@@ -50,7 +78,7 @@ float TransferCurveDisplay::computeOutputDb (float inputDb) const
     const float ratio     = ratioParam->load (std::memory_order_relaxed);
     const float knee      = kneeParam->load (std::memory_order_relaxed);
     const float slope     = compressorSlope (ratio);
-    const float makeup = makeupParam->load(std::memory_order_relaxed);
+    const float makeup    = makeupParam->load (std::memory_order_relaxed);
 
     const float overDb = inputDb - threshold;
 
@@ -69,8 +97,8 @@ float TransferCurveDisplay::computeOutputDb (float inputDb) const
 
 juce::Point<float> TransferCurveDisplay::pointForDb (float inputDb, float outputDb) const
 {
-    const float x = juce::jmap (inputDb,  kMinDb, kMaxDb, curveArea.getX(), curveArea.getRight());
-    const float y = juce::jmap (outputDb, kMinDb, kMaxDb, curveArea.getBottom(), curveArea.getY());
+    const float x = juce::jmap (inputDb,  displayMinDb, displayMaxDb, curveArea.getX(), curveArea.getRight());
+    const float y = juce::jmap (outputDb, displayMinDb, displayMaxDb, curveArea.getBottom(), curveArea.getY());
     return { x, y };
 }
 
@@ -80,95 +108,134 @@ void TransferCurveDisplay::paint (juce::Graphics& g)
     if (curveArea.isEmpty())
         return;
 
-    g.setColour (juce::Colour (0xffe7f0f7));
-    g.fillRoundedRectangle (curveArea, 4.0f);
-    g.setColour (juce::Colour (0xffb8cddd));
-    g.drawRoundedRectangle (curveArea, 4.0f, 1.0f);
+    const auto& t = skin.theme();
 
-    // Grid
-    g.setColour (juce::Colour (0xff86a6bf).withAlpha (0.4f));
-    for (float db = kMinDb; db <= kMaxDb; db += 12.0f)
+    // Smoked dark-glass / frosted soft-white HUD overlay so history traces remain visible underneath
+    g.setColour (juce::Colour (t.wellBgTop).withAlpha (t.lightSurface ? 0.62f : 0.48f));
+    g.fillRoundedRectangle (curveArea, 3.5f);
+    g.setColour (juce::Colour (t.accentPrimary).withAlpha (t.lightSurface ? 0.30f : 0.42f));
+    g.drawRoundedRectangle (curveArea, 3.5f, 1.0f);
+
+    // Input-level vertical gridlines anchored at -18 dBFS = 0 dBu (every 12 dB: ..., -24, -12, 0dBu, +12)
+    g.setFont (juce::FontOptions (7.8f, juce::Font::bold));
+    for (int db = -66; db <= 18; db += 12)
     {
-        const float x = juce::jmap (db, kMinDb, kMaxDb, curveArea.getX(), curveArea.getRight());
-        const float y = juce::jmap (db, kMinDb, kMaxDb, curveArea.getBottom(), curveArea.getY());
-        g.drawVerticalLine ((int) x, curveArea.getY(), curveArea.getBottom());
-        g.drawHorizontalLine ((int) y, curveArea.getX(), curveArea.getRight());
+        if (static_cast<float> (db) < displayMinDb + 2.0f || static_cast<float> (db) > displayMaxDb - 1.0f)
+            continue;
+        const float x = juce::jmap (static_cast<float> (db), displayMinDb, displayMaxDb, curveArea.getX(), curveArea.getRight());
+        const bool isZeroDbu = (db == -18);
+        g.setColour (isZeroDbu ? juce::Colour (t.zeroDbuRef).withAlpha (0.50f)
+                               : juce::Colour (t.textMuted).withAlpha (0.28f));
+        g.drawVerticalLine (static_cast<int> (x), curveArea.getY(), curveArea.getBottom());
+
+        const int dbu = db + kDbuOffset;
+        const juce::String lbl = (dbu == 0) ? "0dBu" : ((dbu > 0 ? "+" : "") + juce::String (dbu));
+        g.setColour (isZeroDbu ? juce::Colour (t.zeroDbuRef) : juce::Colour (t.textPrimary).withAlpha (0.80f));
+        g.drawText (lbl, static_cast<int> (x) - 18, static_cast<int> (curveArea.getBottom()) - 13, 36, 11, juce::Justification::centred);
     }
 
-    // Unity reference line (dashed)
-    juce::Path unity;
-    unity.startNewSubPath (pointForDb (kMinDb, kMinDb));
-    unity.lineTo (pointForDb (kMaxDb, kMaxDb));
-    float dashLengths[] = { 3.0f, 3.0f };
-    juce::Path dashedUnity;
-    juce::PathStrokeType (1.0f).createDashedStroke (dashedUnity, unity, dashLengths, 2);
-    g.setColour (skin.mid().withAlpha (0.5f));
-    g.fillPath (dashedUnity);
-
-    // Transfer curve
-    juce::Path curve;
-    bool first = true;
-    for (float inDb = kMinDb; inDb <= kMaxDb; inDb += 0.5f)
+    // Clip unity diagonal & glowing transfer curve to curveArea
     {
-        auto pt = pointForDb (inDb, juce::jlimit(kMinDb, kMaxDb, computeOutputDb (inDb)));
-        if (first) { curve.startNewSubPath (pt); first = false; }
-        else       curve.lineTo (pt);
-    }
-    g.setColour (skin.accent());
-    g.strokePath (curve, juce::PathStrokeType (2.0f));
+        juce::Graphics::ScopedSaveState clip (g);
+        g.reduceClipRegion (curveArea.toNearestInt());
 
-    // Separate rails keep dedicated handles reachable even at extreme settings.
-    g.setColour(juce::Colour(0xff94b1c7));
-    g.drawHorizontalLine((int)curveArea.getBottom() + 15, curveArea.getX(), curveArea.getRight());
-    g.drawVerticalLine((int)curveArea.getRight() + 17, curveArea.getY(), curveArea.getBottom());
+        juce::Path unity;
+        unity.startNewSubPath (pointForDb (displayMinDb, displayMinDb));
+        unity.lineTo (pointForDb (displayMaxDb, displayMaxDb));
+        float dashLengths[] = { 4.0f, 3.0f };
+        juce::Path dashedUnity;
+        juce::PathStrokeType (1.1f).createDashedStroke (dashedUnity, unity, dashLengths, 2);
+        g.setColour (juce::Colour (t.textMuted).withAlpha (0.50f));
+        g.fillPath (dashedUnity);
+
+        juce::Path curve;
+        bool first = true;
+        const float step = juce::jmax (0.25f, (displayMaxDb - displayMinDb) / 140.0f);
+        for (float inDb = displayMinDb; inDb <= displayMaxDb + 0.01f; inDb += step)
+        {
+            const float clampedIn = juce::jmin (inDb, displayMaxDb);
+            auto pt = pointForDb (clampedIn, computeOutputDb (clampedIn));
+            if (first) { curve.startNewSubPath (pt); first = false; }
+            else       curve.lineTo (pt);
+        }
+
+        // Multi-pass electro-optical / obsidian-ink transfer curve
+        g.setColour (juce::Colour (t.postGlow).withAlpha (t.lightSurface ? 0.14f : 0.24f));
+        g.strokePath (curve, juce::PathStrokeType (t.lightSurface ? 5.4f : 6.8f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+        g.setColour (juce::Colour (t.accentPrimary).withAlpha (t.lightSurface ? 0.32f : 0.50f));
+        g.strokePath (curve, juce::PathStrokeType (3.6f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+        g.setColour (juce::Colour (t.accentPrimary));
+        g.strokePath (curve, juce::PathStrokeType (2.2f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+        g.setColour (t.lightSurface ? juce::Colour (0xff07090d)
+                                    : juce::Colour (t.accentPrimary).interpolatedWith (juce::Colours::white, 0.58f));
+        g.strokePath (curve, juce::PathStrokeType (0.9f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+    }
+
+    // Separate rails keep dedicated handles reachable even as auto-scale zooms
+    const float bottomRailY = curveArea.getBottom() + 10.0f;
+    const float rightRailX  = curveArea.getRight() + 13.0f;
+    g.setColour (juce::Colour (t.accentPrimary).withAlpha (0.45f));
+    g.drawHorizontalLine (static_cast<int> (bottomRailY), curveArea.getX(), curveArea.getRight());
+    g.setColour (juce::Colour (t.accentSecondary).withAlpha (0.45f));
+    g.drawVerticalLine (static_cast<int> (rightRailX), curveArea.getY(), curveArea.getBottom());
+
     for (auto h : { Handle::combined, Handle::makeup, Handle::threshold })
     {
-        auto pos = positionForHandle(h);
-        auto colour = h == Handle::combined ? skin.accent()
-                    : h == Handle::makeup ? juce::Colour(0xff7fb3d5) : juce::Colour(0xff70c9ac);
-        g.setColour(h == hovering || h == dragging ? juce::Colours::white : colour);
-        g.fillEllipse(juce::Rectangle<float>(11, 11).withCentre(pos));
-        g.setColour(juce::Colour(0xfff5faff));
-        g.drawEllipse(juce::Rectangle<float>(11, 11).withCentre(pos), 1.0f);
+        auto pos = positionForHandle (h);
+        auto colour = h == Handle::combined ? juce::Colour (t.accentPrimary)
+                    : h == Handle::makeup   ? juce::Colour (t.accentSecondary)
+                                            : juce::Colour (t.thresholdRef);
+        const bool activeHandle = (h == hovering || h == dragging);
+        g.setColour (colour.withAlpha (activeHandle ? 0.34f : 0.20f));
+        g.fillEllipse (juce::Rectangle<float> (16.5f, 16.5f).withCentre (pos));
+        g.setColour (juce::Colour (t.lightSurface ? 0xfffaf9f6 : t.oledBg));
+        g.fillEllipse (juce::Rectangle<float> (11.5f, 11.5f).withCentre (pos));
+        g.setColour (activeHandle ? (t.lightSurface ? colour.darker (0.25f) : colour.brighter (0.40f)) : colour);
+        g.drawEllipse (juce::Rectangle<float> (11.5f, 11.5f).withCentre (pos), activeHandle ? 2.1f : 1.6f);
+        g.fillEllipse (juce::Rectangle<float> (4.6f, 4.6f).withCentre (pos));
     }
-    g.setColour(skin.mid());
-    g.setFont(juce::FontOptions(8.0f));
-    g.drawText("THRESHOLD", curveArea.getX(), curveArea.getBottom() + 22,
-               curveArea.getWidth(), 10, juce::Justification::centred);
-    g.drawText("OUT", curveArea.getRight() + 3, curveArea.getY() - 12, 29, 10, juce::Justification::centred);
 
-    // Live input/GR dot
-    const float liveInputDb = processor.lastInputPeakDb.load (std::memory_order_relaxed);
+    // Place MAKEUP label at the bottom of the vertical makeup rail so the top lane stays clear for floating modules
+    g.setColour (juce::Colour (t.textPrimary).withAlpha (0.85f));
+    g.setFont (juce::FontOptions (7.8f, juce::Font::bold));
+    g.drawText ("MAKEUP", static_cast<int> (rightRailX) - 21, static_cast<int> (bottomRailY) - 4, 44, 10, juce::Justification::centred);
+
+    // Blazing live input/output operating plasma dot along the transfer curve
+    const float liveInputDb  = processor.lastInputPeakDb.load (std::memory_order_relaxed);
     const float liveOutputDb = computeOutputDb (liveInputDb);
-    auto livePt = pointForDb (juce::jlimit(kMinDb, kMaxDb, liveInputDb), juce::jlimit(kMinDb, kMaxDb, liveOutputDb));
-    g.setColour (juce::Colours::orange);
-    g.fillEllipse (juce::Rectangle<float> (6.0f, 6.0f).withCentre (livePt));
-
-    g.setColour (skin.text());
-    g.setFont (juce::Font (juce::FontOptions (10.0f, juce::Font::bold)));
-    auto grLabelArea = curveArea.withHeight (14.0f).reduced (4.0f, 0.0f);
-    g.drawText (juce::String (-processor.lastGrDbForUI.load (std::memory_order_relaxed), 1) + " dB GR",
-                grLabelArea, juce::Justification::topRight);
+    auto livePt = pointForDb (juce::jlimit (displayMinDb, displayMaxDb, liveInputDb),
+                              juce::jlimit (displayMinDb, displayMaxDb, liveOutputDb));
+    const juce::Colour dotCol (t.lampWarn);
+    g.setColour (dotCol.withAlpha (0.35f));
+    g.fillEllipse (juce::Rectangle<float> (13.0f, 13.0f).withCentre (livePt));
+    g.setColour (dotCol);
+    g.fillEllipse (juce::Rectangle<float> (7.5f, 7.5f).withCentre (livePt));
+    g.setColour (juce::Colours::white);
+    g.fillEllipse (juce::Rectangle<float> (3.0f, 3.0f).withCentre (livePt));
 }
 
 //==============================================================================
-juce::Point<float> TransferCurveDisplay::positionForHandle(Handle h) const
+juce::Point<float> TransferCurveDisplay::positionForHandle (Handle h) const
 {
-    const float t = thresholdParam->load(std::memory_order_relaxed);
+    const float t = thresholdParam->load (std::memory_order_relaxed);
     if (h == Handle::threshold)
-        return {pointForDb(juce::jlimit(kMinDb, kMaxDb, t), 0).x, curveArea.getBottom() + 15};
+    {
+        const float rx = juce::jlimit (curveArea.getX(), curveArea.getRight(),
+                                       pointForDb (t, displayMinDb).x);
+        return { rx, curveArea.getBottom() + 10.0f };
+    }
     if (h == Handle::makeup)
-        return {curveArea.getRight() + 17,
-                juce::jmap(makeupParamObj->convertTo0to1(makeupParam->load()), curveArea.getBottom(), curveArea.getY())};
-    auto pos = pointForDb(t, computeOutputDb(t));
-    return {juce::jlimit(curveArea.getX() + 6, curveArea.getRight() - 6, pos.x),
-            juce::jlimit(curveArea.getY() + 6, curveArea.getBottom() - 6, pos.y)};
+        return { curveArea.getRight() + 13.0f,
+                 juce::jmap (makeupParamObj->convertTo0to1 (makeupParam->load()), curveArea.getBottom(), curveArea.getY()) };
+    auto pos = pointForDb (t, computeOutputDb (t));
+    return { juce::jlimit (curveArea.getX() + 6.0f, curveArea.getRight() - 6.0f, pos.x),
+             juce::jlimit (curveArea.getY() + 6.0f, curveArea.getBottom() - 6.0f, pos.y) };
 }
 
-TransferCurveDisplay::Handle TransferCurveDisplay::hitTestHandle(juce::Point<float> pos) const
+TransferCurveDisplay::Handle TransferCurveDisplay::hitTestHandle (juce::Point<float> pos) const
 {
-    for (auto h : {Handle::threshold, Handle::makeup, Handle::combined})
-        if (pos.getDistanceFrom(positionForHandle(h)) <= 10.0f) return h;
+    for (auto h : { Handle::threshold, Handle::makeup, Handle::combined })
+        if (pos.getDistanceFrom (positionForHandle (h)) <= 12.0f) return h;
     return Handle::none;
 }
 
@@ -180,10 +247,10 @@ void TransferCurveDisplay::endDrag()
     dragging = Handle::none;
 }
 
-void TransferCurveDisplay::mouseDown(const juce::MouseEvent& e)
+void TransferCurveDisplay::mouseDown (const juce::MouseEvent& e)
 {
     endDrag();
-    dragging = hitTestHandle(e.position);
+    dragging = hitTestHandle (e.position);
     dragStartThreshold = thresholdParam->load();
     dragStartRatio = ratioParam->load();
     dragStartMakeup = makeupParam->load();
@@ -193,31 +260,32 @@ void TransferCurveDisplay::mouseDown(const juce::MouseEvent& e)
     if (dragging == Handle::makeup) makeupParamObj->beginChangeGesture();
 }
 
-void TransferCurveDisplay::mouseDrag(const juce::MouseEvent& e)
+void TransferCurveDisplay::mouseDrag (const juce::MouseEvent& e)
 {
     if (dragging == Handle::none || curveArea.isEmpty()) return;
-    const float dx = (e.position.x - dragStartPos.x) * 60.0f / curveArea.getWidth();
-    const float dy = -(e.position.y - dragStartPos.y) * 60.0f / curveArea.getHeight();
-    auto set = [](juce::RangedAudioParameter* p, float value)
-    { p->setValueNotifyingHost(juce::jlimit(0.0f, 1.0f, p->convertTo0to1(value))); };
+    const float spanDb = juce::jmax (18.0f, displayMaxDb - displayMinDb);
+    const float dx = (e.position.x - dragStartPos.x) * spanDb / curveArea.getWidth();
+    const float dy = -(e.position.y - dragStartPos.y) * spanDb / curveArea.getHeight();
+    auto set = [] (juce::RangedAudioParameter* p, float value)
+    { p->setValueNotifyingHost (juce::jlimit (0.0f, 1.0f, p->convertTo0to1 (value))); };
     if (dragging == Handle::combined || dragging == Handle::threshold)
-        set(thresholdParamObj, juce::jlimit(kMinDb, kMaxDb, dragStartThreshold + dx));
+        set (thresholdParamObj, juce::jlimit (kParamMinDb, kParamMaxDb, dragStartThreshold + dx));
     if (dragging == Handle::combined)
-        set(ratioParamObj, juce::jlimit(1.0f, 20.0f, dragStartRatio + dy * 0.5f));
+        set (ratioParamObj, juce::jlimit (1.0f, 20.0f, dragStartRatio + dy * 0.5f));
     if (dragging == Handle::makeup)
     {
         const auto range = makeupParamObj->getNormalisableRange();
         const float delta = -(e.position.y - dragStartPos.y) / curveArea.getHeight() * (range.end - range.start);
-        set(makeupParamObj, juce::jlimit(range.start, range.end, dragStartMakeup + delta));
+        set (makeupParamObj, juce::jlimit (range.start, range.end, dragStartMakeup + delta));
     }
     repaint();
 }
 
-void TransferCurveDisplay::mouseUp(const juce::MouseEvent&) { endDrag(); repaint(); }
-void TransferCurveDisplay::mouseMove(const juce::MouseEvent& e)
+void TransferCurveDisplay::mouseUp (const juce::MouseEvent&) { endDrag(); repaint(); }
+void TransferCurveDisplay::mouseMove (const juce::MouseEvent& e)
 {
-    hovering = hitTestHandle(e.position);
-    setMouseCursor(hovering == Handle::none ? juce::MouseCursor::NormalCursor : juce::MouseCursor::DraggingHandCursor);
+    hovering = hitTestHandle (e.position);
+    setMouseCursor (hovering == Handle::none ? juce::MouseCursor::NormalCursor : juce::MouseCursor::DraggingHandCursor);
     repaint();
 }
-void TransferCurveDisplay::mouseExit(const juce::MouseEvent&) { hovering = Handle::none; repaint(); }
+void TransferCurveDisplay::mouseExit (const juce::MouseEvent&) { hovering = Handle::none; repaint(); }
