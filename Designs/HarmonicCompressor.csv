@@ -1,14 +1,14 @@
 GoodLookinUI design version 1
 id,parameter,label,style,colour,x,y,width,height,font size
-threshold,threshold,THRESHOLD,Brit,#C7A66A,12,50,108,108,10
-ratio,ratio,RATIO,Brit,#C7A66A,126,50,108,108,10
-attack,attack,ATTACK,Brit,#C7A66A,240,50,108,108,10
-release,release,RELEASE,Brit,#C7A66A,354,50,108,108,10
-knee,knee,KNEE,Brit,#7FB3D5,12,160,108,108,10
-makeupGain,makeupGain,MAKEUP,Brit,#7FB3D5,126,160,108,108,10
-mix,mix,MIX,Brit,#7FB3D5,240,160,108,108,10
-harmonic2,harmonic2,2ND,Brit,#CDA434,8,56,76,106,10
-harmonic3,harmonic3,3RD,Brit,#C9702E,86,56,76,106,10
-harmonic4,harmonic4,4TH,Brit,#B3382C,164,56,76,106,10
-harmonic5,harmonic5,5TH,Brit,#3FA796,242,56,76,106,10
-scHPFreq,scHPFreq,HP FREQ,Brit,#4A86C8,8,56,84,106,10
+threshold,threshold,THRESHOLD,Mtl,#C7A66A,20,58,120,112,10
+ratio,ratio,RATIO,Mtl,#C7A66A,160,58,120,112,10
+attack,attack,ATTACK,Mtl,#C7A66A,300,58,120,112,10
+release,release,RELEASE,Mtl,#C7A66A,440,58,120,112,10
+knee,knee,KNEE,Mtl,#7FB3D5,20,178,120,112,10
+makeupGain,makeupGain,MAKEUP,Mtl,#7FB3D5,160,178,120,112,10
+mix,mix,MIX,Mtl,#7FB3D5,300,178,120,112,10
+harmonic2,harmonic2,2ND,Mtl,#CDA434,6,54,68,110,10
+harmonic3,harmonic3,3RD,Mtl,#C9702E,76,54,68,110,10
+harmonic4,harmonic4,4TH,Mtl,#B3382C,146,54,68,110,10
+harmonic5,harmonic5,5TH,Mtl,#3FA796,216,54,68,110,10
+scHPFreq,scHPFreq,HP FREQ,Mtl,#4A86C8,22,48,108,96,10

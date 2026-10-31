@@ -139,7 +139,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout HarmonicCompressorAudioProce
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
     layout.add (std::make_unique<juce::AudioParameterChoice> (ParamIDs::algorithmMode, "Algorithm",
-                                                              juce::StringArray { "Opto", "VCA", "FET", "Red", "Hybrid", "Bridge (Provisional)", "Bus VCA (Provisional)", "FET Circuit (Provisional)" },
+                                                              juce::StringArray { "Opto", "VCA", "FET", "Red", "Hybrid", "Bridge (Provisional)", "Bus VCA (Provisional)", "FET Circuit (Provisional)", "Opto Leveler (Provisional)", "RMS VCA Dynamics (Provisional)" },
                                                               0));
 
     layout.add (std::make_unique<juce::AudioParameterFloat> (ParamIDs::threshold, "Threshold",
@@ -350,6 +350,7 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     const int osNumSamples  = (int) oversampledBlock.getNumSamples();
     const int osNumChannels = (int) oversampledBlock.getNumChannels();
 
+    float blockReduction = 0.0f;
     if (mode >= CompressorMode::Bridge)
     {
         // Advance linked circuit state once per sample, regardless of channel count.
@@ -359,6 +360,7 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
             for (int ch = 0; ch < osNumChannels; ++ch)
                 detector = juce::jmax(detector, std::abs(oversampledBlock.getChannelPointer(ch)[s]));
             const float gr = alg->processSidechain(detector);
+            blockReduction = juce::jmax(blockReduction, -juce::Decibels::gainToDecibels(gr, -120.0f));
             for (int ch = 0; ch < osNumChannels; ++ch)
             {
                 auto* data = oversampledBlock.getChannelPointer(ch);
@@ -375,6 +377,7 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
         {
             const float scSample = data[s];
             const float gr = alg->processSidechain (scSample);
+            blockReduction = juce::jmax(blockReduction, -juce::Decibels::gainToDecibels(gr, -120.0f));
             float y = alg->processAudio(data[s], gr, ch) * makeupGainLinear;
             y = harmonics.processSample (y, h2, h3, h4, h5);
             data[s] = y;
@@ -409,6 +412,18 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
             outputSumSqCh[meterCh] += (double) channelData[s] * (double) channelData[s];
         }
     }
+
+    // Publish actual block peak envelopes and maximum applied wet-path GR.
+    // Dropping telemetry when no editor drains it must never stall audio.
+    int start1, size1, start2, size2;
+    historyFifo.prepareToWrite(1, start1, size1, start2, size2);
+    if (size1 > 0)
+    {
+        historyFrames[(size_t)start1] = {inputPeak, outputPeak, blockReduction,
+                                      (float)numSamples / (float)hostSampleRate};
+        historyFifo.finishedWrite(1);
+    }
+    else historyDrops.fetch_add(1, std::memory_order_relaxed);
 
     // --- Update UI-facing atomics once per block ---
     lastGrDbForUI.store (alg->getLastGainReductionDb(), std::memory_order_relaxed);

@@ -18,12 +18,16 @@ TransferCurveDisplay::TransferCurveDisplay (HarmonicCompressorAudioProcessor& p,
     thresholdParamObj = processor.apvts.getParameter (ParamIDs::threshold);
     ratioParamObj     = processor.apvts.getParameter (ParamIDs::ratio);
 
+    makeupParam = processor.apvts.getRawParameterValue(ParamIDs::makeupGain);
+    makeupParamObj = processor.apvts.getParameter(ParamIDs::makeupGain);
+
     setInterceptsMouseClicks (true, false);
     startTimerHz (30);
 }
 
 TransferCurveDisplay::~TransferCurveDisplay()
 {
+    endDrag();
     stopTimer();
 }
 
@@ -36,7 +40,7 @@ void TransferCurveDisplay::timerCallback()
 //==============================================================================
 void TransferCurveDisplay::resized()
 {
-    curveArea = getLocalBounds().reduced (10).toFloat();
+    curveArea = getLocalBounds().toFloat().withTrimmedLeft(12).withTrimmedTop(16).withTrimmedRight(36).withTrimmedBottom(32);
 }
 
 //==============================================================================
@@ -46,6 +50,7 @@ float TransferCurveDisplay::computeOutputDb (float inputDb) const
     const float ratio     = ratioParam->load (std::memory_order_relaxed);
     const float knee      = kneeParam->load (std::memory_order_relaxed);
     const float slope     = compressorSlope (ratio);
+    const float makeup = makeupParam->load(std::memory_order_relaxed);
 
     const float overDb = inputDb - threshold;
 
@@ -53,13 +58,13 @@ float TransferCurveDisplay::computeOutputDb (float inputDb) const
     {
         const float x = overDb + knee * 0.5f;
         const float reduction = slope * (x * x) / (2.0f * knee);
-        return inputDb - reduction;
+        return inputDb - reduction + makeup;
     }
 
     if (overDb <= 0.0f)
-        return inputDb;
+        return inputDb + makeup;
 
-    return inputDb - slope * overDb;
+    return inputDb - slope * overDb + makeup;
 }
 
 juce::Point<float> TransferCurveDisplay::pointForDb (float inputDb, float outputDb) const
@@ -75,13 +80,13 @@ void TransferCurveDisplay::paint (juce::Graphics& g)
     if (curveArea.isEmpty())
         return;
 
-    g.setColour (juce::Colour (0xff0b0c0d));
+    g.setColour (juce::Colour (0xffe7f0f7));
     g.fillRoundedRectangle (curveArea, 4.0f);
-    g.setColour (juce::Colour (0xff2a3033));
+    g.setColour (juce::Colour (0xffb8cddd));
     g.drawRoundedRectangle (curveArea, 4.0f, 1.0f);
 
     // Grid
-    g.setColour (juce::Colour (0xff485156).withAlpha (0.4f));
+    g.setColour (juce::Colour (0xff86a6bf).withAlpha (0.4f));
     for (float db = kMinDb; db <= kMaxDb; db += 12.0f)
     {
         const float x = juce::jmap (db, kMinDb, kMaxDb, curveArea.getX(), curveArea.getRight());
@@ -105,26 +110,37 @@ void TransferCurveDisplay::paint (juce::Graphics& g)
     bool first = true;
     for (float inDb = kMinDb; inDb <= kMaxDb; inDb += 0.5f)
     {
-        auto pt = pointForDb (inDb, computeOutputDb (inDb));
+        auto pt = pointForDb (inDb, juce::jlimit(kMinDb, kMaxDb, computeOutputDb (inDb)));
         if (first) { curve.startNewSubPath (pt); first = false; }
         else       curve.lineTo (pt);
     }
     g.setColour (skin.accent());
     g.strokePath (curve, juce::PathStrokeType (2.0f));
 
-    // Knee/ratio handle
-    const float threshold = thresholdParam->load (std::memory_order_relaxed);
-    handlePos = pointForDb (threshold, computeOutputDb (threshold));
-
-    g.setColour (hovering || dragging ? juce::Colours::white : skin.accent());
-    g.fillEllipse (juce::Rectangle<float> (9.0f, 9.0f).withCentre (handlePos));
-    g.setColour (juce::Colours::black.withAlpha (0.6f));
-    g.drawEllipse (juce::Rectangle<float> (9.0f, 9.0f).withCentre (handlePos), 1.2f);
+    // Separate rails keep dedicated handles reachable even at extreme settings.
+    g.setColour(juce::Colour(0xff94b1c7));
+    g.drawHorizontalLine((int)curveArea.getBottom() + 15, curveArea.getX(), curveArea.getRight());
+    g.drawVerticalLine((int)curveArea.getRight() + 17, curveArea.getY(), curveArea.getBottom());
+    for (auto h : { Handle::combined, Handle::makeup, Handle::threshold })
+    {
+        auto pos = positionForHandle(h);
+        auto colour = h == Handle::combined ? skin.accent()
+                    : h == Handle::makeup ? juce::Colour(0xff7fb3d5) : juce::Colour(0xff70c9ac);
+        g.setColour(h == hovering || h == dragging ? juce::Colours::white : colour);
+        g.fillEllipse(juce::Rectangle<float>(11, 11).withCentre(pos));
+        g.setColour(juce::Colour(0xfff5faff));
+        g.drawEllipse(juce::Rectangle<float>(11, 11).withCentre(pos), 1.0f);
+    }
+    g.setColour(skin.mid());
+    g.setFont(juce::FontOptions(8.0f));
+    g.drawText("THRESHOLD", curveArea.getX(), curveArea.getBottom() + 22,
+               curveArea.getWidth(), 10, juce::Justification::centred);
+    g.drawText("OUT", curveArea.getRight() + 3, curveArea.getY() - 12, 29, 10, juce::Justification::centred);
 
     // Live input/GR dot
     const float liveInputDb = processor.lastInputPeakDb.load (std::memory_order_relaxed);
     const float liveOutputDb = computeOutputDb (liveInputDb);
-    auto livePt = pointForDb (liveInputDb, liveOutputDb);
+    auto livePt = pointForDb (juce::jlimit(kMinDb, kMaxDb, liveInputDb), juce::jlimit(kMinDb, kMaxDb, liveOutputDb));
     g.setColour (juce::Colours::orange);
     g.fillEllipse (juce::Rectangle<float> (6.0f, 6.0f).withCentre (livePt));
 
@@ -136,62 +152,72 @@ void TransferCurveDisplay::paint (juce::Graphics& g)
 }
 
 //==============================================================================
-void TransferCurveDisplay::mouseDown (const juce::MouseEvent& e)
+juce::Point<float> TransferCurveDisplay::positionForHandle(Handle h) const
 {
-    if (e.position.getDistanceFrom (handlePos) <= 10.0f)
-    {
-        dragging = true;
-        dragStartThreshold = thresholdParam->load (std::memory_order_relaxed);
-        dragStartRatio     = ratioParam->load (std::memory_order_relaxed);
-        dragStartPos = e.position;
-
-        if (thresholdParamObj != nullptr) thresholdParamObj->beginChangeGesture();
-        if (ratioParamObj != nullptr)     ratioParamObj->beginChangeGesture();
-    }
+    const float t = thresholdParam->load(std::memory_order_relaxed);
+    if (h == Handle::threshold)
+        return {pointForDb(juce::jlimit(kMinDb, kMaxDb, t), 0).x, curveArea.getBottom() + 15};
+    if (h == Handle::makeup)
+        return {curveArea.getRight() + 17,
+                juce::jmap(makeupParamObj->convertTo0to1(makeupParam->load()), curveArea.getBottom(), curveArea.getY())};
+    auto pos = pointForDb(t, computeOutputDb(t));
+    return {juce::jlimit(curveArea.getX() + 6, curveArea.getRight() - 6, pos.x),
+            juce::jlimit(curveArea.getY() + 6, curveArea.getBottom() - 6, pos.y)};
 }
 
-void TransferCurveDisplay::mouseDrag (const juce::MouseEvent& e)
+TransferCurveDisplay::Handle TransferCurveDisplay::hitTestHandle(juce::Point<float> pos) const
 {
-    if (! dragging || curveArea.isEmpty())
-        return;
+    for (auto h : {Handle::threshold, Handle::makeup, Handle::combined})
+        if (pos.getDistanceFrom(positionForHandle(h)) <= 10.0f) return h;
+    return Handle::none;
+}
 
-    const float dbPerPixelX = (kMaxDb - kMinDb) / curveArea.getWidth();
-    const float dbPerPixelY = (kMaxDb - kMinDb) / curveArea.getHeight();
+void TransferCurveDisplay::endDrag()
+{
+    if (dragging == Handle::combined || dragging == Handle::threshold) thresholdParamObj->endChangeGesture();
+    if (dragging == Handle::combined) ratioParamObj->endChangeGesture();
+    if (dragging == Handle::makeup) makeupParamObj->endChangeGesture();
+    dragging = Handle::none;
+}
 
-    const float dDb = (e.position.x - dragStartPos.x) * dbPerPixelX;
-    const float newThreshold = juce::jlimit (kMinDb, kMaxDb, dragStartThreshold + dDb);
+void TransferCurveDisplay::mouseDown(const juce::MouseEvent& e)
+{
+    endDrag();
+    dragging = hitTestHandle(e.position);
+    dragStartThreshold = thresholdParam->load();
+    dragStartRatio = ratioParam->load();
+    dragStartMakeup = makeupParam->load();
+    dragStartPos = e.position;
+    if (dragging == Handle::combined || dragging == Handle::threshold) thresholdParamObj->beginChangeGesture();
+    if (dragging == Handle::combined) ratioParamObj->beginChangeGesture();
+    if (dragging == Handle::makeup) makeupParamObj->beginChangeGesture();
+}
 
-    const float dRatio = -(e.position.y - dragStartPos.y) * dbPerPixelY * 0.5f;
-    const float newRatio = juce::jlimit (1.0f, 20.0f, dragStartRatio + dRatio);
-
-    if (thresholdParamObj != nullptr)
-        thresholdParamObj->setValueNotifyingHost (thresholdParamObj->convertTo0to1 (newThreshold));
-    if (ratioParamObj != nullptr)
-        ratioParamObj->setValueNotifyingHost (ratioParamObj->convertTo0to1 (newRatio));
-
+void TransferCurveDisplay::mouseDrag(const juce::MouseEvent& e)
+{
+    if (dragging == Handle::none || curveArea.isEmpty()) return;
+    const float dx = (e.position.x - dragStartPos.x) * 60.0f / curveArea.getWidth();
+    const float dy = -(e.position.y - dragStartPos.y) * 60.0f / curveArea.getHeight();
+    auto set = [](juce::RangedAudioParameter* p, float value)
+    { p->setValueNotifyingHost(juce::jlimit(0.0f, 1.0f, p->convertTo0to1(value))); };
+    if (dragging == Handle::combined || dragging == Handle::threshold)
+        set(thresholdParamObj, juce::jlimit(kMinDb, kMaxDb, dragStartThreshold + dx));
+    if (dragging == Handle::combined)
+        set(ratioParamObj, juce::jlimit(1.0f, 20.0f, dragStartRatio + dy * 0.5f));
+    if (dragging == Handle::makeup)
+    {
+        const auto range = makeupParamObj->getNormalisableRange();
+        const float delta = -(e.position.y - dragStartPos.y) / curveArea.getHeight() * (range.end - range.start);
+        set(makeupParamObj, juce::jlimit(range.start, range.end, dragStartMakeup + delta));
+    }
     repaint();
 }
 
-void TransferCurveDisplay::mouseUp (const juce::MouseEvent&)
+void TransferCurveDisplay::mouseUp(const juce::MouseEvent&) { endDrag(); repaint(); }
+void TransferCurveDisplay::mouseMove(const juce::MouseEvent& e)
 {
-    if (dragging)
-    {
-        if (thresholdParamObj != nullptr) thresholdParamObj->endChangeGesture();
-        if (ratioParamObj != nullptr)     ratioParamObj->endChangeGesture();
-    }
-    dragging = false;
-}
-
-void TransferCurveDisplay::mouseMove (const juce::MouseEvent& e)
-{
-    const bool wasHovering = hovering;
-    hovering = e.position.getDistanceFrom (handlePos) <= 10.0f;
-    if (hovering != wasHovering)
-        repaint();
-}
-
-void TransferCurveDisplay::mouseExit (const juce::MouseEvent&)
-{
-    hovering = false;
+    hovering = hitTestHandle(e.position);
+    setMouseCursor(hovering == Handle::none ? juce::MouseCursor::NormalCursor : juce::MouseCursor::DraggingHandCursor);
     repaint();
 }
+void TransferCurveDisplay::mouseExit(const juce::MouseEvent&) { hovering = Handle::none; repaint(); }

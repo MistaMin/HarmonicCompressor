@@ -47,6 +47,8 @@ enum class CompressorMode : int
     Bridge,
     BusVCA,
     FETCircuit,
+    OptoLeveler,
+    RMSVCADynamics,
     Count
 };
 
@@ -90,6 +92,8 @@ struct AlgorithmDefaults
             case CompressorMode::Bridge: return { 2.0f, 400.0f, 0.0f, 0.0f, 0.0f, true };
             case CompressorMode::BusVCA: return { 3.0f, 100.0f, 0.0f, 0.0f, 0.0f, true };
             case CompressorMode::FETCircuit: return { 0.2f, 200.0f, 0.0f, 0.0f, 0.0f, true };
+            case CompressorMode::OptoLeveler: return { 116.54f, 91.85f, 0.0f, 0.0f, 0.0f, true };
+            case CompressorMode::RMSVCADynamics: return { 34.5f, 34.5f, 0.0f, 0.0f, 0.0f, false };
             default:                       return { 10.0f, 100.0f,  6.0f, 0.0f,  0.0f,  false };
         }
     }
@@ -587,6 +591,80 @@ private:
     std::atomic<float> feedbackAmount_{0.25f};
 };
 
+// Reduced reference-derived candidates, not complete circuit solvers.
+// Constants and omitted stages are recorded in dsp/CIRCUIT_INTEGRATION.md.
+class OptoLevelerAlgorithm final : public CompressorAlgorithm
+{
+public:
+    void prepare(const juce::dsp::ProcessSpec& spec) override {
+        sampleRate_=spec.sampleRate;
+        lightCoefficient_=coefficient(0.001);
+        attack_={coefficient(0.11654),coefficient(0.11654),coefficient(1.0)};
+        release_={coefficient(0.01333),coefficient(0.09185),coefficient(0.69596)};
+        reset();
+    }
+    void reset() override { cell_={};light_=0;gain_=1;lastGrDb_.store(0); }
+    void updateParameters(const CompressorParams& p) override {
+        drive_=juce::Decibels::decibelsToGain(-p.thresholdDb);
+        // Shared ratio knob selects the source Compress / Limit configurations.
+        limit_=p.ratio>=10.0f;
+    }
+    float processSidechain(float x) override {
+        // Source junction J: before R7, after R6, coupled to cell loading.
+        const float r7=limit_ ? 2700.0f : 0.0f;
+        const float junction=gain_+(1-gain_)*r7/(68000.0f+r7);
+        // Normalized panel drive is provisional until tube driver calibration.
+        const float raw=std::pow(juce::jlimit(0.0f,10.0f,std::abs(x)*drive_*junction),5.1f);
+        light_=lightCoefficient_*light_+(1-lightCoefficient_)*raw;
+        for(size_t i=0;i<3;++i) {
+            const float c=light_>cell_[i]?attack_[i]:release_[i];
+            cell_[i]=c*cell_[i]+(1-c)*light_;
+        }
+        const float state=0.65467f*cell_[0]+0.2131f*cell_[1]+0.13223f*cell_[2];
+        const float conductance=2.0e-7f+0.001f*std::pow(juce::jmax(0.0f,state),0.9f);
+        // Dark-normalized shunt loading; amplifier/transformer loading still omitted.
+        gain_=(1+(68000+r7)*2.0e-7f)/(1+(68000+r7)*conductance);
+        lastGrDb_.store(juce::Decibels::gainToDecibels(gain_,-120.0f),std::memory_order_relaxed);
+        return gain_;
+    }
+private:
+    float coefficient(double seconds) const {return float(std::exp(-1/(sampleRate_*seconds)));}
+    std::array<float,3> cell_{},attack_{},release_{};
+    float light_=0,gain_=1,drive_=1,lightCoefficient_=0;
+    bool limit_=false;
+};
+
+class RMSVCADynamicsAlgorithm final : public CompressorAlgorithm
+{
+public:
+    void prepare(const juce::dsp::ProcessSpec& spec) override {
+        sampleRate_=spec.sampleRate;
+        // Constant-current log-cap release ~126 dB/s. Transforming
+        // C*dV/dt=Icharge-Iin^2/IX*exp(V/Vt) with P=exp(-V/Vt)
+        // gives a single mean-square integrator. 10/log(10)/tau=126.
+        const double tau=10.0/std::log(10.0)/126.0;
+        coefficient_=float(std::exp(-1.0/(sampleRate_*tau)));
+        reset();
+    }
+    void reset() override {power_=1e-12f;lastGrDb_.store(0);}
+    void updateParameters(const CompressorParams& p) override {params_=p;}
+    float processSidechain(float x) override {
+        power_=coefficient_*power_+(1-coefficient_)*x*x;
+        power_=juce::jmax(1e-12f,power_);
+        const float level=10*std::log10(power_);
+        const float over=level-params_.thresholdDb;
+        const float slope=1-1/juce::jlimit(1.0f,100.0f,params_.ratio);
+        // Paired -6mV/dB detector, 1/2 divider, +2.98mV/dB VCA.
+        const float control=over>=0?over:0.01f*over;
+        const float gainDb=juce::jlimit(-100.0f,6.0f,-slope*(3.0f/2.98f)*control);
+        lastGrDb_.store(gainDb,std::memory_order_relaxed);
+        return juce::Decibels::decibelsToGain(gainDb);
+    }
+private:
+    CompressorParams params_;
+    float power_=1e-12f,coefficient_=0;
+};
+
 // Provisional reduced circuit engines. These are integration candidates, not
 // validated equivalents of the source netlists. See dsp/CIRCUIT_INTEGRATION.md.
 class CircuitAlgorithm final : public CompressorAlgorithm
@@ -748,6 +826,8 @@ public:
         algorithmPool_[(size_t)CompressorMode::Bridge] = &bridge_;
         algorithmPool_[(size_t)CompressorMode::BusVCA] = &busVca_;
         algorithmPool_[(size_t)CompressorMode::FETCircuit] = &fetCircuit_;
+        algorithmPool_[(size_t)CompressorMode::OptoLeveler] = &optoLeveler_;
+        algorithmPool_[(size_t)CompressorMode::RMSVCADynamics] = &rmsVcaDynamics_;
     }
 
     void prepare(const juce::dsp::ProcessSpec& spec)
@@ -805,6 +885,8 @@ private:
     FETAlgorithm       fet_;
     RedStyleAlgorithm  red_;
     HybridAlgorithm    hybrid_;
+    OptoLevelerAlgorithm optoLeveler_;
+    RMSVCADynamicsAlgorithm rmsVcaDynamics_;
     CircuitAlgorithm bridge_{CompressorMode::Bridge};
     CircuitAlgorithm busVca_{CompressorMode::BusVCA};
     CircuitAlgorithm fetCircuit_{CompressorMode::FETCircuit};

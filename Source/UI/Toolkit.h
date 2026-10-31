@@ -17,11 +17,11 @@ namespace gj = goodlookinui::juce_adapter;
 struct Skin {
     const glui::Faceplate* plate = glui::findFaceplate("Graphite");
     juce::Colour bottom() const { return juce::Colour(plate->panelBottom); }
-    juce::Colour text() const { return juce::Colour(plate->text); }
-    juce::Colour mid() const { return juce::Colour(plate->textMid); }
-    juce::Colour accent() const { return juce::Colour(plate->accent); }
+    juce::Colour text() const { return juce::Colour(0xff285472); }
+    juce::Colour mid() const { return juce::Colour(0xff52768e); }
+    juce::Colour accent() const { return juce::Colour(0xff227caf); }
     juce::Colour backdrop() const { return juce::Colour(plate->panelTop).interpolatedWith(juce::Colour(plate->panelBottom), 0.5f); }
     int finish() const { return plate->finish; }
-    int meterFace = 0;    // 0 cream VU, 1 black VU, 2 LED ladders
+    int meterFace = 1;    // 0 cream VU, 1 black VU, 2 LED ladders
     int pushStyle = 0;    // switches::PushStyle
 };

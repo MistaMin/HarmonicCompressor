@@ -34,6 +34,10 @@ public:
 private:
     void timerCallback() override;
 
+    enum class Handle { none, combined, makeup, threshold };
+    juce::Point<float> positionForHandle(Handle) const;
+    Handle hitTestHandle(juce::Point<float>) const;
+    void endDrag();
     float computeOutputDb (float inputDb) const;
     juce::Point<float> pointForDb (float inputDb, float outputDb) const;
 
@@ -43,15 +47,18 @@ private:
     std::atomic<float>* thresholdParam = nullptr;
     std::atomic<float>* ratioParam = nullptr;
     std::atomic<float>* kneeParam = nullptr;
+    std::atomic<float>* makeupParam = nullptr;
 
     juce::RangedAudioParameter* thresholdParamObj = nullptr;
     juce::RangedAudioParameter* ratioParamObj = nullptr;
+    juce::RangedAudioParameter* makeupParamObj = nullptr;
 
     juce::Rectangle<float> curveArea;
     juce::Point<float> handlePos { -1000.0f, -1000.0f };
 
-    bool dragging = false;
-    bool hovering = false;
+    Handle dragging = Handle::none;
+    Handle hovering = Handle::none;
+    float dragStartMakeup = 0.0f;
     float dragStartThreshold = 0.0f;
     float dragStartRatio = 1.0f;
     juce::Point<float> dragStartPos;

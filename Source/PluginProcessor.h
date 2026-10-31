@@ -56,6 +56,12 @@ public:
     juce::AudioProcessorValueTreeState apvts;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
+    // Single audio producer / single editor consumer, bounded telemetry only.
+    struct HistoryFrame { float input, output, reduction, seconds; };
+    juce::AbstractFifo historyFifo { 2048 };
+    std::array<HistoryFrame, 2048> historyFrames {};
+    std::atomic<unsigned> historyDrops { 0 };
+
     // UI-facing real-time-safe state: written once per block from the audio
     // thread, read from the message thread by the editor/display.
     std::atomic<float> lastGrDbForUI { 0.0f };

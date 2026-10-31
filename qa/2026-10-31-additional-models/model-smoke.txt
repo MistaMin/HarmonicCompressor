@@ -1,0 +1,7 @@
+44100 Hz: minimum gain 0.0749544, recovered 0.947231; reset finite
+44100 Hz: minimum gain 0.399209, recovered 1.09271; reset finite
+48000 Hz: minimum gain 0.0728021, recovered 0.946996; reset finite
+48000 Hz: minimum gain 0.39924, recovered 1.09271; reset finite
+96000 Hz: minimum gain 0.0591499, recovered 0.94613; reset finite
+96000 Hz: minimum gain 0.399416, recovered 1.09271; reset finite
+PASS: both new engines, three sample rates, burst/recovery/reset

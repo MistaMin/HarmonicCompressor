@@ -1,0 +1,22 @@
+[
+  {
+    "family": "opto-leveler",
+    "file": "opto_leveler.lib",
+    "sha256": "a891665973d2f78a3ece0a3091804c432bf62074b35a631024d780618789d183"
+  },
+  {
+    "family": "opto-leveler",
+    "file": "circuit.json",
+    "sha256": "7e5434ad10d60a2ad2a5a3adf1329cf1fd175683966d8bc5bc91bd2e59c797eb"
+  },
+  {
+    "family": "rms-vca-dynamics",
+    "file": "rms_vca_dynamics_behavioural.lib",
+    "sha256": "eb839b4575ea34f302c719bca34629bc96738702225bc70873fe7a986971e92b"
+  },
+  {
+    "family": "rms-vca-dynamics",
+    "file": "circuit.json",
+    "sha256": "9c8439d32e85a107d8615e9c62101331428fc7dc3a6d929e3ae2186dbf022ef7"
+  }
+]

@@ -4,8 +4,8 @@
 
 namespace
 {
-    constexpr int canvasWidth = 800;
-    constexpr int panelsHeight = 516;
+    constexpr int canvasWidth = 1120;
+    constexpr int panelsHeight = 760;
 #if GOODLOOKINUI_ENABLE_EDITOR
     constexpr int devStripHeight = 34;
 #else
@@ -13,19 +13,9 @@ namespace
 #endif
     constexpr int canvasHeight = panelsHeight + devStripHeight;
 
-    const char* const algorithmNames[] = { "OPTO", "VCA", "FET", "RED", "HYBRID", "BRIDGE", "BUS", "FET C" };
+    const char* const algorithmNames[] = { "Optical", "VCA", "FET", "Red", "Hybrid", "Transistor Bridge", "Bus VCA", "FET Circuit", "Opto Leveler", "RMS VCA Dynamics" };
     // Each mode keeps the lamp colour it had before the redesign.
-    const juce::uint32 algorithmColours[] = { 0xffcda434, 0xffc9702e, 0xff4a86c8, 0xffb3382c, 0xff3fa796, 0xffcda434, 0xffc9702e, 0xff4a86c8 };
-
-    // Each algorithm has its own plate, knob class and key style (built-in defaults). Developer mode can
-    // change them per algorithm; the choices are saved in the plugin state as plate<i> / knob<i> / push<i>.
-    struct ModeLook { const char* plate; const char* knob; int push; };
-    const ModeLook modeLooks[] = {
-        { "Champagne", "Brz", 0 },   // Opto:   warm gold plate, polished brass knobs
-        { "Steel",     "Mtl", 0 },   // VCA:    brushed steel plate, knurled aluminium knobs
-        { "Slate",     "Snk", 3 },   // FET:    rack slate plate, matte black knobs
-        { "Scarlet",   "Pie", 1 },   // Red:    signal scarlet plate, serrated skirt knobs
-        { "Cyber",     "Neo", 4 }, { "Champagne", "Brz", 0 }, { "Steel", "Mtl", 0 }, { "Slate", "Snk", 3 } }; // Hybrid: cyber cyan plate, neon ring knobs
+    const juce::uint32 algorithmColours[] = { 0xffcda434, 0xffc9702e, 0xff4a86c8, 0xffb3382c, 0xff3fa796, 0xffcda434, 0xffc9702e, 0xff4a86c8, 0xffb58a47, 0xff377f9d };
 
     juce::String ratioText (double v)
     {
@@ -58,23 +48,18 @@ namespace
 //==============================================================================
 void HarmonicCompressorAudioProcessorEditor::Surface::paint (juce::Graphics& g)
 {
-    const auto& p = *skin.plate;
-    auto b = getLocalBounds().toFloat();
-    g.setGradientFill (juce::ColourGradient (juce::Colour (p.bgTop), 0, 0, juce::Colour (p.bgBottom), 0, b.getHeight(), false));
-    g.fillRect (b);
-    gj::drawFinish (g, b, p.finish);
+    g.fillAll(juce::Colour(0xff8ca6bd));
+    g.setColour(juce::Colour(0xff236d9b));
+    g.fillRoundedRectangle(24, 24, 4, 32, 2);
+    g.setFont(juce::FontOptions(21.0f, juce::Font::bold));
+    g.setColour(juce::Colour(0xff244762));
+    g.drawText("HARMONIC", 40, 18, 300, 28, juce::Justification::centredLeft);
+    g.setFont(juce::FontOptions(10.0f));
+    g.setColour(juce::Colour(0xff456b87));
+    g.drawText("COMPRESSOR  /  DYNAMICS & COLOUR", 41, 47, 350, 18, juce::Justification::centredLeft);
+    g.setFont(juce::FontOptions(10.0f, juce::Font::bold));
+    g.drawText("COMPRESSOR MODEL", 714, 10, 270, 18, juce::Justification::centredLeft);
 
-    // title bar
-    auto bar = b.removeFromTop (44.0f);
-    g.setColour (juce::Colour (p.titleBar)); g.fillRect (bar);
-    g.setColour (juce::Colour (p.border)); g.drawHorizontalLine (43, 0.0f, bar.getWidth());
-    g.setColour (juce::Colour (p.accent)); g.fillRect (12.0f, 12.0f, 4.0f, 20.0f);
-    g.setColour (juce::Colour (p.text)); g.setFont (juce::FontOptions (15.0f, juce::Font::bold));
-    g.drawText ("HARMONIC COMPRESSOR", 24, 6, 270, 22, juce::Justification::centredLeft);
-    g.setColour (juce::Colour (p.textMid)); g.setFont (juce::FontOptions (9.0f));
-    g.drawText ("MULTI-MODE HARMONIC COLOUR", 24, 25, 270, 12, juce::Justification::centredLeft);
-    for (auto pt : { juce::Point<float> (8, 8), { bar.getWidth() - 8, 8 }, { 8, float (panelsHeight) - 8 }, { bar.getWidth() - 8, float (panelsHeight) - 8 } })
-        gj::drawScrew (g, pt.x, pt.y);
 }
 
 //==============================================================================
@@ -121,13 +106,15 @@ HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (
 
     // --- Panels on the design canvas ---
     addAndMakeVisible (surface);
-    for (auto* c : std::initializer_list<juce::Component*> { &compPanel, &harmPanel, &scPanel, &curvePanel, &meterPanel })
+    for (auto* c : std::initializer_list<juce::Component*> { &compPanel, &harmPanel, &scPanel, &curvePanel, &meterPanel, &inputMeter, &scope })
         surface.addAndMakeVisible (c);
-    compPanel.setBounds (12, 52, 470, 280);
-    curvePanel.setBounds (494, 52, 294, 280);
-    harmPanel.setBounds (12, 344, 330, 160);
-    scPanel.setBounds (354, 344, 190, 160);
-    meterPanel.setBounds (556, 344, 232, 160);
+    compPanel.setBounds (104, 390, 580, 350);
+    curvePanel.setBounds (680, 88, 308, 286);
+    harmPanel.setBounds (700, 390, 288, 182);
+    scPanel.setBounds (700, 588, 288, 152);
+    meterPanel.setBounds (1000, 88, 108, 652);
+    inputMeter.setBounds(12, 88, 80, 652);
+    scope.setBounds(104, 88, 560, 286);
     compPanel.setAccent (juce::Colour (0xffc7a66a));
     curvePanel.setAccent (juce::Colour (0xff39f2ff));
     harmPanel.setAccent (juce::Colour (0xffb3382c));
@@ -135,29 +122,32 @@ HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (
     meterPanel.setAccent (juce::Colour (0xff3ccf5a));
 
     curvePanel.addAndMakeVisible (transferCurve);
-    transferCurve.setBounds (10, 46, 274, 224);
+    transferCurve.setBounds (8, 44, 292, 230);
 
-    // --- Algorithm keys (radio), synced to the algorithmMode parameter ---
-    for (int i = 0; i < numAlgorithms; ++i)
+    surface.addAndMakeVisible(algorithmSelector);
+    algorithmSelector.setBounds(714, 32, 274, 36);
+    algorithmSelector.setTooltip("Choose compressor model");
+    algorithmSelector.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffe9f1f7));
+    algorithmSelector.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff285a7b));
+    algorithmSelector.onClick = [this]
     {
-        auto key = std::make_unique<KeyButton> (algorithmNames[i], juce::Colour (algorithmColours[i]));
-        if (i >= 5) key->setTooltip ("Provisional circuit mode: DSP audit pending");
-        key->setRadioGroupId (1001);
-        key->setBounds (300 + i * 61, 8, 58, 28);
-        key->onClick = [this, i]
-        {
-            if (algorithmAttachment != nullptr) algorithmAttachment->setValueAsCompleteGesture ((float) i);
-        };
-        surface.addAndMakeVisible (*key);
-        algorithmKeys[(size_t) i] = std::move (key);
-    }
+        juce::PopupMenu menu;
+        for (int i = 0; i < numAlgorithms; ++i)
+            menu.addItem(i + 1, algorithmNames[i], true, i == currentMode);
+        menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(&algorithmSelector),
+            [safe = juce::Component::SafePointer<HarmonicCompressorAudioProcessorEditor>(this)](int result)
+            {
+                if (safe != nullptr && result > 0 && result <= numAlgorithms)
+                    safe->algorithmAttachment->setValueAsCompleteGesture(float(result - 1));
+            });
+    };
     algorithmAttachment = std::make_unique<juce::ParameterAttachment> (
         *audioProcessor.apvts.getParameter (ParamIDs::algorithmMode),
         [this] (float v)
         {
             // Each mode's remembered parameter values are restored by the processor; here we only mirror the selection.
-            const int index = juce::roundToInt (v);
-            for (int i = 0; i < numAlgorithms; ++i) algorithmKeys[(size_t) i]->setToggleState (i == index, juce::dontSendNotification);
+            const int index = juce::jlimit(0, numAlgorithms - 1, juce::roundToInt(v));
+            algorithmSelector.setButtonText(juce::String(algorithmNames[index]) + "   /   SELECT");
             if (index != currentMode || ! lookApplied) { lookApplied = true; applyModeLook (index); }
         });
     // The first update below fires before the knobs exist, so it only records the mode.
@@ -183,10 +173,10 @@ HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (
     compPanel.addAndMakeVisible (autoReleaseKey);
     scPanel.addAndMakeVisible (scEnableKey);
     scPanel.addAndMakeVisible (scListenKey);
-    autoAttackKey.setBounds (356, 176, 104, 30);
-    autoReleaseKey.setBounds (356, 216, 104, 30);
-    scEnableKey.setBounds (100, 64, 82, 34);
-    scListenKey.setBounds (100, 108, 82, 34);
+    autoAttackKey.setBounds (440, 184, 116, 32);
+    autoReleaseKey.setBounds (440, 228, 116, 32);
+    scEnableKey.setBounds (152, 55, 112, 30);
+    scListenKey.setBounds (152, 100, 112, 30);
     autoAttackKey.setTooltip ("Program-dependent attack");
     autoReleaseKey.setTooltip ("Program-dependent release");
     scListenKey.setTooltip ("Listen to the sidechain signal");
@@ -271,10 +261,10 @@ void HarmonicCompressorAudioProcessorEditor::applyBakedDesign()
 void HarmonicCompressorAudioProcessorEditor::applySkin()
 {
     for (auto& k : knobs) k->setTextColours (skin.text(), skin.mid());
-    for (auto& key : algorithmKeys) key->setStyle (skin.pushStyle);
+
     for (auto* key : { &autoAttackKey, &autoReleaseKey, &scEnableKey, &scListenKey }) key->setStyle (skin.pushStyle);
     surface.repaint();
-    for (auto* c : std::initializer_list<juce::Component*> { &compPanel, &harmPanel, &scPanel, &curvePanel, &meterPanel }) c->repaint();
+    for (auto* c : std::initializer_list<juce::Component*> { &compPanel, &harmPanel, &scPanel, &curvePanel, &meterPanel, &inputMeter, &scope }) c->repaint();
     repaint();
 }
 
@@ -294,12 +284,23 @@ void HarmonicCompressorAudioProcessorEditor::applyModeLook (int mode)
 {
     mode = juce::jlimit (0, numAlgorithms - 1, mode);
     currentMode = mode;
+    const bool circuitTiming = mode == (int)CompressorMode::OptoLeveler || mode == (int)CompressorMode::RMSVCADynamics;
+    for (const char* id : {ParamIDs::attack, ParamIDs::release, ParamIDs::knee})
+        if (auto it = knobById.find(id); it != knobById.end()) {
+            it->second->setEnabled(!circuitTiming);
+            it->second->setAlpha(circuitTiming ? 0.4f : 1.0f);
+            it->second->setTooltip(circuitTiming ? "Circuit-defined response" : "");
+        }
+    autoAttackKey.setEnabled(!circuitTiming);autoReleaseKey.setEnabled(!circuitTiming);
+    if (auto it=knobById.find(ParamIDs::ratio);it!=knobById.end())
+        it->second->setTooltip(mode==(int)CompressorMode::OptoLeveler ? "Compress below 10:1; Limit at 10:1 and above" : "");
+
     auto& s = audioProcessor.apvts.state;
     const auto n = juce::String (mode);
-    const auto& d = modeLooks[mode];
-    if (auto* f = glui::findFaceplate (s.getProperty ("plate" + n, d.plate).toString().toStdString())) skin.plate = f;
-    skin.pushStyle = juce::jlimit (0, gj::switches::numPushStyles - 1, (int) s.getProperty ("push" + n, d.push));
-    const auto knob = s.getProperty ("knob" + n, d.knob).toString();
+
+    if (auto* f = glui::findFaceplate (s.getProperty ("plate" + n, "Graphite").toString().toStdString())) skin.plate = f;
+    skin.pushStyle = juce::jlimit (0, gj::switches::numPushStyles - 1, (int) s.getProperty ("push" + n, 3));
+    const auto knob = s.getProperty ("knob" + n, "Mtl").toString();
     applyKnobStyle (knob == "design" ? juce::String() : knob);
     const juce::Colour lamp (algorithmColours[mode]);
     compPanel.setAccent (lamp);
@@ -334,7 +335,7 @@ void HarmonicCompressorAudioProcessorEditor::saveModeLook (const char* what, con
 void HarmonicCompressorAudioProcessorEditor::loadLookState()
 {
     auto& s = audioProcessor.apvts.state;
-    skin.meterFace = juce::jlimit (0, 2, (int) s.getProperty ("meterFace", 0));
+    skin.meterFace = juce::jlimit (0, 2, (int) s.getProperty ("meterFace", 1));
     gj::retro::glowEnabled = s.getProperty ("glow", "on").toString() != "off";
 }
 

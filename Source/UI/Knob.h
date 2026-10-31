@@ -40,9 +40,9 @@ public:
         g.drawText(design.label, labelArea, juce::Justification::centred);
         gj::drawKnob(g, kb, motion.position, design, active, backdrop);
         auto ro = valueArea.toFloat().withSizeKeepingCentre(juce::jmin(68.0f, float(getWidth()) - 6.0f), 15.0f);
-        g.setColour(juce::Colour(0xff161d20)); g.fillRoundedRectangle(ro, 2);
-        g.setColour(juce::Colour(0xff465255)); g.drawRoundedRectangle(ro, 2, 0.6f);
-        g.setColour(active ? juce::Colour(0xffe9d9b0) : juce::Colour(0xff7d8788));
+        g.setColour(juce::Colour(0xfff9fcff)); g.fillRoundedRectangle(ro, 2);
+        g.setColour(juce::Colour(0xff9eb5c8)); g.drawRoundedRectangle(ro, 2, 0.6f);
+        g.setColour(active ? juce::Colour(0xff254e6c) : juce::Colour(0xff7d8788));
         g.setFont(juce::FontOptions(10.0f, juce::Font::bold));
         g.drawText(format(getValue()), valueArea, juce::Justification::centred);
     }

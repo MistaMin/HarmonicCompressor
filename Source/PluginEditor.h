@@ -69,12 +69,14 @@ private:
     Panel compPanel { skin, "COMPRESSION", "THRESHOLD / RATIO / TIMING" };
     Panel harmPanel { skin, "HARMONICS", "2ND - 5TH HARMONIC AMOUNT" };
     Panel scPanel   { skin, "SIDECHAIN", "DETECTOR FILTER" };
-    Panel curvePanel { skin, "TRANSFER CURVE", "DRAG THE DOT: THRESHOLD / RATIO" };
+    Panel curvePanel { skin, "TRANSFER CURVE", "DOTS: THRESHOLD / RATIO / MAKEUP" };
     MeterPanel meterPanel { skin, audioProcessor };
+    MeterPanel inputMeter { skin, audioProcessor, true };
+    CompressionScope scope { skin, audioProcessor };
     TransferCurveDisplay transferCurve { audioProcessor, skin };
 
     static constexpr int numAlgorithms = (int) CompressorMode::Count;
-    std::array<std::unique_ptr<KeyButton>, (size_t) numAlgorithms> algorithmKeys;
+    juce::TextButton algorithmSelector;
     std::unique_ptr<juce::ParameterAttachment> algorithmAttachment;
 
     KeyButton autoAttackKey { "AUTO ATTACK", juce::Colour (0xff39ff7a) }, autoReleaseKey { "AUTO RELEASE", juce::Colour (0xff39ff7a) },
