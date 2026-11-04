@@ -8,3 +8,14 @@ xcuserdata/
 Installer/
 dist/
 output/
+
+# QA evidence: keep reports and logs, drop bulky media and host project files
+qa/**/*.wav
+qa/**/*.png
+qa/**/*.ppm
+qa/**/*.rpp
+qa/**/*.pid
+qa/**/*.reapeaks
+qa/**/stage-formats/
+qa/**/stage/
+qa/**/vststate.bin

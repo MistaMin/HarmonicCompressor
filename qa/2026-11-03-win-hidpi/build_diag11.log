@@ -1,0 +1,8 @@
+[HarmonicCompressor] Building all targets...
+[0/2] Re-checking globbed directories...
+[1/6] Building VST3 manifest helper for HarmonicCompressor
+-- Configuring done (0.0s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/Users/marco/Developer/HarmonicCompressor/build/vst3_helpers/HarmonicCompressor
+ninja: no work to do.
+[2/6] Linking CXX shared module "HarmonicCompressor_artefacts\Release\CLAP\Harmonic Compressor.clap"

@@ -1,0 +1,15 @@
+# Harmonic Compressor QA exceptions (reaper_qa.py suite).
+# Context entries: the parameter is retested with the section enabled. These are
+# not excuses - the check still runs, just in the state where the parameter acts.
+#
+# Sidechain HP filters only the detector's sidechain path; with Sidechain Enable off
+# the filter is bypassed entirely (PluginProcessor.cpp:466,495: `scEnabled ? sidechain.processSample(...) : rawSc`).
+Sidechain HP Freq @ Sidechain Enable=1.0
+# Transient Attack/Sustain/Speed only shape the gain computer while the transient
+# designer is enabled; disabled, targetDb stays 0 dB (TransientDesigner.h:70).
+Transient Attack @ Transient Enable=1.0
+Transient Sustain @ Transient Enable=1.0
+# Speed scales only the detector time constants; with Attack=Sustain=0 the gain target
+# is 0 dB regardless (TransientDesigner.h:82-84: amounts multiply the envelope diffs).
+# Tested with Transient Enable on and Transient Attack at max so Speed has something to scale.
+Transient Speed @ Transient Enable=1.0, Transient Attack=1.0

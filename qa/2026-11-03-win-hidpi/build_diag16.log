@@ -1,0 +1,12 @@
+[HarmonicCompressor] Building all targets...
+[0/2] Re-checking globbed directories...
+[1/5] Building VST3 manifest helper for HarmonicCompressor
+-- Configuring done (0.0s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/Users/marco/Developer/HarmonicCompressor/build/vst3_helpers/HarmonicCompressor
+ninja: no work to do.
+[2/5] Linking CXX shared module "HarmonicCompressor_artefacts\Release\AAX\Harmonic Compressor.aaxplugin\Contents\x64\Harmonic Compressor.aaxplugin"
+[3/5] Linking CXX shared module "HarmonicCompressor_artefacts\Release\VST3\Harmonic Compressor.vst3\Contents\x86_64-win\Harmonic Compressor.vst3"
+removing moduleinfo.json
+creating C:/Users/marco/Developer/HarmonicCompressor/build/HarmonicCompressor_artefacts/Release/VST3/Harmonic Compressor.vst3/Contents/Resources/moduleinfo.json
+[4/5] Linking CXX executable "HarmonicCompressor_artefacts\Release\Standalone\Harmonic Compressor.exe"

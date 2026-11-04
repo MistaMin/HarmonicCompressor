@@ -1,0 +1,2 @@
+1793752273
+{"result":{"version":"7.80/x64","resourcePath":"C:\\Users\\marco\\AppData\\Roaming\\REAPER"},"ok":true}
