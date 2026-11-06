@@ -64,6 +64,10 @@ public:
             headerArea = b.removeFromTop(16);
             trackArea = b;
         }
+
+        // Slider::resized() stores the track that maps a click to a value.
+        // Skipping it leaves that span at 1px, so any click lands at the maximum.
+        juce::Slider::resized();
     }
 
     juce::Rectangle<int> getTrackBounds() const noexcept { return trackArea; }
@@ -452,10 +456,15 @@ private:
     struct HorizontalTrackLnf : juce::LookAndFeel_V4 {
         juce::Slider::SliderLayout getSliderLayout(juce::Slider& s) override {
             juce::Slider::SliderLayout layout;
-            if (auto* k = dynamic_cast<const Knob*>(&s))
-                layout.sliderBounds = k->getTrackBounds();
-            else
+            if (auto* k = dynamic_cast<const Knob*>(&s)) {
+                // The painted cap travels inside the groove, inset by the thumb radius.
+                auto track = k->getTrackBounds();
+                if (track.getWidth() > kThumbRadius * 2)
+                    track = track.reduced(kThumbRadius, 0);
+                layout.sliderBounds = track;
+            } else {
                 layout.sliderBounds = s.getLocalBounds();
+            }
             return layout;
         }
         int getSliderThumbRadius(juce::Slider&) override { return kThumbRadius; }

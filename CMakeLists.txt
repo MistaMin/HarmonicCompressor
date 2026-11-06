@@ -134,3 +134,22 @@ target_compile_definitions(HarmonicCompressor PRIVATE
 set_target_properties(HarmonicCompressor PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED TRUE)
+
+# Headless click-mapping check for the linear module faders. Not part of the
+# default plugin build; run with: cmake --build build --target SliderClickTest
+juce_add_console_app(SliderClickTest PRODUCT_NAME "SliderClickTest")
+target_sources(SliderClickTest PRIVATE qa/2026-11-06-slider-click/slider_click_test.cpp)
+target_include_directories(SliderClickTest PRIVATE Source)
+target_compile_definitions(SliderClickTest PRIVATE
+    JUCE_WEB_BROWSER=0
+    JUCE_USE_CURL=0
+    GOODLOOKINUI_ENABLE_EDITOR=0)
+target_link_libraries(SliderClickTest PRIVATE
+    goodlookinui_juce
+    juce::juce_gui_basics
+    juce::juce_recommended_config_flags
+    juce::juce_recommended_warning_flags)
+set_target_properties(SliderClickTest PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED TRUE
+    EXCLUDE_FROM_ALL TRUE)
