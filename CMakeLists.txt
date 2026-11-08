@@ -141,19 +141,16 @@ set_target_properties(HarmonicCompressor PROPERTIES
 
 # Headless click-mapping check for the linear module faders. Not part of the
 # default plugin build; run with: cmake --build build --target SliderClickTest
-juce_add_console_app(SliderClickTest PRODUCT_NAME "SliderClickTest")
+add_executable(SliderClickTest EXCLUDE_FROM_ALL)
 target_sources(SliderClickTest PRIVATE qa/2026-11-06-slider-click/slider_click_test.cpp)
-target_include_directories(SliderClickTest PRIVATE Source)
-target_compile_definitions(SliderClickTest PRIVATE
-    JUCE_WEB_BROWSER=0
-    JUCE_USE_CURL=0
-    GOODLOOKINUI_ENABLE_EDITOR=0)
+target_include_directories(SliderClickTest PRIVATE
+    $<TARGET_PROPERTY:HarmonicCompressor,INCLUDE_DIRECTORIES>)
 target_link_libraries(SliderClickTest PRIVATE
-    goodlookinui_juce
-    juce::juce_gui_basics
+    HarmonicCompressor
     juce::juce_recommended_config_flags
     juce::juce_recommended_warning_flags)
 set_target_properties(SliderClickTest PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/SliderClickTest_artefacts/$<CONFIG>"
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED TRUE
     EXCLUDE_FROM_ALL TRUE)
@@ -162,9 +159,8 @@ set_target_properties(SliderClickTest PROPERTIES
 add_executable(EditorSliderTest EXCLUDE_FROM_ALL)
 target_sources(EditorSliderTest PRIVATE qa/2026-11-06-slider-click/editor_slider_test.cpp)
 target_include_directories(EditorSliderTest PRIVATE Source
-    "${CMAKE_CURRENT_BINARY_DIR}/HarmonicCompressor_artefacts/JuceLibraryCode")
+    $<TARGET_PROPERTY:HarmonicCompressor,INCLUDE_DIRECTORIES>)
 target_link_libraries(EditorSliderTest PRIVATE HarmonicCompressor
-    goodlookinui_juce juce::juce_audio_utils juce::juce_dsp
     juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
 set_target_properties(EditorSliderTest PROPERTIES
     CXX_STANDARD 20

@@ -130,6 +130,9 @@ with open(path, "rb") as f:
 for entry in data:
     entry["BundleIsVersionChecked"] = False
     entry["BundleIsRelocatable"] = False
+    # Replacing bundles removes obsolete resources from earlier installations;
+    # merging leaves extra files that invalidate the new code signature.
+    entry["BundleOverwriteAction"] = "upgrade"
 with open(path, "wb") as f:
     plistlib.dump(data, f)
 PYEOF

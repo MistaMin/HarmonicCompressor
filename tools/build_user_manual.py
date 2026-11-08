@@ -200,7 +200,7 @@ def main():
         creator="Harmonic Compressor documentation"
     )
     doc.build(story, onFirstPage=footer, onLaterPages=footer)
-    print(f"✓ Built manual PDF successfully: {OUTPUT}")
+    print(f"Built manual PDF successfully: {OUTPUT}")
 
 if __name__ == "__main__":
     main()

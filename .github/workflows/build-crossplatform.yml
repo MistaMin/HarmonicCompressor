@@ -15,6 +15,9 @@ on:
 permissions:
   contents: read
 
+env:
+  PYTHONUTF8: '1'
+
 jobs:
   build:
     strategy:
@@ -52,7 +55,7 @@ jobs:
         shell: bash
         run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGOODLOOKINUI_ROOT="$GITHUB_WORKSPACE/third_party/GoodLookinUI"
       - name: Build formats and regression tests
-        run: cmake --build build --parallel 2 --target HarmonicCompressor_VST3 HarmonicCompressor_CLAP HarmonicCompressor_LV2 HarmonicCompressor_Standalone SliderClickTest EditorSliderTest
+        run: cmake --build build --parallel 4 --target HarmonicCompressor_VST3 HarmonicCompressor_CLAP HarmonicCompressor_LV2 HarmonicCompressor_Standalone SliderClickTest EditorSliderTest
       - name: Test Linux sliders
         if: runner.os == 'Linux'
         run: xvfb-run -a ctest --test-dir build --output-on-failure
@@ -65,6 +68,13 @@ jobs:
           python -m pip install reportlab
           python tools/build_user_manual.py
           python tools/package_crossplatform.py --platform ${{ matrix.platform }} --artefacts build/HarmonicCompressor_artefacts/Release --out dist
+      - name: Preserve built formats if packaging fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: HarmonicCompressor-${{ matrix.platform }}-unpackaged
+          path: build/HarmonicCompressor_artefacts/Release/
+          if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
         with:
           name: HarmonicCompressor-${{ matrix.platform }}-x86_64
