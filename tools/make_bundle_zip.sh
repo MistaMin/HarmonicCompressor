@@ -31,6 +31,7 @@ declare -a BUNDLES=(
   "CLAP|%s.clap|Library/Audio/Plug-Ins/CLAP|clap"
   "LV2|%s.lv2|Library/Audio/Plug-Ins/LV2|lv2"
   "AAX|%s.aaxplugin|Library/Application Support/Avid/Audio/Plug-Ins|aax"
+  "Standalone|%s.app|Applications|standalone"
 )
 
 INSTALLS=()
@@ -62,12 +63,12 @@ if find "$STAGE" -name '._*' | grep . >/dev/null; then
 fi
 
 rm -f "$ZIP"
-(cd "$STAGE" && zip -qry "$ZIP" Library)
+(cd "$STAGE" && zip -qry "$ZIP" Library Applications)
 rm -rf "$STAGE"
 
 # Installs list, one entry per bundle, for the manifest writer.
 {
-  printf '{"os":"macos","arch":"universal","min_os":"%s","installs":[' "${MIN_OS:-11.0}"
+  printf '{"os":"macos","arch":"universal","build_class":"modern","min_os":"%s","installs":[' "${MIN_OS:-11.0}"
   first=1
   for entry in "${INSTALLS[@]}"; do
     id=${entry%%|*}; rel=${entry#*|}

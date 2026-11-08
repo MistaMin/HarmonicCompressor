@@ -40,6 +40,7 @@ def archive_entry(zip_path: Path) -> dict:
         "os": meta["os"],
         "arch": [meta["arch"]],
         "min_os": meta["min_os"],
+        "build_class": meta.get("build_class", "modern"),
         "name": zip_path.name,
         "size": len(data),
         "sha256": hashlib.sha256(data).hexdigest(),

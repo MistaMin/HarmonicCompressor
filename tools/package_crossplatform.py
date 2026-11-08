@@ -32,7 +32,7 @@ def main():
             shutil.copytree(source, destination, symlinks=True)
         else:
             shutil.copy2(source, destination)
-        installs.append({'format': fmt.lower(), 'path': destination.relative_to(stage).as_posix()})
+        installs.append({'format': fmt.lower(), 'path': destination.relative_to(args.out).as_posix()})
     for source in [root / 'output/pdf/HarmonicCompressor-User-Manual.pdf',
                    root / 'LICENSE', root / 'LICENSE-BINARIES.txt', root / 'RELEASE_NOTES.md']:
         shutil.copy2(source, stage / source.name)
@@ -48,8 +48,10 @@ def main():
     digest = hashlib.sha256(archive.read_bytes()).hexdigest()
     Path(str(archive) + '.sha256').write_text(f'{digest}  {archive.name}\n')
     metadata = {'os': args.platform, 'arch': 'x86_64',
-                'min_os': '10.0' if args.platform == 'windows' else 'Ubuntu 24.04 / glibc 2.39',
+                'min_os': '10.0' if args.platform == 'windows' else '24.04',
                 'build_class': 'modern', 'installs': installs}
+    if args.platform == 'linux':
+        metadata['distribution'] = 'Ubuntu 24.04 / glibc 2.39'
     Path(str(archive) + '.installs.json').write_text(json.dumps(metadata, indent=2) + '\n')
     print(archive)
 
