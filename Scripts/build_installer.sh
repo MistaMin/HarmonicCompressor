@@ -43,6 +43,12 @@ mkdir -p "$STAGING/Applications"
 
 DOCS_DEST="$STAGING/Library/Application Support/Harmonic Compressor"
 mkdir -p "$DOCS_DEST"
+if [ -d "$PROJECT_ROOT/Licenses" ]; then
+    ditto "$PROJECT_ROOT/Licenses" "$DOCS_DEST/Licenses"
+fi
+if [ -f "$PROJECT_ROOT/THIRD_PARTY_LICENSES.md" ]; then
+    cp "$PROJECT_ROOT/THIRD_PARTY_LICENSES.md" "$DOCS_DEST/THIRD_PARTY_LICENSES.md"
+fi
 if [ -f "$LICENSE_BINARIES_SRC" ]; then
     cp "$LICENSE_BINARIES_SRC" "$DOCS_DEST/ReadMe - License (Freeware).txt"
     echo "  + LICENSE-BINARIES.txt included"

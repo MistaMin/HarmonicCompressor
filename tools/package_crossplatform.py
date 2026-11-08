@@ -34,8 +34,10 @@ def main():
             shutil.copy2(source, destination)
         installs.append({'format': fmt.lower(), 'path': destination.relative_to(args.out).as_posix()})
     for source in [root / 'output/pdf/HarmonicCompressor-User-Manual.pdf',
-                   root / 'LICENSE', root / 'LICENSE-BINARIES.txt', root / 'RELEASE_NOTES.md']:
+                   root / 'LICENSE', root / 'LICENSE-BINARIES.txt', root / 'RELEASE_NOTES.md',
+                   root / 'THIRD_PARTY_LICENSES.md']:
         shutil.copy2(source, stage / source.name)
+    shutil.copytree(root / 'Licenses', stage / 'Licenses')
     if args.platform == 'windows':
         archive = args.out / (name + '.zip')
         with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED) as output:
