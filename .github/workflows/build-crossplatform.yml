@@ -2,6 +2,12 @@ name: Cross-platform release builds
 
 on:
   workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to build
+        type: choice
+        options: [all, windows, linux]
+        default: all
   push:
     branches: [master]
     tags: ['v*']
@@ -14,11 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-24.04
-            platform: linux
-          - os: windows-latest
-            platform: windows
+        include: ${{ fromJSON(inputs.platform == 'windows' && '[{"os":"windows-latest","platform":"windows"}]' || inputs.platform == 'linux' && '[{"os":"ubuntu-24.04","platform":"linux"}]' || '[{"os":"ubuntu-24.04","platform":"linux"},{"os":"windows-latest","platform":"windows"}]') }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -48,7 +50,7 @@ jobs:
         if: runner.os == 'Windows'
       - name: Configure
         shell: bash
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGOODLOOKINUI_ROOT="$GITHUB_WORKSPACE/third_party/GoodLookinUI" -DCMAKE_CXX_FLAGS=-D_USE_MATH_DEFINES
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGOODLOOKINUI_ROOT="$GITHUB_WORKSPACE/third_party/GoodLookinUI"
       - name: Build formats and regression tests
         run: cmake --build build --parallel 2 --target HarmonicCompressor_VST3 HarmonicCompressor_CLAP HarmonicCompressor_LV2 HarmonicCompressor_Standalone SliderClickTest EditorSliderTest
       - name: Test Linux sliders

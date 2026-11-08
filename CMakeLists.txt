@@ -6,6 +6,10 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS deployment ta
 
 project(HarmonicCompressor VERSION 1.5.1)
 
+if(MSVC)
+    add_compile_definitions(_USE_MATH_DEFINES)
+endif()
+
 # Optional AAX SDK path. When set to a valid AAX SDK tree, the AAX format is
 # added to the build; otherwise the project still configures cleanly without it.
 set(AAX_SDK_PATH "" CACHE PATH "Path to the AAX SDK (optional)")
