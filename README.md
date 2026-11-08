@@ -24,7 +24,7 @@ Harmonic Compressor is a mastering-grade analogue dynamics processor and harmoni
   - Even harmonics (Tube warmth: $H_2, H_4$) with sub-audio 3.5 Hz DC blocker.
   - Odd harmonics (Tape saturation: $H_3, H_5$) and secondary smooth rail ceiling limiter.
 - **Built-in Transient Designer:**
-  - Independent Attack (+/- 12 dB) and Sustain (+/- 12 dB) shaping in the detection path.
+  - Independent Attack and Sustain controls (-100% to +100%) with 0.5-50 ms detector speed, after the dry/wet mix and before output trim.
   - Sidechain High-Pass Filter (20 to 500 Hz, with bypass and audition modes).
 - **Visual Ergonomics & 4 Themes:**
   - **Soft White:** Minimalist high-contrast studio chassis.
@@ -66,7 +66,7 @@ python3 tools/build_user_manual.py
 
 ## Documentation
 
-A comprehensive 8-page color user manual with detailed circuit topologies, signal flow diagrams, and full parameter documentation is available in [`Docs/UserManual.md`](Docs/UserManual.md) and compiles to `output/pdf/HarmonicCompressor-User-Manual.pdf`.
+A color user manual with model descriptions, signal flow and all 25 host parameters is available in [`Docs/UserManual.md`](Docs/UserManual.md) and compiles to `output/pdf/HarmonicCompressor-User-Manual.pdf`.
 
 ## Licensing & Compliance
 

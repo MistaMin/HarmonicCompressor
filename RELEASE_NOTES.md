@@ -4,6 +4,7 @@
 - Added a regression test against the actual editor and parameter attachments: all 13 linear sliders, four themes and editor reopening.
 - Corrected the manual to document all 25 host parameters, actual ranges and defaults, the post-mix transient stage, oversampling choices and movable modules.
 - Preserved parameter identifiers and saved-state layout.
+- Installer upgrades now replace old bundles cleanly, removing obsolete resources that could invalidate the Standalone app signature.
 
 macOS: universal Apple silicon/Intel build, macOS 11 or later. Formats: VST3, AU, CLAP, LV2, PACE-signed AAX and Standalone. Windows/Linux availability and validation are reported with their build results.
 
