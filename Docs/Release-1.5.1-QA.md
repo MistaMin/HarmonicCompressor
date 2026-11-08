@@ -1,6 +1,7 @@
 # Harmonic Compressor 1.5.1 release status
 
-Status: macOS candidate signed, notarized and QA-passed; not published. Canonical
+Status: macOS 1.5.1 published on GitHub (tag `v1.5.1`, commit `0439514`) and staged in
+`Release Binaries/MistaMin/HarmonicCompressor/1.5.1/`; website sync pending. Canonical
 workflow: DSP Engineering Wiki, Make-Plugin-Release. User decisions on 2026-11-08:
 no Standalone in the Plugin Manager ZIP; no GitHub-hosted runners. Windows and
 Linux require user-owned native build machines. Do not ship the earlier
@@ -57,9 +58,8 @@ extracted to `/tmp`.
 
 ## Remaining release work
 
-- Publish the macOS artifact: push the release commit, update the v1.5.1 GitHub
-  release with the ZIP and manifest, then stage in `Release Binaries` and update
-  the Plugin Manager catalog. The GitHub release is still a draft with no assets.
+- Website sync (`opengrid.studio/ogpm`) of the 1.5.1 manifest and archive: the local
+  `Release Binaries` staging and `index.json` entry are done, the upload is not.
 - Pro Tools interactive test and control-surface behaviour on the new build: the
   AAX Validator suite is the automated evidence; a foreground Pro Tools session
   test has not been run.
