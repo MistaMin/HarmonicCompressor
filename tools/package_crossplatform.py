@@ -14,6 +14,8 @@ def main():
     parser.add_argument('--platform', choices=['windows', 'linux'], required=True)
     parser.add_argument('--artefacts', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--include-standalone', action='store_true',
+                        help='Include Standalone only when requested by the user')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     version = (root / 'VERSION').read_text().strip()
@@ -21,8 +23,10 @@ def main():
     stage = args.out / name
     stage.mkdir(parents=True, exist_ok=False)
     installs = []
-    for fmt, suffix in [('VST3', '.vst3'), ('CLAP', '.clap'), ('LV2', '.lv2'),
-                        ('Standalone', '.exe' if args.platform == 'windows' else '')]:
+    formats = [('VST3', '.vst3'), ('CLAP', '.clap'), ('LV2', '.lv2')]
+    if args.include_standalone:
+        formats.append(('Standalone', '.exe' if args.platform == 'windows' else ''))
+    for fmt, suffix in formats:
         source = args.artefacts / fmt / ('Harmonic Compressor' + suffix)
         if not source.exists():
             raise SystemExit(f'Missing required {fmt}: {source}')

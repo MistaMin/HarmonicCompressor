@@ -3,6 +3,7 @@
 # The zip root mirrors the macOS install tree, so the manager copies each entry to "/" as-is.
 #
 # Usage: make_bundle_zip.sh <Plugin Name> <version> <artefacts/Release dir> <out dir>
+# Set INCLUDE_STANDALONE=1 only when the user requests it for the Manager ZIP.
 set -euo pipefail
 
 if [ $# -ne 4 ]; then
@@ -31,8 +32,12 @@ declare -a BUNDLES=(
   "CLAP|%s.clap|Library/Audio/Plug-Ins/CLAP|clap"
   "LV2|%s.lv2|Library/Audio/Plug-Ins/LV2|lv2"
   "AAX|%s.aaxplugin|Library/Application Support/Avid/Audio/Plug-Ins|aax"
-  "Standalone|%s.app|Applications|standalone"
 )
+case "${INCLUDE_STANDALONE:-0}" in
+  1) BUNDLES+=("Standalone|%s.app|Applications|app") ;;
+  0) ;;
+  *) echo "INCLUDE_STANDALONE must be 0 or 1" >&2; exit 2 ;;
+esac
 
 INSTALLS=()
 for entry in "${BUNDLES[@]}"; do
@@ -63,7 +68,7 @@ if find "$STAGE" -name '._*' | grep . >/dev/null; then
 fi
 
 rm -f "$ZIP"
-(cd "$STAGE" && zip -qry "$ZIP" Library Applications)
+(cd "$STAGE" && COPYFILE_DISABLE=1 zip -qry "$ZIP" .)
 rm -rf "$STAGE"
 
 # Installs list, one entry per bundle, for the manifest writer.

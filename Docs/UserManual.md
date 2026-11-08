@@ -99,7 +99,6 @@ Use a host that supports the selected plugin format. Compatibility and validatio
   - **AAX Native:** Pro Tools 2022+ (PACE Eden Signed).
   - **CLAP:** CLAP 1.2+ host.
   - **LV2:** LV2 compatible host.
-  - **Standalone:** Native standalone application with CoreAudio support.
 - **RAM:** 4 GB minimum (8 GB recommended).
 - **Display:** 1280 x 800 minimum screen resolution (Retina / 4K Ultra-HD supported).
 

@@ -6,6 +6,6 @@
 - Preserved parameter identifiers and saved-state layout.
 - Installer upgrades now replace old bundles cleanly, removing obsolete resources that could invalidate the Standalone app signature.
 
-macOS: universal Apple silicon/Intel build, macOS 11 or later. Formats: VST3, AU, CLAP, LV2, PACE-signed AAX and Standalone. Windows/Linux availability and validation are reported with their build results.
+macOS: universal Apple silicon/Intel build (arm64 and x86_64), macOS 11 or later. Plugin Manager package: VST3, AU, CLAP, LV2 and PACE-signed AAX. This plugin ships no Standalone app. Windows and Linux builds are listed only after their native builds and tests pass on their own machines.
 
-Binaries are staged in the OpenGrid release collection; GitHub release pages contain source and release information rather than executable downloads.
+Approved binary downloads are published on the GitHub release page and through the OpenGrid Plugin Manager.

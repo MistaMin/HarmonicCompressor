@@ -45,7 +45,7 @@ if(HARMONIC_BUILD_CLAP AND NOT HARMONIC_DEV_MODE)
 endif()
 
 # ---------------------------------------------------------------------------
-# Plugin formats: VST3, AU and Standalone are always built. AAX is added only
+# Plugin formats: VST3, AU, LV2 are always built (no Standalone app is shipped). AAX is added only
 # when AAX_SDK_PATH points at a valid AAX SDK (juce_set_aax_sdk_path must be
 # called BEFORE juce_add_plugin, as required by JUCE's CMake API).
 # ---------------------------------------------------------------------------
@@ -58,7 +58,7 @@ if(HARMONIC_DEV_MODE)
     set(HC_PRODUCT_NAME "Harmonic Compressor Dev")
     set(HC_PLUGIN_CODE Hcmd)
 else()
-    set(HARMONIC_COMPRESSOR_FORMATS VST3 AU Standalone LV2)
+    set(HARMONIC_COMPRESSOR_FORMATS VST3 AU LV2)
     set(HC_PRODUCT_NAME "Harmonic Compressor")
     set(HC_PLUGIN_CODE Hcmp)
 endif()
@@ -90,6 +90,13 @@ juce_add_plugin(HarmonicCompressor
     LV2URI "urn:opengrid:harmoniccompressor")
 
 juce_generate_juce_header(HarmonicCompressor)
+
+# The AAX page table (control-surface layout) is read from the bundle's Contents/Resources.
+if(TARGET HarmonicCompressor_AAX)
+    add_custom_command(TARGET HarmonicCompressor_AAX POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:HarmonicCompressor_AAX>/../Resources"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/Resources/HarmonicCompressor.xml" "$<TARGET_FILE_DIR:HarmonicCompressor_AAX>/../Resources/HarmonicCompressor.xml")
+endif()
 
 target_sources(HarmonicCompressor
     PRIVATE

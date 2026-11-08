@@ -2,7 +2,7 @@
 
 [![Version](https://img.shields.io/badge/version-1.5.1-blue.svg)](VERSION)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Format](https://img.shields.io/badge/formats-VST3%20%7C%20AU%20%7C%20AAX%20%7C%20CLAP%20%7C%20LV2%20%7C%20Standalone-brightgreen.svg)]()
+[![Format](https://img.shields.io/badge/formats-VST3%20%7C%20AU%20%7C%20AAX%20%7C%20CLAP%20%7C%20LV2-brightgreen.svg)]()
 [![Platform](https://img.shields.io/badge/platform-macOS%20(Universal%20arm64%2Fx86__64)-lightgrey.svg)]()
 
 Harmonic Compressor is a mastering-grade analogue dynamics processor and harmonic saturation plugin built with JUCE. Combining seven meticulously modeled analogue compression circuits, continuous first-order Antiderivative Anti-Aliasing (ADAA) harmonic coloration, an integrated transient designer, auto-scaling meters, and an interactive real-time compression transfer curve display.
@@ -33,7 +33,7 @@ Harmonic Compressor is a mastering-grade analogue dynamics processor and harmoni
   - **Hyperdrive:** Ultraviolet, magenta and cyan synthwave palette.
   - Movable, collapsible modules inside the plugin window.
 - **Zero Latency:** Native 0 samples latency at 1x oversampling, ideal for tracking.
-- **Multi-Format:** Ships as **VST3, AU, AAX Native (PACE Eden Signed), CLAP, LV2, and Standalone App** (Universal Apple Silicon arm64 & Intel x86_64).
+- **Multi-Format:** Ships as **VST3, AU, AAX Native (PACE Eden Signed), CLAP and LV2** (Universal Apple Silicon arm64 & Intel x86_64). No Standalone app is shipped.
 
 ## Building from Source
 
@@ -48,7 +48,7 @@ cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
   -DAAX_SDK_PATH=/path/to/aax-sdk-2-8-1
 
 # Compile all formats
-ninja -C build HarmonicCompressor_VST3 HarmonicCompressor_AU HarmonicCompressor_CLAP HarmonicCompressor_LV2 HarmonicCompressor_AAX HarmonicCompressor_Standalone
+ninja -C build HarmonicCompressor_VST3 HarmonicCompressor_AU HarmonicCompressor_CLAP HarmonicCompressor_LV2 HarmonicCompressor_AAX
 ```
 
 JUCE and GoodLookinUI must be available locally before configuring. The pinned

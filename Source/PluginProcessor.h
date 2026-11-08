@@ -6,6 +6,14 @@
 #include "DSP/TransientDesigner.h"
 
 //==============================================================================
+/** AAX client extensions: names the control-surface page table shipped in Contents/Resources.
+    Without it the AAX validator reports "Failed to load page tables library". */
+struct HarmonicCompressorAAXExtensions : juce::AAXClientExtensions
+{
+    juce::String getPageFileName() const override { return "HarmonicCompressor.xml"; }
+};
+
+//==============================================================================
 /**
     HarmonicCompressor audio processor.
 
@@ -53,6 +61,7 @@ public:
 
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
+    juce::AAXClientExtensions& getAAXClientExtensions() override { return aaxExtensions; }
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     //==============================================================================
@@ -84,6 +93,7 @@ public:
 
 private:
     //==============================================================================
+    HarmonicCompressorAAXExtensions aaxExtensions;
     CompressorEngine engine;
     hcdsp::MultirateEngine multirate;
     hcdsp::TransientDesigner transientDesigner;
