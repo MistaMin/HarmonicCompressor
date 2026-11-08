@@ -117,6 +117,9 @@ private:
     std::array<ModeSnapshot, (size_t) CompressorMode::Count> modeSnapshots;
     int currentModeIndex = 0;
     std::atomic<bool> restoringState { false };
+    // Bumped on every state restore. A mode switch queued before a restore must not apply its
+    // remembered snapshot afterwards, or it would overwrite the values the host just restored.
+    std::atomic<uint32_t> stateRestoreGeneration { 0 };
 
     // --- VU meter ballistics state (audio thread only) ---
     // Two cascaded one-pole smoothers approximate the ~300 ms, slightly

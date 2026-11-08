@@ -1,6 +1,7 @@
 # Harmonic Compressor 1.5.1
 
 - Fixed linear sliders jumping to the maximum when clicked. The clickable travel now follows the painted groove, and values can be dragged back down from maximum.
+- Fixed a race where an algorithm-mode switch queued just before a session restore could overwrite the restored parameters.
 - Added a regression test against the actual editor and parameter attachments: all 13 linear sliders, four themes and editor reopening.
 - Corrected the manual to document all 25 host parameters, actual ranges and defaults, the post-mix transient stage, oversampling choices and movable modules.
 - Added the Pro Tools control-surface page table, so AAX control surfaces expose the plugin's parameters.

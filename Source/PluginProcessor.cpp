@@ -149,10 +149,17 @@ void HarmonicCompressorAudioProcessor::parameterChanged (const juce::String& par
     if (newIndex == currentModeIndex)
         return;
 
+    const auto restoreGeneration = stateRestoreGeneration.load (std::memory_order_acquire);
+
     // setValueNotifyingHost() below must run on the message thread; automation
     // can deliver this callback from other threads, so hop over if needed.
-    juce::MessageManager::callAsync ([this, newIndex]
+    juce::MessageManager::callAsync ([this, newIndex, restoreGeneration]
     {
+        // A state restore after this switch was queued wins: applying the remembered
+        // snapshot now would overwrite the values the host just restored.
+        if (restoreGeneration != stateRestoreGeneration.load (std::memory_order_acquire))
+            return;
+
         if (newIndex == currentModeIndex)
             return;
 
@@ -695,6 +702,9 @@ void HarmonicCompressorAudioProcessor::setStateInformation (const void* data, in
 
     if (tree.isValid())
     {
+        // Invalidate any mode switch that is still queued: the state being restored is the
+        // truth from here on, and a stale snapshot must not overwrite it.
+        stateRestoreGeneration.fetch_add (1, std::memory_order_acq_rel);
         restoringState.store (true, std::memory_order_release);
         apvts.replaceState (tree);
         currentModeIndex = juce::jlimit (0, (int) CompressorMode::Count - 1,

@@ -1,14 +1,15 @@
 # Harmonic Compressor 1.5.1 release status
 
-Status: candidate; not published. Canonical workflow: DSP Engineering Wiki,
-Make-Plugin-Release. User decisions on 2026-11-08: no Standalone in the Plugin
-Manager ZIP; no GitHub-hosted runners. Windows and Linux require user-owned
-native build machines. Do not ship the earlier hosted-runner archives.
+Status: macOS candidate signed, notarized and QA-passed; not published. Canonical
+workflow: DSP Engineering Wiki, Make-Plugin-Release. User decisions on 2026-11-08:
+no Standalone in the Plugin Manager ZIP; no GitHub-hosted runners. Windows and
+Linux require user-owned native build machines. Do not ship the earlier
+hosted-runner archives.
 
 ## Verified macOS candidate
 
-Source: commit `8a5b2ce` on master (AAX page table, no Standalone in release
-formats, packaging scripts). Candidate: `dist/release-1.5.1/`.
+Source: master with the 1.5.1 changes plus the state-restore race fix. Candidate:
+`dist/release-1.5.1/`. QA ledger: `qa/2026-11-09-release-1.5.1/ledger.md`.
 
 - Both Release CTest targets pass, including the editor regression covering all
   13 linear sliders across four themes and two editor lifecycles (1,144 checks).
@@ -17,49 +18,59 @@ formats, packaging scripts). Candidate: `dist/release-1.5.1/`.
   (`Resources/HarmonicCompressor.xml` with `<Editor><DiscCtrls>`), which the
   validator needs for `test.page_table.automation_list`.
 - Extracted executable slices are universal arm64/x86_64; Apple and PACE
-  signatures verify on every format inside the ZIP.
-- Avid AAX Validator 2024.6 on the AAX bundle extracted from the ZIP: all six
-  default tests PASS, including `page_table.load` and `page_table.automation_list`.
-  The remaining warnings (algorithm context gaps; automatable parameters not in
-  the default one-control-per-page table) also appear on the sibling plugins.
+  signatures verify on every format inside the ZIP. The installed copies were
+  re-installed from the ZIP and are byte-identical to it.
+- Validators on the installed build: auval PASS; clap-validator 44 tests, 32
+  passed, 0 failed, 1 warning, 11 skipped; pluginval strictness 10 SUCCESS on
+  VST3 (3/3 runs) and AU; AAX Validator 2024.6 6/6 PASS, including
+  `page_table.load` and `page_table.automation_list`.
+- REAPER 7.80 host suite on the installed build: VST3, AU and CLAP pass all nine
+  checks (load, audio, determinism, editor, every parameter audible, every
+  parameter visible, state round trip, editor lifecycle). 25/25 parameters are
+  bound to the GUI.
+- pluginval's strictness-10 state test exposed a race: a mode switch queued just
+  before a state restore could overwrite the restored parameters. Fixed in
+  `PluginProcessor` with a restore-generation guard; the failure was 1–3
+  parameters per run before the fix and 0 in 3/3 runs after it.
 - Apple accepted the ZIP: submission
-  `18667616-14fc-4111-8506-72aede2b0280`.
-- Archive size 24012167 bytes, SHA-256
-  `47b1617a973ae5a026f61f011806b7aabdf068576ef848939c59f1e023f18dee`, five
+  `0929bda7-3c25-475f-be2f-fd165afcbcd5`.
+- Archive size 24012245 bytes, SHA-256
+  `3216d42c1f0f41ae35402ca1afe1ed5cb7eee76f6d0899f23d8582bd9ebfa2bf`, five
   install paths in the schema-2 manifest. Modern macOS 11.0+; legacy not published.
+
+## LV2 state: host limitation, not a plugin defect
+
+REAPER 7.80 on this Mac restores no LV2 plugin state on project reopen. The same
+flow that restores VST3 exactly (audio difference -240 dB) leaves LV2 at defaults
+(-5.6 dB); Harmonic Compressor, ArcVu, Blue Channel, DualSone and the third-party
+AudioGridder all fail the same way. The state is written into the project under
+`urn:opengrid:harmoniccompressor:StateString`, so the plugin saves it; REAPER does
+not pass it back. The LV2 parameter path itself works (sidechain HP filter moves
+the output by 13 dB). No second LV2 host is installed here, so the plugin's own
+LV2 state interface is not independently proven; the suite's LV2 state FAIL is
+expected on this host and is recorded as an exception, not as a pass.
 
 The AAX validator cannot load bundles from `/Volumes/Developer` (signed or
 unsigned; the sibling RadarVU build fails the same way), while installed bundles
-in `/Library` load. The validator run therefore used the ZIP extracted to `/tmp`.
-
-Earlier macOS evidence is retained in `dist/wiki-candidate-1.5.1/QA/`: installed
-AU validation, VST3 OpenGrid9 audio and exact state roundtrip for all 25 plugin
-parameters, 25/25 GUI/manual bindings, minimum OS and original signing records.
-These checks are distinct from native GUI interaction inside each DAW.
+in `/Library` load; AAX validation therefore used the installed copy and the ZIP
+extracted to `/tmp`.
 
 ## Remaining release work
 
-- Install the new ZIP to `/Library` (administrator authentication) and re-run the
-  installed-plugin checks: the copies in `/Library` are still the earlier
-  candidate, which has no page table. Pro Tools and control-surface behaviour
-  have not been tested on the new build.
-- LV2 state round trip: REAPER 7.80 on this Mac restores no LV2 plugin state at
-  all. Harmonic Compressor, ArcVu, Blue Channel, DualSone and the third-party
-  AudioGridder all reopen at defaults, while VST3 restores correctly in the same
-  REAPER instance. Recorded as a host limitation, not a plugin defect; no second
-  LV2 host is installed here to prove the plugin's own state interface.
+- Publish the macOS artifact: push the release commit, update the v1.5.1 GitHub
+  release with the ZIP and manifest, then stage in `Release Binaries` and update
+  the Plugin Manager catalog. The GitHub release is still a draft with no assets.
+- Pro Tools interactive test and control-surface behaviour on the new build: the
+  AAX Validator suite is the automated evidence; a foreground Pro Tools session
+  test has not been run.
 - Obtain Windows and Linux machine connections; build and test the same clean
   source revision natively; package without Standalone. Confirm Windows signing.
-- Complete or explicitly resolve outstanding hosted GUI/format-validator checks
-  and the controlled performance comparison. Earlier results did not verify
-  Pro Tools/Logic editor lifecycle or CLAP/LV2 validators. Historical Windows
-  150% HiDPI clipping was not revalidated or claimed fixed.
+- Controlled performance comparison was not measured; 1.5.1 changes hit-testing
+  and state handling, not painting, timers or the audio path.
 - The locally installed Standalone has an invalid resource seal. It is excluded
   from the Manager ZIP. Its optional repair needs administrator authentication;
-  it must not be described as successfully repaired.
-- Finish QA, final source commit/push/tag and GitHub binary publication, then
-  approved Release Binaries staging and Plugin Manager site upload/verification.
-  The GitHub release is still a draft. No RELEASE-READY marker has been created.
+  it must not be described as successfully repaired. Historical Windows 150%
+  HiDPI clipping was not revalidated or claimed fixed.
 
 The prior installer/DMG and hosted archives are retained as historical candidates,
 not current approved release assets. Unrelated DSP evidence edits are preserved.
