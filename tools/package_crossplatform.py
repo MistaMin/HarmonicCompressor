@@ -26,23 +26,33 @@ def main():
         source = args.artefacts / fmt / ('Harmonic Compressor' + suffix)
         if not source.exists():
             raise SystemExit(f'Missing required {fmt}: {source}')
-        destination = stage / ('plugins' if fmt != 'Standalone' else 'standalone') / source.name
+        if args.platform == 'windows':
+            # The manager copies paths relative to Program Files. Keep the ZIP
+            # root identical to those destinations rather than a portable wrapper.
+            folder = {'VST3': 'Common Files/VST3', 'CLAP': 'Common Files/CLAP',
+                      'LV2': 'Common Files/LV2', 'Standalone': 'OpenGrid/Harmonic Compressor'}[fmt]
+        else:
+            folder = 'plugins' if fmt != 'Standalone' else 'standalone'
+        destination = stage / folder / source.name
         destination.parent.mkdir(parents=True, exist_ok=True)
         if source.is_dir():
             shutil.copytree(source, destination, symlinks=True)
         else:
             shutil.copy2(source, destination)
-        installs.append({'format': fmt.lower(), 'path': destination.relative_to(args.out).as_posix()})
+        archive_root = stage if args.platform == 'windows' else args.out
+        installs.append({'format': fmt.lower(), 'path': destination.relative_to(archive_root).as_posix()})
+    docs = stage / 'OpenGrid/Harmonic Compressor/Documentation' if args.platform == 'windows' else stage
+    docs.mkdir(parents=True, exist_ok=True)
     for source in [root / 'output/pdf/HarmonicCompressor-User-Manual.pdf',
                    root / 'LICENSE', root / 'LICENSE-BINARIES.txt', root / 'RELEASE_NOTES.md',
                    root / 'THIRD_PARTY_LICENSES.md']:
-        shutil.copy2(source, stage / source.name)
-    shutil.copytree(root / 'Licenses', stage / 'Licenses')
+        shutil.copy2(source, docs / source.name)
+    shutil.copytree(root / 'Licenses', docs / 'Licenses')
     if args.platform == 'windows':
         archive = args.out / (name + '.zip')
         with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED) as output:
             for path in sorted(stage.rglob('*')):
-                output.write(path, path.relative_to(args.out))
+                output.write(path, path.relative_to(stage))
     else:
         archive = args.out / (name + '.tar.gz')
         with tarfile.open(archive, 'w:gz') as output:
