@@ -7,26 +7,26 @@ All DSP stages active: Full Dynamics + ADAA Harmonics (20% H2, 20% H3) + Transie
 
 | Model | OS | Process Time / Block | Realtime Deadline % | Speedup vs Realtime |
 |---|---|---|---|---|
-| Red          | 1x | 0.0528 ms | 0.99  % | 101  x faster |
-| Hybrid       | 1x | 0.0463 ms | 0.87  % | 115  x faster |
-| Bridge       | 1x | 0.0490 ms | 0.92  % | 109  x faster |
-| Bus VCA      | 1x | 0.0494 ms | 0.93  % | 108  x faster |
-| 76           | 1x | 0.0452 ms | 0.85  % | 118  x faster |
-| Opto Leveler | 1x | 0.0549 ms | 1.03  % | 97   x faster |
-| VCA 160      | 1x | 0.0471 ms | 0.88  % | 113  x faster |
-| Red          | 2x | 0.1050 ms | 1.97  % | 51   x faster |
-| Hybrid       | 2x | 0.0924 ms | 1.73  % | 58   x faster |
-| Bridge       | 2x | 0.0995 ms | 1.87  % | 54   x faster |
-| Bus VCA      | 2x | 0.1003 ms | 1.88  % | 53   x faster |
-| 76           | 2x | 0.0902 ms | 1.69  % | 59   x faster |
-| Opto Leveler | 2x | 0.1122 ms | 2.10  % | 48   x faster |
-| VCA 160      | 2x | 0.0958 ms | 1.80  % | 56   x faster |
-| Red          | 4x | 0.2039 ms | 3.82  % | 26   x faster |
-| Hybrid       | 4x | 0.1807 ms | 3.39  % | 30   x faster |
-| Bridge       | 4x | 0.1964 ms | 3.68  % | 27   x faster |
-| Bus VCA      | 4x | 0.1968 ms | 3.69  % | 27   x faster |
-| 76           | 4x | 0.1779 ms | 3.33  % | 30   x faster |
-| Opto Leveler | 4x | 0.2193 ms | 4.11  % | 24   x faster |
-| VCA 160      | 4x | 0.1875 ms | 3.51  % | 28   x faster |
+| Red          | 1x | 0.0551 ms | 1.03  % | 97   x faster |
+| Hybrid       | 1x | 0.0511 ms | 0.96  % | 104  x faster |
+| Bridge       | 1x | 0.0620 ms | 1.16  % | 86   x faster |
+| Bus VCA      | 1x | 0.0588 ms | 1.10  % | 91   x faster |
+| 76           | 1x | 0.0533 ms | 1.00  % | 100  x faster |
+| Opto Leveler | 1x | 0.0730 ms | 1.37  % | 73   x faster |
+| VCA 160      | 1x | 0.0736 ms | 1.38  % | 72   x faster |
+| Red          | 2x | 0.1259 ms | 2.36  % | 42   x faster |
+| Hybrid       | 2x | 0.1308 ms | 2.45  % | 41   x faster |
+| Bridge       | 2x | 0.1235 ms | 2.31  % | 43   x faster |
+| Bus VCA      | 2x | 0.1247 ms | 2.34  % | 43   x faster |
+| 76           | 2x | 0.1255 ms | 2.35  % | 43   x faster |
+| Opto Leveler | 2x | 0.1479 ms | 2.77  % | 36   x faster |
+| VCA 160      | 2x | 0.1261 ms | 2.36  % | 42   x faster |
+| Red          | 4x | 0.2996 ms | 5.62  % | 18   x faster |
+| Hybrid       | 4x | 0.2361 ms | 4.43  % | 23   x faster |
+| Bridge       | 4x | 0.2363 ms | 4.43  % | 23   x faster |
+| Bus VCA      | 4x | 0.2334 ms | 4.38  % | 23   x faster |
+| 76           | 4x | 0.2300 ms | 4.31  % | 23   x faster |
+| Opto Leveler | 4x | 0.2934 ms | 5.50  % | 18   x faster |
+| VCA 160      | 4x | 0.2741 ms | 5.14  % | 19   x faster |
 
-process CPU: avg 0.1144 ms
+process CPU: avg 0.1492 ms
