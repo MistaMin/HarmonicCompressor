@@ -12,9 +12,9 @@ BUILD_DIR="${1:-$PROJECT_ROOT/build-release}"
 ARTEFACTS="$BUILD_DIR/HarmonicCompressor_artefacts/Release"
 
 PRODUCT_NAME="Harmonic Compressor"
-VERSION="1.5.0"
+VERSION="$(tr -d '\r\n' < "$PROJECT_ROOT/VERSION")"
 IDENTIFIER="com.opengrid.harmoniccompressor"
-OUT_DIR="$PROJECT_ROOT/Installer"
+OUT_DIR="${HC_INSTALLER_OUT_DIR:-$PROJECT_ROOT/Installer}"
 STAGING="$OUT_DIR/staging"
 
 INSTALLER_ID="Developer ID Installer: Marcos Deida (ZQYU67JUBH)"
@@ -58,7 +58,7 @@ fi
 FOUND_ANY=0
 
 if [ -d "$VST3_SRC" ]; then
-    cp -R "$VST3_SRC" "$STAGING/Library/Audio/Plug-Ins/VST3/"
+    ditto "$VST3_SRC" "$STAGING/Library/Audio/Plug-Ins/VST3/$PRODUCT_NAME.vst3"
     echo "  + VST3 included"
     FOUND_ANY=1
 else
@@ -66,7 +66,7 @@ else
 fi
 
 if [ -d "$AU_SRC" ]; then
-    cp -R "$AU_SRC" "$STAGING/Library/Audio/Plug-Ins/Components/"
+    ditto "$AU_SRC" "$STAGING/Library/Audio/Plug-Ins/Components/$PRODUCT_NAME.component"
     echo "  + AU included"
     FOUND_ANY=1
 else
@@ -74,7 +74,7 @@ else
 fi
 
 if [ -d "$CLAP_SRC" ]; then
-    cp -R "$CLAP_SRC" "$STAGING/Library/Audio/Plug-Ins/CLAP/"
+    ditto "$CLAP_SRC" "$STAGING/Library/Audio/Plug-Ins/CLAP/$PRODUCT_NAME.clap"
     echo "  + CLAP included"
     FOUND_ANY=1
 else
@@ -82,7 +82,7 @@ else
 fi
 
 if [ -d "$LV2_SRC" ]; then
-    cp -R "$LV2_SRC" "$STAGING/Library/Audio/Plug-Ins/LV2/"
+    ditto "$LV2_SRC" "$STAGING/Library/Audio/Plug-Ins/LV2/$PRODUCT_NAME.lv2"
     echo "  + LV2 included"
     FOUND_ANY=1
 else
@@ -90,7 +90,7 @@ else
 fi
 
 if [ -d "$AAX_SRC" ]; then
-    cp -R "$AAX_SRC" "$STAGING/Library/Application Support/Avid/Audio/Plug-Ins/"
+    ditto "$AAX_SRC" "$STAGING/Library/Application Support/Avid/Audio/Plug-Ins/$PRODUCT_NAME.aaxplugin"
     echo "  + AAX included (PACE Eden signed)"
     FOUND_ANY=1
 else
@@ -98,7 +98,7 @@ else
 fi
 
 if [ -d "$APP_SRC" ]; then
-    cp -R "$APP_SRC" "$STAGING/Applications/"
+    ditto "$APP_SRC" "$STAGING/Applications/$PRODUCT_NAME.app"
     echo "  + Standalone app included"
     FOUND_ANY=1
 else

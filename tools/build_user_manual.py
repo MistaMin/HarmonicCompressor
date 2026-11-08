@@ -135,7 +135,7 @@ def main():
                 if n == 2:
                     widths = [110, width - 110]
                 elif n == 6:
-                    widths = [75, 75, 75, 70, 75, width - 370]
+                    widths = [94, 79, 85, 52, 38, width - 348]
                 else:
                     widths = [width / n] * n
                 table = Table(rows, colWidths=widths, repeatRows=1, hAlign="LEFT")

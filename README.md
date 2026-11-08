@@ -1,6 +1,6 @@
 # Harmonic Compressor
 
-[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.5.1-blue.svg)](VERSION)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Format](https://img.shields.io/badge/formats-VST3%20%7C%20AU%20%7C%20AAX%20%7C%20CLAP%20%7C%20LV2%20%7C%20Standalone-brightgreen.svg)]()
 [![Platform](https://img.shields.io/badge/platform-macOS%20(Universal%20arm64%2Fx86__64)-lightgrey.svg)]()
@@ -25,13 +25,13 @@ Harmonic Compressor is a mastering-grade analogue dynamics processor and harmoni
   - Odd harmonics (Tape saturation: $H_3, H_5$) and secondary smooth rail ceiling limiter.
 - **Built-in Transient Designer:**
   - Independent Attack (+/- 12 dB) and Sustain (+/- 12 dB) shaping in the detection path.
-  - Sidechain High-Pass Filter (Off to 350 Hz) for tight, pump-free low-end control.
+  - Sidechain High-Pass Filter (20 to 500 Hz, with bypass and audition modes).
 - **Visual Ergonomics & 4 Themes:**
   - **Soft White:** Minimalist high-contrast studio chassis.
   - **Matrix Phosphor:** Retro CRT green glow.
   - **Cryo Plasma:** Deep cobalt & cyan neon accents.
-  - **Hyperdrive Amber:** Classic warm vintage vacuum tube glow.
-  - Detachable floating module windows for multi-monitor arrangements.
+  - **Hyperdrive:** Ultraviolet, magenta and cyan synthwave palette.
+  - Movable, collapsible modules inside the plugin window.
 - **Zero Latency:** Native 0 samples latency at 1x oversampling, ideal for tracking.
 - **Multi-Format:** Ships as **VST3, AU, AAX Native (PACE Eden Signed), CLAP, LV2, and Standalone App** (Universal Apple Silicon arm64 & Intel x86_64).
 
@@ -50,6 +50,14 @@ cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
 # Compile all formats
 ninja -C build HarmonicCompressor_VST3 HarmonicCompressor_AU HarmonicCompressor_CLAP HarmonicCompressor_LV2 HarmonicCompressor_AAX HarmonicCompressor_Standalone
 ```
+
+JUCE and GoodLookinUI must be available locally before configuring. The pinned
+dependency checkouts used for release builds are recorded in
+[the cross-platform workflow](.github/workflows/build-crossplatform.yml).
+Pass `-DGOODLOOKINUI_ROOT=/path/to/GoodLookinUI` if it is not in the default sibling location.
+
+Version 1.5.1 fixes linear sliders jumping to the maximum on click. Existing
+parameter IDs and saved-state layout are preserved. See [release notes](RELEASE_NOTES.md).
 
 To compile the versioned PDF user manual:
 ```bash

@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "Build architecture for macOS")
 set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS deployment target")
 
-project(HarmonicCompressor VERSION 1.5.0)
+project(HarmonicCompressor VERSION 1.5.1)
 
 # Optional AAX SDK path. When set to a valid AAX SDK tree, the AAX format is
 # added to the build; otherwise the project still configures cleanly without it.
@@ -153,3 +153,22 @@ set_target_properties(SliderClickTest PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED TRUE
     EXCLUDE_FROM_ALL TRUE)
+
+# Exercise the real editor and APVTS attachments, including recovery from maximum.
+add_executable(EditorSliderTest EXCLUDE_FROM_ALL)
+target_sources(EditorSliderTest PRIVATE qa/2026-11-06-slider-click/editor_slider_test.cpp)
+target_include_directories(EditorSliderTest PRIVATE Source
+    "${CMAKE_CURRENT_BINARY_DIR}/HarmonicCompressor_artefacts/JuceLibraryCode")
+target_link_libraries(EditorSliderTest PRIVATE HarmonicCompressor
+    goodlookinui_juce juce::juce_audio_utils juce::juce_dsp
+    juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
+set_target_properties(EditorSliderTest PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED TRUE
+    EXCLUDE_FROM_ALL TRUE)
+
+include(CTest)
+if(BUILD_TESTING)
+    add_test(NAME SliderClickTest COMMAND SliderClickTest)
+    add_test(NAME EditorSliderTest COMMAND EditorSliderTest)
+endif()
