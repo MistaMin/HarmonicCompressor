@@ -1,0 +1,40 @@
+PASS     loads VST3: Harmonic Compressor (OpenGrid), 29 parameters
+PASS     finite output peak -6.9 dBFS
+PASS     not silent rms -18.3 dBFS
+PASS     deterministic render repeat differs by -240.0 dB
+PASS     editor opens 1120x813, 0.0% animates by itself
+  Algorithm                        audio=ok       visual=ok
+  Threshold                        audio=ok       visual=ok
+  Ratio                            audio=ok       visual=ok
+  Attack                           audio=ok       visual=ok
+  Release                          audio=ok       visual=ok
+  Knee                             audio=ok       visual=ok
+  Makeup Gain                      audio=ok       visual=ok
+  Mix                              audio=ok       visual=ok
+  2nd Harmonic                     audio=ok       visual=ok
+  3rd Harmonic                     audio=ok       visual=ok
+  4th Harmonic                     audio=ok       visual=ok
+  5th Harmonic                     audio=ok       visual=ok
+  Sidechain Enable                 audio=ok       visual=ok
+  Sidechain Listen                 audio=ok       visual=ok
+  Sidechain HP Freq                audio=ok       visual=ok
+  Auto Release                     audio=ok       visual=ok
+  Auto Attack                      audio=ok       visual=ok
+  Input Gain                       audio=ok       visual=ok
+  Output Gain                      audio=ok       visual=ok
+  Oversample                       audio=ok       visual=ok
+  Oversample Filter                audio=ok       visual=ok
+  Transient Enable                 audio=ok       visual=ok
+  Transient Attack                 audio=ok       visual=ok
+  Transient Sustain                audio=ok       visual=ok
+  Transient Speed                  audio=ok       visual=ok
+  Bypass                           audio=ok       visual=ok
+  Bypass                           audio=ok       visual=ok
+  Wet                              audio=ok       visual=ok
+  Delta                            audio=ok       visual=ok
+PASS     every parameter changes the sound 
+PASS     every parameter is shown in the GUI 
+PASS     state survives save and reopen 
+PASS     editor reopens 5 close/open cycles
+report: /Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-08-release-qa-macos/report.md
+exit 0

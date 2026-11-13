@@ -1,0 +1,3 @@
+2026-11-08 20:58:29.622 REAPER[48471:13637671] ApplePersistenceIgnoreState: Existing state will not be touched. New state will be written to /var/folders/ws/dc4h6lrj7j18p3kv5ydd62040000gn/T/com.cockos.reaper.savedState
+Server started listening on port 3009
+2026-11-08 20:58:30.537 REAPER[48471:13637671] swell-cocoa: creating metal device context for 0x115060200 Apple M1 Max

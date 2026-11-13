@@ -1,0 +1,6 @@
+# Context rules only (zero skipped checks — every parameter must pass audio, visual, and state):
+Sidechain HP Freq @ Sidechain Enable=1.0
+Transient Enable @ Transient Attack=0.85
+Transient Attack @ Transient Enable=1.0
+Transient Sustain @ Transient Enable=1.0
+Transient Speed @ Transient Enable=1.0, Transient Attack=0.85, Transient Sustain=0.85

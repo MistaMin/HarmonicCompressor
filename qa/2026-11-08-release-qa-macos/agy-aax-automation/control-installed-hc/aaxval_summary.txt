@@ -1,0 +1,5 @@
+test.page_table.load                          FAIL E_COMPLETED_FAIL
+    ERROR: Failed to load page tables library
+    FAIL
+    FAILED
+test.page_table.automation_list               PASS E_COMPLETED_PASS

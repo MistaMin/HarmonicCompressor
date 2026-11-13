@@ -1,0 +1,9 @@
+Test project /Volumes/Developer/OpenGrid/HarmonicCompressor/build-release
+    Start 1: SliderClickTest
+1/2 Test #1: SliderClickTest ..................   Passed    0.11 sec
+    Start 2: EditorSliderTest
+2/2 Test #2: EditorSliderTest .................   Passed    0.18 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   0.29 sec

@@ -1,0 +1,244 @@
+{
+ "params": [
+  {
+   "step": 1,
+   "value": 1,
+   "name": "Free Wheeling",
+   "ident": "0:_freeWheeling",
+   "index": 0,
+   "text": "On"
+  },
+  {
+   "step": 1,
+   "value": 1,
+   "name": "Enabled",
+   "ident": "1:_enabled",
+   "index": 1,
+   "text": "On"
+  },
+  {
+   "step": 0,
+   "value": 0.8333333333,
+   "name": "Algorithm",
+   "ident": "2:_urn:opengrid:harmoniccompressor:algorithmMode",
+   "index": 2,
+   "text": "5.00000000"
+  },
+  {
+   "step": 0,
+   "value": 1,
+   "name": "Threshold",
+   "ident": "3:_urn:opengrid:harmoniccompressor:threshold",
+   "index": 3,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0.01960784314,
+   "name": "Ratio",
+   "ident": "4:_urn:opengrid:harmoniccompressor:ratio",
+   "index": 4,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0.3881293765,
+   "name": "Attack",
+   "ident": "5:_urn:opengrid:harmoniccompressor:attack",
+   "index": 5,
+   "text": "116.50000000"
+  },
+  {
+   "step": 0,
+   "value": 0.02904841402,
+   "name": "Release",
+   "ident": "6:_urn:opengrid:harmoniccompressor:release",
+   "index": 6,
+   "text": "92.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0,
+   "name": "Knee",
+   "ident": "7:_urn:opengrid:harmoniccompressor:knee",
+   "index": 7,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0.3333333333,
+   "name": "Makeup Gain",
+   "ident": "8:_urn:opengrid:harmoniccompressor:makeupGain",
+   "index": 8,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0,
+   "name": "Mix",
+   "ident": "9:_urn:opengrid:harmoniccompressor:mix",
+   "index": 9,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0,
+   "name": "2nd Harmonic",
+   "ident": "10:_urn:opengrid:harmoniccompressor:harmonic2",
+   "index": 10,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0,
+   "name": "3rd Harmonic",
+   "ident": "11:_urn:opengrid:harmoniccompressor:harmonic3",
+   "index": 11,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0,
+   "name": "4th Harmonic",
+   "ident": "12:_urn:opengrid:harmoniccompressor:harmonic4",
+   "index": 12,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0,
+   "name": "5th Harmonic",
+   "ident": "13:_urn:opengrid:harmoniccompressor:harmonic5",
+   "index": 13,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0,
+   "name": "Sidechain Enable",
+   "ident": "14:_urn:opengrid:harmoniccompressor:scEnabled",
+   "index": 14,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0,
+   "name": "Sidechain Listen",
+   "ident": "15:_urn:opengrid:harmoniccompressor:scListen",
+   "index": 15,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": -0.04166666667,
+   "name": "Sidechain HP Freq",
+   "ident": "16:_urn:opengrid:harmoniccompressor:scHPFreq",
+   "index": 16,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0,
+   "name": "Auto Release",
+   "ident": "17:_urn:opengrid:harmoniccompressor:autoRelease",
+   "index": 17,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0,
+   "name": "Auto Attack",
+   "ident": "18:_urn:opengrid:harmoniccompressor:autoAttack",
+   "index": 18,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0.1604166826,
+   "name": "Input Gain",
+   "ident": "19:_urn:opengrid:harmoniccompressor:inputGain",
+   "index": 19,
+   "text": "-16.29999924"
+  },
+  {
+   "step": 0,
+   "value": 0.5291666736,
+   "name": "Output Gain",
+   "ident": "20:_urn:opengrid:harmoniccompressor:outputGain",
+   "index": 20,
+   "text": "1.40000033"
+  },
+  {
+   "step": 0,
+   "value": 1,
+   "name": "Oversample",
+   "ident": "21:_urn:opengrid:harmoniccompressor:oversampleMode",
+   "index": 21,
+   "text": "3.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0,
+   "name": "Oversample Filter",
+   "ident": "22:_urn:opengrid:harmoniccompressor:oversampleFilter",
+   "index": 22,
+   "text": "0.00000000"
+  },
+  {
+   "step": 0,
+   "value": 1,
+   "name": "Transient Enable",
+   "ident": "23:_urn:opengrid:harmoniccompressor:transientEnabled",
+   "index": 23,
+   "text": "1.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0.01,
+   "name": "Transient Attack",
+   "ident": "24:_urn:opengrid:harmoniccompressor:transientAttack",
+   "index": 24,
+   "text": "-98.00000000"
+  },
+  {
+   "step": 0,
+   "value": 0.3800000095,
+   "name": "Transient Sustain",
+   "ident": "25:_urn:opengrid:harmoniccompressor:transientSustain",
+   "index": 25,
+   "text": "-23.99999809"
+  },
+  {
+   "step": 0,
+   "value": 0.7494949957,
+   "name": "Transient Speed",
+   "ident": "26:_urn:opengrid:harmoniccompressor:transientSpeed",
+   "index": 26,
+   "text": "37.60000229"
+  },
+  {
+   "step": 0,
+   "value": 0,
+   "name": "Bypass",
+   "ident": "27:bypass",
+   "index": 27,
+   "text": "normal"
+  },
+  {
+   "step": 0,
+   "value": 0.49,
+   "name": "Wet",
+   "ident": "28:wet",
+   "index": 28,
+   "text": "49"
+  },
+  {
+   "step": 0,
+   "value": 1,
+   "name": "Delta",
+   "ident": "29:delta",
+   "index": 29,
+   "text": "enabled"
+  }
+ ]
+}

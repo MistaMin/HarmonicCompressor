@@ -1,0 +1,11 @@
+PASS     loads LV2: Harmonic Compressor (OpenGrid) (4->2ch), 30 parameters
+PASS     finite output peak -6.9 dBFS
+PASS     not silent rms -18.3 dBFS
+PASS     deterministic render repeat differs by -240.0 dB
+PASS     editor opens 1080x813, 0.0% animates by itself
+  Sidechain HP Freq                audio=ok       visual=ok
+PASS     every parameter changes the sound 
+PASS     every parameter is shown in the GUI 
+FAIL     state survives save and reopen Sidechain HP Freq (82.40000153 -> )
+PASS     editor reopens 5 close/open cycles
+report: /Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-09-release-1.5.1/reaper-lv2-sc/report.md

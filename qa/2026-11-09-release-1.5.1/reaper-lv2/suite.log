@@ -1,0 +1,40 @@
+PASS     loads LV2: Harmonic Compressor (OpenGrid) (4->2ch), 30 parameters
+PASS     finite output peak -6.9 dBFS
+PASS     not silent rms -18.3 dBFS
+PASS     deterministic render repeat differs by -116.9 dB
+PASS     editor opens 0x0, 0.6% animates by itself
+  Free Wheeling                    audio=excused  visual=ok
+  Enabled                          audio=ok       visual=ok
+  Algorithm                        audio=ok       visual=ok
+  Threshold                        audio=ok       visual=ok
+  Ratio                            audio=ok       visual=ok
+  Attack                           audio=ok       visual=ok
+  Release                          audio=ok       visual=ok
+  Knee                             audio=ok       visual=ok
+  Makeup Gain                      audio=ok       visual=ok
+  Mix                              audio=ok       visual=ok
+  2nd Harmonic                     audio=ok       visual=ok
+  3rd Harmonic                     audio=ok       visual=ok
+  4th Harmonic                     audio=ok       visual=ok
+  5th Harmonic                     audio=ok       visual=ok
+  Sidechain Enable                 audio=ok       visual=ok
+  Sidechain Listen                 audio=ok       visual=ok
+  Sidechain HP Freq                audio=DEAD     visual=ok
+  Auto Release                     audio=ok       visual=ok
+  Auto Attack                      audio=ok       visual=ok
+  Input Gain                       audio=ok       visual=ok
+  Output Gain                      audio=ok       visual=ok
+  Oversample                       audio=ok       visual=ok
+  Oversample Filter                audio=ok       visual=ok
+  Transient Enable                 audio=ok       visual=ok
+  Transient Attack                 audio=ok       visual=ok
+  Transient Sustain                audio=ok       visual=ok
+  Transient Speed                  audio=ok       visual=ok
+  Bypass                           audio=ok       visual=ok
+  Wet                              audio=ok       visual=ok
+  Delta                            audio=ok       visual=ok
+FAIL     every parameter changes the sound Sidechain HP Freq
+PASS     every parameter is shown in the GUI 
+FAIL     state survives save and reopen Algorithm (5.21999979 -> 5.00000000), Ratio (60.22000122 -> 60.20000076), Release (1053.25000000 -> 1053.00000000), Knee (17.28000069 -> 17.30000114), Makeup Gain (-8.76000023 -> -8.80000019), Sidechain Enable (0.31000000 -> 0.00000000), Sidechain Listen (0.68000001 -> 1.00000000), Auto Release (0.41999999 -> 0.00000000), Auto Attack (0.79000002 -> 1.00000000), Input Gain (-16.31999969 -> -16.29999924), Output Gain (1.44000006 -> 1.40000033), Oversample (2.70000005 -> 3.00000000), Oversample Filter (0.27000001 -> 0.00000000), Transient Enable (0.63999999 -> 1.00000000), Transient Speed (37.62500000 -> 37.60000229)
+PASS     editor reopens 5 close/open cycles
+report: /Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-09-release-1.5.1/reaper-lv2/report.md

@@ -1,0 +1,392 @@
+{
+ "fx": "LV2: Harmonic Compressor",
+ "checks": [
+  {
+   "check": "loads",
+   "status": "PASS",
+   "detail": "LV2: Harmonic Compressor (OpenGrid) (4->2ch), 30 parameters"
+  },
+  {
+   "check": "finite output",
+   "status": "PASS",
+   "detail": "peak -6.9 dBFS"
+  },
+  {
+   "check": "not silent",
+   "status": "PASS",
+   "detail": "rms -18.3 dBFS"
+  },
+  {
+   "check": "deterministic render",
+   "status": "PASS",
+   "detail": "repeat differs by -116.9 dB"
+  },
+  {
+   "check": "editor opens",
+   "status": "PASS",
+   "detail": "0x0, 0.6% animates by itself"
+  },
+  {
+   "check": "every parameter changes the sound",
+   "status": "FAIL",
+   "detail": "Sidechain HP Freq"
+  },
+  {
+   "check": "every parameter is shown in the GUI",
+   "status": "PASS",
+   "detail": ""
+  },
+  {
+   "check": "state survives save and reopen",
+   "status": "FAIL",
+   "detail": "Algorithm (5.21999979 -> 5.00000000), Ratio (60.22000122 -> 60.20000076), Release (1053.25000000 -> 1053.00000000), Knee (17.28000069 -> 17.30000114), Makeup Gain (-8.76000023 -> -8.80000019), Sidechain Enable (0.31000000 -> 0.00000000), Sidechain Listen (0.68000001 -> 1.00000000), Auto Release (0.41999999 -> 0.00000000), Auto Attack (0.79000002 -> 1.00000000), Input Gain (-16.31999969 -> -16.29999924), Output Gain (1.44000006 -> 1.40000033), Oversample (2.70000005 -> 3.00000000), Oversample Filter (0.27000001 -> 0.00000000), Transient Enable (0.63999999 -> 1.00000000), Transient Speed (37.62500000 -> 37.60000229)"
+  },
+  {
+   "check": "editor reopens",
+   "status": "PASS",
+   "detail": "5 close/open cycles"
+  }
+ ],
+ "params": [
+  {
+   "index": 0,
+   "name": "Free Wheeling",
+   "ident": "0:_freeWheeling",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -112.0,
+   "audio": "excused",
+   "visualChange": 16.349,
+   "visual": "ok"
+  },
+  {
+   "index": 1,
+   "name": "Enabled",
+   "ident": "1:_enabled",
+   "default": 1,
+   "context": "",
+   "audioDiffDb": -3.9,
+   "audio": "ok",
+   "visualChange": 16.697,
+   "visual": "ok"
+  },
+  {
+   "index": 2,
+   "name": "Algorithm",
+   "ident": "2:_urn:opengrid:harmoniccompressor:algorithmMode",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -18.1,
+   "audio": "ok",
+   "visualChange": 15.923,
+   "visual": "ok"
+  },
+  {
+   "index": 3,
+   "name": "Threshold",
+   "ident": "3:_urn:opengrid:harmoniccompressor:threshold",
+   "default": 1,
+   "context": "",
+   "audioDiffDb": -7.2,
+   "audio": "ok",
+   "visualChange": 23.0,
+   "visual": "ok"
+  },
+  {
+   "index": 4,
+   "name": "Ratio",
+   "ident": "4:_urn:opengrid:harmoniccompressor:ratio",
+   "default": 0.01960784314,
+   "context": "",
+   "audioDiffDb": -13.3,
+   "audio": "ok",
+   "visualChange": 16.1,
+   "visual": "ok"
+  },
+  {
+   "index": 5,
+   "name": "Attack",
+   "ident": "5:_urn:opengrid:harmoniccompressor:attack",
+   "default": -0.0003334444815,
+   "context": "",
+   "audioDiffDb": -13.3,
+   "audio": "ok",
+   "visualChange": 15.756,
+   "visual": "ok"
+  },
+  {
+   "index": 6,
+   "name": "Release",
+   "ident": "6:_urn:opengrid:harmoniccompressor:release",
+   "default": -0.001669449082,
+   "context": "",
+   "audioDiffDb": -13.3,
+   "audio": "ok",
+   "visualChange": 15.985,
+   "visual": "ok"
+  },
+  {
+   "index": 7,
+   "name": "Knee",
+   "ident": "7:_urn:opengrid:harmoniccompressor:knee",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -13.3,
+   "audio": "ok",
+   "visualChange": 16.207,
+   "visual": "ok"
+  },
+  {
+   "index": 8,
+   "name": "Makeup Gain",
+   "ident": "8:_urn:opengrid:harmoniccompressor:makeupGain",
+   "default": 0.3333333333,
+   "context": "",
+   "audioDiffDb": -0.3,
+   "audio": "ok",
+   "visualChange": 19.806,
+   "visual": "ok"
+  },
+  {
+   "index": 9,
+   "name": "Mix",
+   "ident": "9:_urn:opengrid:harmoniccompressor:mix",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -7.0,
+   "audio": "ok",
+   "visualChange": 15.463,
+   "visual": "ok"
+  },
+  {
+   "index": 10,
+   "name": "2nd Harmonic",
+   "ident": "10:_urn:opengrid:harmoniccompressor:harmonic2",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -7.0,
+   "audio": "ok",
+   "visualChange": 15.892,
+   "visual": "ok"
+  },
+  {
+   "index": 11,
+   "name": "3rd Harmonic",
+   "ident": "11:_urn:opengrid:harmoniccompressor:harmonic3",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -7.0,
+   "audio": "ok",
+   "visualChange": 16.308,
+   "visual": "ok"
+  },
+  {
+   "index": 12,
+   "name": "4th Harmonic",
+   "ident": "12:_urn:opengrid:harmoniccompressor:harmonic4",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -7.0,
+   "audio": "ok",
+   "visualChange": 16.304,
+   "visual": "ok"
+  },
+  {
+   "index": 13,
+   "name": "5th Harmonic",
+   "ident": "13:_urn:opengrid:harmoniccompressor:harmonic5",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -7.0,
+   "audio": "ok",
+   "visualChange": 16.341,
+   "visual": "ok"
+  },
+  {
+   "index": 14,
+   "name": "Sidechain Enable",
+   "ident": "14:_urn:opengrid:harmoniccompressor:scEnabled",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -7.0,
+   "audio": "ok",
+   "visualChange": 15.762,
+   "visual": "ok"
+  },
+  {
+   "index": 15,
+   "name": "Sidechain Listen",
+   "ident": "15:_urn:opengrid:harmoniccompressor:scListen",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -7.0,
+   "audio": "ok",
+   "visualChange": 16.254,
+   "visual": "ok"
+  },
+  {
+   "index": 16,
+   "name": "Sidechain HP Freq",
+   "ident": "16:_urn:opengrid:harmoniccompressor:scHPFreq",
+   "default": -0.04166666667,
+   "context": "Sidechain Enable=1, Threshold=0.2, Ratio=0.8",
+   "audioDiffDb": -240.0,
+   "audio": "DEAD",
+   "visualChange": 29.753,
+   "visual": "ok"
+  },
+  {
+   "index": 17,
+   "name": "Auto Release",
+   "ident": "17:_urn:opengrid:harmoniccompressor:autoRelease",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -7.0,
+   "audio": "ok",
+   "visualChange": 16.257,
+   "visual": "ok"
+  },
+  {
+   "index": 18,
+   "name": "Auto Attack",
+   "ident": "18:_urn:opengrid:harmoniccompressor:autoAttack",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -7.0,
+   "audio": "ok",
+   "visualChange": 16.58,
+   "visual": "ok"
+  },
+  {
+   "index": 19,
+   "name": "Input Gain",
+   "ident": "19:_urn:opengrid:harmoniccompressor:inputGain",
+   "default": 0.5,
+   "context": "",
+   "audioDiffDb": 2.0,
+   "audio": "ok",
+   "visualChange": 19.734,
+   "visual": "ok"
+  },
+  {
+   "index": 20,
+   "name": "Output Gain",
+   "ident": "20:_urn:opengrid:harmoniccompressor:outputGain",
+   "default": 0.5,
+   "context": "",
+   "audioDiffDb": 2.0,
+   "audio": "ok",
+   "visualChange": 19.116,
+   "visual": "ok"
+  },
+  {
+   "index": 21,
+   "name": "Oversample",
+   "ident": "21:_urn:opengrid:harmoniccompressor:oversampleMode",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -6.1,
+   "audio": "ok",
+   "visualChange": 15.944,
+   "visual": "ok"
+  },
+  {
+   "index": 22,
+   "name": "Oversample Filter",
+   "ident": "22:_urn:opengrid:harmoniccompressor:oversampleFilter",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -6.1,
+   "audio": "ok",
+   "visualChange": 16.291,
+   "visual": "ok"
+  },
+  {
+   "index": 23,
+   "name": "Transient Enable",
+   "ident": "23:_urn:opengrid:harmoniccompressor:transientEnabled",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -6.1,
+   "audio": "ok",
+   "visualChange": 16.467,
+   "visual": "ok"
+  },
+  {
+   "index": 24,
+   "name": "Transient Attack",
+   "ident": "24:_urn:opengrid:harmoniccompressor:transientAttack",
+   "default": 0.5,
+   "context": "Transient Enable=1",
+   "audioDiffDb": -1.7,
+   "audio": "ok",
+   "visualChange": 13.65,
+   "visual": "ok"
+  },
+  {
+   "index": 25,
+   "name": "Transient Sustain",
+   "ident": "25:_urn:opengrid:harmoniccompressor:transientSustain",
+   "default": 0.5,
+   "context": "Transient Enable=1",
+   "audioDiffDb": -2.2,
+   "audio": "ok",
+   "visualChange": 13.093,
+   "visual": "ok"
+  },
+  {
+   "index": 26,
+   "name": "Transient Speed",
+   "ident": "26:_urn:opengrid:harmoniccompressor:transientSpeed",
+   "default": -0.0101010101,
+   "context": "Transient Enable=1, Transient Attack=1",
+   "audioDiffDb": -1.7,
+   "audio": "ok",
+   "visualChange": 13.57,
+   "visual": "ok"
+  },
+  {
+   "index": 27,
+   "name": "Bypass",
+   "ident": "27:bypass",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -6.1,
+   "audio": "ok",
+   "visualChange": 16.221,
+   "visual": "ok"
+  },
+  {
+   "index": 28,
+   "name": "Wet",
+   "ident": "28:wet",
+   "default": 1,
+   "context": "",
+   "audioDiffDb": -6.1,
+   "audio": "ok",
+   "visualChange": 15.789,
+   "visual": "ok"
+  },
+  {
+   "index": 29,
+   "name": "Delta",
+   "ident": "29:delta",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -6.1,
+   "audio": "ok",
+   "visualChange": 15.462,
+   "visual": "ok"
+  }
+ ],
+ "info": {
+  "numParams": 30,
+  "latency": "0",
+  "name": "LV2: Harmonic Compressor (OpenGrid) (4->2ch)",
+  "fx": 0
+ },
+ "failed": [
+  "every parameter changes the sound",
+  "state survives save and reopen"
+ ]
+}

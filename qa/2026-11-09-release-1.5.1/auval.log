@@ -1,0 +1,330 @@
+
+    AU Validation Tool
+    Version: 1.10.0 
+    Copyright 2003-2019, Apple Inc. All Rights Reserved.
+    Specify -h (-help) for command options
+
+--------------------------------------------------
+VALIDATING AUDIO UNIT: 'aufx' - 'Hcmp' - 'OpGr'
+--------------------------------------------------
+Manufacturer String: OpenGrid
+AudioUnit Name: Harmonic Compressor
+Component Version: 1.5.1 (0x10501)
+
+* * PASS
+--------------------------------------------------
+TESTING OPEN TIMES:
+COLD:
+Time to open AudioUnit:         8.474 ms
+WARM:
+Time to open AudioUnit:         1.827  ms
+This AudioUnit is a version 2 implementation.
+FIRST TIME:
+Time for initialization:        0.108 ms
+
+* * PASS
+--------------------------------------------------
+VERIFYING DEFAULT SCOPE FORMATS:
+Input Scope Bus Configuration:
+ Default Bus Count:2
+    Bus Name: Input
+    Format Bus 0: AudioStreamBasicDescription:  2 ch,  44100 Hz, Float32, deinterleaved
+    Bus Name: Sidechain
+    Format Bus 1: AudioStreamBasicDescription:  2 ch,  44100 Hz, Float32, deinterleaved
+
+Output Scope Bus Configuration:
+ Default Bus Count:1
+    Bus Name: Output
+    Default Format: AudioStreamBasicDescription:  2 ch,  44100 Hz, Float32, deinterleaved
+
+* * PASS
+--------------------------------------------------
+VERIFYING REQUIRED PROPERTIES:
+
+* * PASS
+--------------------------------------------------
+VERIFYING RECOMMENDED PROPERTIES:
+  VERIFYING PROPERTY: Latency
+    PASS
+  VERIFYING PROPERTY: Tail Time
+    PASS
+  VERIFYING PROPERTY: Bypass Effect
+    PASS
+
+* * PASS
+--------------------------------------------------
+VERIFYING OPTIONAL PROPERTIES:
+
+* * PASS
+--------------------------------------------------
+VERIFYING SPECIAL PROPERTIES:
+
+VERIFYING CUSTOM UI
+Cocoa Views Available: 1
+  JUCE_AUCocoaViewClass_7292d16ba8b84c58
+    PASS
+
+HAS FACTORY PRESETS
+    ID:   0    Name: Untitled
+
+VERIFYING CLASS INFO
+    PASS
+
+TESTING HOST CALLBACKS
+    PASS
+
+* * PASS
+--------------------------------------------------
+PUBLISHED PARAMETER INFO:
+
+# # # 25 Global Scope Parameters:
+Parameter ID:108124
+Name: Mix
+Parameter Type: Generic
+Values: Minimum = 0.00, Default = 1.00, Maximum = 1.00
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:3296579
+Name: Knee
+Parameter Type: Generic
+Values: Minimum = 0.0, Default = 6.0, Maximum = 24.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:33059805
+Name: Transient Speed
+Parameter Type: Generic
+Values: Minimum = 0.5, Default = 10.0, Maximum = 50.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:108285963
+Name: Ratio
+Parameter Type: Generic
+Values: Minimum = -2.0, Default = 4.0, Maximum = 100.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:513139184
+Name: Sidechain HP Freq
+Parameter Type: Generic
+Values: Minimum = 20, Default = 150, Maximum = 500
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:513666418
+Name: Transient Attack
+Parameter Type: Generic
+Values: Minimum = -100.0, Default = 0.0, Maximum = 100.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:602006635
+Name: Threshold
+Parameter Type: Generic
+Values: Minimum = -60.0, Default = -18.0, Maximum = 0.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:652086327
+Name: Sidechain Listen
+Parameter Type: Boolean
+Values: Minimum = Off, Default = Off, Maximum = On
+Flags: Values Have Strings, High Resolution, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:740224584
+Name: Attack
+Parameter Type: Generic
+Values: Minimum = 0.1, Default = 10.0, Maximum = 300.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:873230368
+Name: Output Gain
+Parameter Type: Generic
+Values: Minimum = -24.0, Default = 0.0, Maximum = 24.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1057129025
+Name: Oversample
+Parameter Type: Indexed
+Values: Minimum = 1x, Default = 2x, Maximum = 8x
+Flags: Values Have Strings, High Resolution, Readable, Writable 
+Parameter has Value Strings
+Num Strings = 4
+Value: 0,  String: 1x
+Value: 1,  String: 2x
+Value: 2,  String: 4x
+Value: 3,  String: 8x
+  -parameter PASS
+
+Parameter ID:1090594823
+Name: Release
+Parameter Type: Generic
+Values: Minimum = 5, Default = 100, Maximum = 3000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1144492722
+Name: Algorithm
+Parameter Type: Indexed
+Values: Minimum = Red, Default = Red, Maximum = VCA 160
+Flags: Values Have Strings, High Resolution, Readable, Writable 
+Parameter has Value Strings
+Num Strings = 7
+Value: 0,  String: Red
+Value: 1,  String: Hybrid
+Value: 2,  String: Bridge
+Value: 3,  String: Bus VCA
+Value: 4,  String: 76
+Value: 5,  String: Opto Leveler
+Value: 6,  String: VCA 160
+  -parameter PASS
+
+Parameter ID:1226400808
+Name: Makeup Gain
+Parameter Type: Generic
+Values: Minimum = -12.0, Default = 0.0, Maximum = 24.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1243241169
+Name: Sidechain Enable
+Parameter Type: Boolean
+Values: Minimum = Off, Default = Off, Maximum = On
+Flags: Values Have Strings, High Resolution, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1249540311
+Name: Auto Attack
+Parameter Type: Boolean
+Values: Minimum = Off, Default = Off, Maximum = On
+Flags: Values Have Strings, High Resolution, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1706566249
+Name: Input Gain
+Parameter Type: Generic
+Values: Minimum = -24.0, Default = 0.0, Maximum = 24.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1727365029
+Name: 2nd Harmonic
+Parameter Type: Generic
+Values: Minimum = 0.0, Default = 0.0, Maximum = 100.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1727365030
+Name: 3rd Harmonic
+Parameter Type: Generic
+Values: Minimum = 0.0, Default = 0.0, Maximum = 100.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1727365031
+Name: 4th Harmonic
+Parameter Type: Generic
+Values: Minimum = 0.0, Default = 0.0, Maximum = 100.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1727365032
+Name: 5th Harmonic
+Parameter Type: Generic
+Values: Minimum = 0.0, Default = 0.0, Maximum = 100.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1846996824
+Name: Auto Release
+Parameter Type: Boolean
+Values: Minimum = Off, Default = Off, Maximum = On
+Flags: Values Have Strings, High Resolution, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1862223929
+Name: Transient Sustain
+Parameter Type: Generic
+Values: Minimum = -100.0, Default = 0.0, Maximum = 100.0
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:2083021974
+Name: Oversample Filter
+Parameter Type: Indexed
+Values: Minimum = Min Phase, Default = Min Phase, Maximum = Lin Phase
+Flags: Values Have Strings, High Resolution, Readable, Writable 
+Parameter has Value Strings
+Num Strings = 2
+Value: 0,  String: Min Phase
+Value: 1,  String: Lin Phase
+  -parameter PASS
+
+Parameter ID:2104521047
+Name: Transient Enable
+Parameter Type: Boolean
+Values: Minimum = Off, Default = Off, Maximum = On
+Flags: Values Have Strings, High Resolution, Readable, Writable 
+  -parameter PASS
+
+Testing that parameters retain value across reset and initialization
+  PASS
+
+* * PASS
+--------------------------------------------------
+FORMAT TESTS:
+
+Reported Channel Capabilities (explicit):
+      [2, 2]  
+
+Input/Output Channel Handling:
+1-1   1-2   1-4   1-5   1-6   1-7   1-8   2-2   2-4   2-5   2-6   2-7   2-8   4-4   4-5   5-5   6-6   7-7   8-8
+                                          X                                                                       
+
+* * PASS
+--------------------------------------------------
+RENDER TESTS:
+
+Input Format: AudioStreamBasicDescription:  2 ch,  44100 Hz, Float32, deinterleaved
+Output Format: AudioStreamBasicDescription:  2 ch,  44100 Hz, Float32, deinterleaved
+Render Test at 512 frames
+Slicing Render Test at 64 frames
+  PASS
+
+
+Render Test at 64 frames, sample rate: 22050 Hz
+Render Test at 137 frames, sample rate: 96000 Hz
+Render Test at 4096 frames, sample rate: 48000 Hz
+Render Test at 4096 frames, sample rate: 192000 Hz
+Render Test at 4096 frames, sample rate: 11025 Hz
+Render Test at 512 frames, sample rate: 44100 Hz
+  PASS
+
+Checking connection semantics:
+Connection format:
+AudioStreamBasicDescription:  2 ch,  44100 Hz, Float32, deinterleaved
+  PASS
+
+Bad Max Frames - Render should fail
+  PASS
+
+Checking parameter setting
+Using AudioUnitSetParameter
+Using AudioUnitScheduleParameter
+  PASS
+
+Checking ramped parameter scheduling
+  PASS
+
+Test MIDI
+  PASS
+
+* * PASS
+--------------------------------------------------
+AU VALIDATION SUCCEEDED.
+--------------------------------------------------

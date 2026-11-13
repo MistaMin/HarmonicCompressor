@@ -1,0 +1,4 @@
+test.page_table.load                          FAIL E_ABORTED
+    FAILED
+test.page_table.automation_list               FAIL E_ABORTED
+    FAILED

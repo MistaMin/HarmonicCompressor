@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='US-ASCII' standalone='yes'?>
+<PageTables vers='1.1.0.1'>
+	<PageTableLayouts>
+		<Plugin manID='OpGr' prodID='Hcmp' plugID='jccc'>
+			<Desc>Harmonic Compressor stereo</Desc>
+			<Layout>StandardLayout</Layout>
+		</Plugin><!--manID='OpGr' prodID='Hcmp' plugID='jccc'-->
+		<Plugin manID='OpGr' prodID='Hcmp' plugID='jcbb'>
+			<Desc>Harmonic Compressor mono</Desc>
+			<Layout>StandardLayout</Layout>
+		</Plugin><!--manID='OpGr' prodID='Hcmp' plugID='jcbb'-->
+		<PTLayout name='StandardLayout'>
+			<PageTable type='Av18' pgsz='24'>
+				<Page num='1'>
+					<Cell row='1' col='1' knobID="algorithmMode" inOutButtonID="" selectButtonID=""/>
+					<Cell row='1' col='2' knobID="threshold" inOutButtonID="" selectButtonID=""/>
+					<Cell row='1' col='3' knobID="ratio" inOutButtonID="" selectButtonID=""/>
+					<Cell row='1' col='4' knobID="attack" inOutButtonID="" selectButtonID=""/>
+					<Cell row='1' col='5' knobID="release" inOutButtonID="" selectButtonID=""/>
+					<Cell row='1' col='6' knobID="knee" inOutButtonID="" selectButtonID=""/>
+					<Cell row='1' col='7' knobID="makeupGain" inOutButtonID="" selectButtonID=""/>
+					<Cell row='1' col='8' knobID="mix" inOutButtonID="" selectButtonID=""/>
+					<Cell row='2' col='1' knobID="harmonic2" inOutButtonID="" selectButtonID=""/>
+					<Cell row='2' col='2' knobID="harmonic3" inOutButtonID="" selectButtonID=""/>
+					<Cell row='2' col='3' knobID="harmonic4" inOutButtonID="" selectButtonID=""/>
+					<Cell row='2' col='4' knobID="harmonic5" inOutButtonID="" selectButtonID=""/>
+					<Cell row='2' col='5' knobID="scEnabled" inOutButtonID="" selectButtonID=""/>
+					<Cell row='2' col='6' knobID="scHPFreq" inOutButtonID="" selectButtonID=""/>
+					<Cell row='2' col='7' knobID="scListen" inOutButtonID="" selectButtonID=""/>
+					<Cell row='2' col='8' knobID="autoRelease" inOutButtonID="" selectButtonID=""/>
+					<Cell row='3' col='1' knobID="autoAttack" inOutButtonID="" selectButtonID=""/>
+					<Cell row='3' col='2' knobID="inputGain" inOutButtonID="" selectButtonID=""/>
+					<Cell row='3' col='3' knobID="outputGain" inOutButtonID="" selectButtonID=""/>
+					<Cell row='3' col='4' knobID="oversampleMode" inOutButtonID="" selectButtonID=""/>
+					<Cell row='3' col='5' knobID="oversampleFilter" inOutButtonID="" selectButtonID=""/>
+					<Cell row='3' col='6' knobID="transientEnabled" inOutButtonID="" selectButtonID=""/>
+					<Cell row='3' col='7' knobID="transientAttack" inOutButtonID="" selectButtonID=""/>
+					<Cell row='3' col='8' knobID="transientSustain" inOutButtonID="" selectButtonID=""/>
+				</Page>
+				<Page num='2'>
+					<Cell row='1' col='1' knobID="transientSpeed" inOutButtonID="" selectButtonID=""/>
+				</Page>
+			</PageTable>
+		</PTLayout>
+	</PageTableLayouts>
+	<ControlNamesVariations>
+	</ControlNamesVariations>
+</PageTables>

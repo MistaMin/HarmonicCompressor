@@ -1,0 +1,11 @@
+test.describe_validation                      PASS E_COMPLETED_PASS
+    WARNING: Algorithm context contains gaps between registered fields. This may be a problem on older hosts.
+test.parameters                               PASS E_COMPLETED_PASS
+test.parameter_traversal.random.fast          PASS E_COMPLETED_PASS
+test.page_table.load                          FAIL E_COMPLETED_FAIL
+    ERROR: Failed to load page tables library
+    FAIL
+    FAILED
+test.page_table.automation_list               PASS E_COMPLETED_PASS
+test.load_unload                              PASS E_COMPLETED_PASS
+exit 1

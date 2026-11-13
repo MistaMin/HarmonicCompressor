@@ -1,0 +1,8 @@
+test.describe_validation                      PASS E_COMPLETED_PASS
+    WARNING: Algorithm context contains gaps between registered fields. This may be a problem on older hosts.
+test.parameters                               PASS E_COMPLETED_PASS
+test.parameter_traversal.random.fast          PASS E_COMPLETED_PASS
+test.page_table.load                          PASS E_COMPLETED_PASS
+test.page_table.automation_list               PASS E_COMPLETED_PASS
+    WARNING: Automatable parameters are not present in the default one-control-per-page page table: [[id: MasterBypassID, name: Master Bypass], [id: algorithmMode, name: Algorithm], [id: attack, name: Attack], [id: autoAttack, name: Auto Attack], [id: autoRelease, name: Auto Release], [id: harmonic2, name: 2nd Harmonic], [id: harmonic3, name: 3rd Harmonic], [id: harmonic4, name: 4th Harmonic], [id: harmonic5, name: 5th Harmonic], [id: inputGain, name: Input Gain], [id: knee, name: Knee], [id: makeupGain, name: Makeup Gain], [id: mix, name: Mix], [id: outputGain, name: Output Gain], [id: oversampleFilter, name: Oversample Filter], [id: oversampleMode, name: Oversample], [id: ratio, name: Ratio], [id: release, name: Release], [id: scEnabled, name: Sidechain Enable], [id: scHPFreq, name: Sidechain HP Freq], [id: scListen, name: Sidechain Listen], [id: threshold, name: Threshold], [id: transientAttack, name: Transient Attack], [id: transientEnabled, name: Transient Enable], [id: transientSpeed, name: Transient Speed], [id: transientSustain, name: Transient Sustain]]
+test.load_unload                              PASS E_COMPLETED_PASS

@@ -14,8 +14,20 @@ qa/**/*.wav
 qa/**/*.png
 qa/**/*.ppm
 qa/**/*.rpp
+qa/**/*.rpp-bak
 qa/**/*.pid
 qa/**/*.reapeaks
+qa/**/*.flac
+qa/**/*.mp3
+qa/**/*.aif
+qa/**/*.aiff
+qa/**/Backups/
+qa/**/Media/
+qa/**/peaks/
 qa/**/stage-formats/
 qa/**/stage/
 qa/**/vststate.bin
+
+# QA harness helpers are built, not evidence
+qa/**/winlist
+qa/**/hide_pid

@@ -1,0 +1,3 @@
+    Updating crates.io index
+error: could not find `clap-validator` in registry `crates-io` with version `*`
+exit 101

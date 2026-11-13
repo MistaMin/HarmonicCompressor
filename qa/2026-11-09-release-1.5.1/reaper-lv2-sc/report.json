@@ -1,0 +1,72 @@
+{
+ "fx": "LV2: Harmonic Compressor",
+ "checks": [
+  {
+   "check": "loads",
+   "status": "PASS",
+   "detail": "LV2: Harmonic Compressor (OpenGrid) (4->2ch), 30 parameters"
+  },
+  {
+   "check": "finite output",
+   "status": "PASS",
+   "detail": "peak -6.9 dBFS"
+  },
+  {
+   "check": "not silent",
+   "status": "PASS",
+   "detail": "rms -18.3 dBFS"
+  },
+  {
+   "check": "deterministic render",
+   "status": "PASS",
+   "detail": "repeat differs by -240.0 dB"
+  },
+  {
+   "check": "editor opens",
+   "status": "PASS",
+   "detail": "1080x813, 0.0% animates by itself"
+  },
+  {
+   "check": "every parameter changes the sound",
+   "status": "PASS",
+   "detail": ""
+  },
+  {
+   "check": "every parameter is shown in the GUI",
+   "status": "PASS",
+   "detail": ""
+  },
+  {
+   "check": "state survives save and reopen",
+   "status": "FAIL",
+   "detail": "Sidechain HP Freq (82.40000153 -> )"
+  },
+  {
+   "check": "editor reopens",
+   "status": "PASS",
+   "detail": "5 close/open cycles"
+  }
+ ],
+ "params": [
+  {
+   "index": 16,
+   "name": "Sidechain HP Freq",
+   "ident": "16:_urn:opengrid:harmoniccompressor:scHPFreq",
+   "default": -0.04166666667,
+   "context": "Sidechain Enable=1, Threshold=0.2, Ratio=0.8",
+   "audioDiffDb": -13.2,
+   "audio": "ok",
+   "visualChange": 41.379,
+   "visual": "ok"
+  }
+ ],
+ "info": {
+  "numParams": 30,
+  "latency": "0",
+  "name": "LV2: Harmonic Compressor (OpenGrid) (4->2ch)",
+  "fx": 0
+ },
+ "failed": [
+  "state survives save and reopen"
+ ]
+}

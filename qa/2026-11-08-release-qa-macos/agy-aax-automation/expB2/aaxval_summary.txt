@@ -1,0 +1,4 @@
+test.page_table.automation_list               FAIL E_COMPLETED_FAIL
+    ERROR: AAXHShell_GetNumControlNamesForId
+    FAIL
+    FAILED

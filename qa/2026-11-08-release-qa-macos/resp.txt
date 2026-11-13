@@ -1,0 +1,2 @@
+1794168266
+{"ok":true,"result":{"resourcePath":"/Users/marcosdeida/Library/Application Support/REAPER","version":"7.80/macOS-arm64"}}

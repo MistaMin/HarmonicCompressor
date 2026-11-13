@@ -1,0 +1,5 @@
+test.page_table.load                          PASS E_COMPLETED_PASS
+test.page_table.automation_list               FAIL E_COMPLETED_FAIL
+    ERROR: AAXHShell_GetNumControlNamesForId
+    FAIL
+    FAILED
