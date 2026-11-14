@@ -1,6 +1,6 @@
 # Harmonic Compressor
 
-[![Version](https://img.shields.io/badge/version-1.5.1-blue.svg)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.5.2-blue.svg)](VERSION)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Format](https://img.shields.io/badge/formats-VST3%20%7C%20AU%20%7C%20AAX%20%7C%20CLAP%20%7C%20LV2-brightgreen.svg)]()
 [![Platform](https://img.shields.io/badge/platform-macOS%20(Universal%20arm64%2Fx86__64)-lightgrey.svg)]()
@@ -59,8 +59,9 @@ dependency checkouts used for release builds are recorded in
 [the cross-platform workflow](.github/workflows/build-crossplatform.yml).
 Pass `-DGOODLOOKINUI_ROOT=/path/to/GoodLookinUI` if it is not in the default sibling location.
 
-Version 1.5.1 fixes linear sliders jumping to the maximum on click. Existing
-parameter IDs and saved-state layout are preserved. See [release notes](RELEASE_NOTES.md).
+Version 1.5.2 adds Auto Gain (loudness-matched output) and Delta monitoring, and fixes
+parallel Mix with oversampling on. Existing parameter IDs and saved sessions are preserved;
+older sessions load with both new switches off. See [release notes](RELEASE_NOTES.md).
 
 To compile the versioned PDF user manual:
 ```bash

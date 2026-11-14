@@ -1,0 +1,37 @@
+objc[52876]: Class GNotificationCenterDelegate is implemented in both /opt/homebrew/Cellar/glib/2.90.1/lib/libgio-2.0.0.dylib (0x1061a04e8) and <scratch>/og9_private/opengrid9-runtime/lib/libgio-2.0.0.dylib (0x1038504e8). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+*** WEAK-JACK: using Homebrew
+load_dir_entry(): warning: Skipping non-directory `/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-14-autogain-delta/opengrid9/home/Library/Audio/Plug-Ins/LV2/.DS_Store' within path entry
+lilv_world_compare_versions(): warning: Ignoring duplicate version 0.0 of <https://opengrid.studio/plugins/audiogridder> from <file:///Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/>
+lilv_world_compare_versions(): note: Previously loaded from <file:///Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-14-autogain-delta/opengrid9/home/Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/>
+load_dir_entry(): warning: Skipping non-directory `/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-14-autogain-delta/opengrid9/home/Library/Audio/Plug-Ins/LV2/.DS_Store' within path entry
+lilv_world_compare_versions(): warning: Ignoring duplicate version 0.0 of <https://opengrid.studio/plugins/audiogridder> from <file:///Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/>
+lilv_world_compare_versions(): note: Previously loaded from <file:///Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-14-autogain-delta/opengrid9/home/Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/>
+MIDI Clock in new MIDI buffer of size 8192
+MTC in new MIDI buffer of size 8192
+[WARNING]: Falling back to Reasonable Synth for Midi Audition
+Error: ...ida/.agent/skills/plugin-daw-test/scripts/og9_bridge.lua:309: attempt to call a nil value (field 'exit')
+objc[55003]: Class GNotificationCenterDelegate is implemented in both /opt/homebrew/Cellar/glib/2.90.1/lib/libgio-2.0.0.dylib (0x103c844e8) and <scratch>/og9_private/opengrid9-runtime/lib/libgio-2.0.0.dylib (0x1013844e8). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+*** WEAK-JACK: using Homebrew
+load_dir_entry(): warning: Skipping non-directory `/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-14-autogain-delta/opengrid9/home/Library/Audio/Plug-Ins/LV2/.DS_Store' within path entry
+lilv_world_compare_versions(): warning: Ignoring duplicate version 0.0 of <https://opengrid.studio/plugins/audiogridder> from <file:///Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/>
+lilv_world_compare_versions(): note: Previously loaded from <file:///Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-14-autogain-delta/opengrid9/home/Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/>
+load_dir_entry(): warning: Skipping non-directory `/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-14-autogain-delta/opengrid9/home/Library/Audio/Plug-Ins/LV2/.DS_Store' within path entry
+lilv_world_compare_versions(): warning: Ignoring duplicate version 0.0 of <https://opengrid.studio/plugins/audiogridder> from <file:///Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/>
+lilv_world_compare_versions(): note: Previously loaded from <file:///Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-14-autogain-delta/opengrid9/home/Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/>
+MIDI Clock in new MIDI buffer of size 8192
+MTC in new MIDI buffer of size 8192
+[WARNING]: Falling back to Reasonable Synth for Midi Audition
+Error: ...ida/.agent/skills/plugin-daw-test/scripts/og9_bridge.lua:309: attempt to call a nil value (field 'exit')
+objc[55685]: Class GNotificationCenterDelegate is implemented in both /opt/homebrew/Cellar/glib/2.90.1/lib/libgio-2.0.0.dylib (0x1065804e8) and <scratch>/og9_private/opengrid9-runtime/lib/libgio-2.0.0.dylib (0x103c304e8). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+*** WEAK-JACK: using Homebrew
+load_dir_entry(): warning: Skipping non-directory `/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-14-autogain-delta/opengrid9/home/Library/Audio/Plug-Ins/LV2/.DS_Store' within path entry
+lilv_world_compare_versions(): warning: Ignoring duplicate version 0.0 of <https://opengrid.studio/plugins/audiogridder> from <file:///Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/>
+lilv_world_compare_versions(): note: Previously loaded from <file:///Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-14-autogain-delta/opengrid9/home/Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/>
+load_dir_entry(): warning: Skipping non-directory `/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-14-autogain-delta/opengrid9/home/Library/Audio/Plug-Ins/LV2/.DS_Store' within path entry
+lilv_world_compare_versions(): warning: Ignoring duplicate version 0.0 of <https://opengrid.studio/plugins/audiogridder> from <file:///Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/>
+lilv_world_compare_versions(): note: Previously loaded from <file:///Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-14-autogain-delta/opengrid9/home/Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/>
+MIDI Clock in new MIDI buffer of size 8192
+MTC in new MIDI buffer of size 8192
+lua/ direct dispatch of call slot via functor @ 0x16cfb0468, invalidation 0x0
+[WARNING]: Falling back to Reasonable Synth for Midi Audition
+Error: ...ida/.agent/skills/plugin-daw-test/scripts/og9_bridge.lua:309: attempt to call a nil value (field 'exit')

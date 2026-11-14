@@ -1,4 +1,4 @@
-# Harmonic Compressor (version 1.5.1)
+# Harmonic Compressor (version 1.5.2)
 
 Harmonic Compressor is a mastering-grade, multi-topology analogue dynamics processor and harmonic saturation engine. Built with physical-circuit component modeling and first-order Antiderivative Anti-Aliasing (ADAA), it combines seven distinct analogue compression topologies, an integrated transient designer, a multi-order harmonic saturation stage, and an interactive real-time transfer curve display.
 

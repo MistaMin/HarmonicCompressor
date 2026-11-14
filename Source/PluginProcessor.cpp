@@ -249,7 +249,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout HarmonicCompressorAudioProce
     layout.add (std::make_unique<juce::AudioParameterFloat> (ParamIDs::transientSpeed, "Transient Speed",
                                                              juce::NormalisableRange<float> (0.5f, 50.0f, 0.1f, 0.4f), 10.0f));
 
-    // Appended v1.6 parameters (preserving indices 0..24 for existing sessions)
+    // Appended v1.5.2 parameters (preserving indices 0..24 for existing sessions)
     layout.add (std::make_unique<juce::AudioParameterBool> (ParamIDs::autoGain, "Auto Gain", false));
     layout.add (std::make_unique<juce::AudioParameterBool> (ParamIDs::delta, "Delta Monitor", false));
 

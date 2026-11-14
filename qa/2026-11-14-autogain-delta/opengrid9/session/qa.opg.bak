@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Session version="7004" sample-rate="48000" name="qa" uuid="d7009ce1-e20e-405a-9677-87762c3adf87" session-range-is-free="1" id-counter="2045" rg-counter="0" name-counter="1" event-counter="0" vca-counter="1">
+  <ProgramVersion created-with="OpenGrid 9.8-294-g50aeb89cb9" modified-with="OpenGrid 9.8-294-g50aeb89cb9"/>
+  <EngineHints backend="Dummy" input-device="Silence" output-device="Silence"/>
+  <EngineState>
+    <PortEngine backend="Dummy" driver="Normal Speed" device="Silence" instance=""/>
+  </EngineState>
+  <MIDIPorts>
+    <Port name="Cue Control in" type="midi" direction="Input"/>
+    <Port name="MIDI Clock out" type="midi" direction="Output"/>
+    <Port name="MMC in" type="midi" direction="Input"/>
+    <Port name="MMC out" type="midi" direction="Output"/>
+    <Port name="MTC out" type="midi" direction="Output"/>
+    <Port name="Scene in" type="midi" direction="Input"/>
+    <Port name="Scene out" type="midi" direction="Output"/>
+    <Port name="x-virtual-keyboard" type="midi" direction="Output"/>
+  </MIDIPorts>
+  <Config>
+    <Option name="use-region-fades" value="1"/>
+    <Option name="use-transport-fades" value="1"/>
+    <Option name="use-monitor-fades" value="1"/>
+    <Option name="native-file-data-format" value="FormatFloat"/>
+    <Option name="native-file-header-format" value="RF64_WAV"/>
+    <Option name="auto-play" value="0"/>
+    <Option name="auto-return" value="0"/>
+    <Option name="auto-input" value="1"/>
+    <Option name="triggerbox-overrides-disk-monitoring" value="1"/>
+    <Option name="cue-behavior" value="FollowCues"/>
+    <Option name="punch-in" value="0"/>
+    <Option name="punch-out" value="0"/>
+    <Option name="count-in" value="0"/>
+    <Option name="session-monitoring" value=""/>
+    <Option name="record-mode" value="RecLayered"/>
+    <Option name="draw-opaque-midi-regions" value="0"/>
+    <Option name="subframes-per-frame" value="100"/>
+    <Option name="timecode-format" value="timecode_30"/>
+    <Option name="minitimeline-span" value="120"/>
+    <Option name="raid-path" value=""/>
+    <Option name="audio-search-path" value=""/>
+    <Option name="midi-search-path" value=""/>
+    <Option name="track-name-number" value="0"/>
+    <Option name="track-name-take" value="1"/>
+    <Option name="take-name" value="Take1"/>
+    <Option name="jack-time-master" value="1"/>
+    <Option name="use-video-sync" value="0"/>
+    <Option name="video-pullup" value="0"/>
+    <Option name="external-sync" value="0"/>
+    <Option name="insert-merge-policy" value="InsertMergeRelax"/>
+    <Option name="timecode-offset" value="0"/>
+    <Option name="timecode-offset-negative" value="1"/>
+    <Option name="slave-timecode-offset" value=" 00:00:00:00"/>
+    <Option name="timecode-generator-offset" value=" 00:00:00:00"/>
+    <Option name="midi-copy-is-fork" value="1"/>
+    <Option name="tracks-follow-session-time" value="0"/>
+    <Option name="realtime-export" value="0"/>
+    <Option name="use-surround-master" value="0"/>
+    <Option name="use-video-file-fps" value="0"/>
+    <Option name="videotimeline-pullup" value="1"/>
+    <Option name="wave-amplitude-zoom" value="0"/>
+    <Option name="wave-zoom-factor" value="2"/>
+    <Option name="show-summary" value="1"/>
+    <Option name="show-vertical-summary" value="0"/>
+    <Option name="show-group-tabs" value="1"/>
+    <Option name="show-region-fades" value="1"/>
+    <Option name="show-busses-on-meterbridge" value="0"/>
+    <Option name="show-master-on-meterbridge" value="1"/>
+    <Option name="show-midi-on-meterbridge" value="1"/>
+    <Option name="show-rec-on-meterbridge" value="1"/>
+    <Option name="show-mute-on-meterbridge" value="0"/>
+    <Option name="show-solo-on-meterbridge" value="0"/>
+    <Option name="show-monitor-on-meterbridge" value="0"/>
+    <Option name="show-name-on-meterbridge" value="1"/>
+    <Option name="show-fader-on-meterbridge" value="0"/>
+    <Option name="meterbridge-label-height" value="0"/>
+    <Option name="show-master-bus-comment-on-load" value="0"/>
+    <Option name="default-time-domain" value="BeatTime"/>
+  </Config>
+  <Metadata/>
+  <Sources>
+    <Source name="warmup%L.wav" take-id="2026-11-14 12.07.13" type="audio" flags="" id="250" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="warmup%R.wav" take-id="2026-11-14 12.07.13" type="audio" flags="" id="252" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="base%L.wav" take-id="2026-11-14 12.07.13" type="audio" flags="" id="262" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="base%R.wav" take-id="2026-11-14 12.07.13" type="audio" flags="" id="264" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="base2%L.wav" take-id="2026-11-14 12.07.14" type="audio" flags="" id="274" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="base2%R.wav" take-id="2026-11-14 12.07.14" type="audio" flags="" id="276" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p0_0%L.wav" take-id="2026-11-14 12.07.14" type="audio" flags="" id="286" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p0_0%R.wav" take-id="2026-11-14 12.07.14" type="audio" flags="" id="288" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p0_1%L.wav" take-id="2026-11-14 12.07.14" type="audio" flags="" id="298" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p0_1%R.wav" take-id="2026-11-14 12.07.14" type="audio" flags="" id="300" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p1_0%L.wav" take-id="2026-11-14 12.07.15" type="audio" flags="" id="310" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p1_0%R.wav" take-id="2026-11-14 12.07.15" type="audio" flags="" id="312" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p1_1%L.wav" take-id="2026-11-14 12.07.15" type="audio" flags="" id="322" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p1_1%R.wav" take-id="2026-11-14 12.07.15" type="audio" flags="" id="324" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p2_0%L.wav" take-id="2026-11-14 12.07.15" type="audio" flags="" id="334" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p2_0%R.wav" take-id="2026-11-14 12.07.15" type="audio" flags="" id="336" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p2_1%L.wav" take-id="2026-11-14 12.07.15" type="audio" flags="" id="346" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p2_1%R.wav" take-id="2026-11-14 12.07.15" type="audio" flags="" id="348" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p3_0%L.wav" take-id="2026-11-14 12.07.16" type="audio" flags="" id="358" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p3_0%R.wav" take-id="2026-11-14 12.07.16" type="audio" flags="" id="360" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p3_1%L.wav" take-id="2026-11-14 12.07.16" type="audio" flags="" id="370" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p3_1%R.wav" take-id="2026-11-14 12.07.16" type="audio" flags="" id="372" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p4_0%L.wav" take-id="2026-11-14 12.07.16" type="audio" flags="" id="382" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p4_0%R.wav" take-id="2026-11-14 12.07.16" type="audio" flags="" id="384" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p4_1%L.wav" take-id="2026-11-14 12.07.17" type="audio" flags="" id="394" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p4_1%R.wav" take-id="2026-11-14 12.07.17" type="audio" flags="" id="396" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p5_0%L.wav" take-id="2026-11-14 12.07.17" type="audio" flags="" id="406" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p5_0%R.wav" take-id="2026-11-14 12.07.17" type="audio" flags="" id="408" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p5_1%L.wav" take-id="2026-11-14 12.07.17" type="audio" flags="" id="418" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p5_1%R.wav" take-id="2026-11-14 12.07.17" type="audio" flags="" id="420" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p6_0%L.wav" take-id="2026-11-14 12.07.18" type="audio" flags="" id="430" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p6_0%R.wav" take-id="2026-11-14 12.07.18" type="audio" flags="" id="432" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p6_1%L.wav" take-id="2026-11-14 12.07.18" type="audio" flags="" id="442" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p6_1%R.wav" take-id="2026-11-14 12.07.18" type="audio" flags="" id="444" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p7_0%L.wav" take-id="2026-11-14 12.07.18" type="audio" flags="" id="454" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p7_0%R.wav" take-id="2026-11-14 12.07.18" type="audio" flags="" id="456" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p7_1%L.wav" take-id="2026-11-14 12.07.18" type="audio" flags="" id="466" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p7_1%R.wav" take-id="2026-11-14 12.07.18" type="audio" flags="" id="468" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p8_0%L.wav" take-id="2026-11-14 12.07.19" type="audio" flags="" id="478" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p8_0%R.wav" take-id="2026-11-14 12.07.19" type="audio" flags="" id="480" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p8_1%L.wav" take-id="2026-11-14 12.07.19" type="audio" flags="" id="490" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p8_1%R.wav" take-id="2026-11-14 12.07.19" type="audio" flags="" id="492" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p9_0%L.wav" take-id="2026-11-14 12.07.19" type="audio" flags="" id="502" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p9_0%R.wav" take-id="2026-11-14 12.07.19" type="audio" flags="" id="504" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p9_1%L.wav" take-id="2026-11-14 12.07.20" type="audio" flags="" id="514" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p9_1%R.wav" take-id="2026-11-14 12.07.20" type="audio" flags="" id="516" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p10_0%L.wav" take-id="2026-11-14 12.07.20" type="audio" flags="" id="526" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p10_0%R.wav" take-id="2026-11-14 12.07.20" type="audio" flags="" id="528" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p10_1%L.wav" take-id="2026-11-14 12.07.20" type="audio" flags="" id="538" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p10_1%R.wav" take-id="2026-11-14 12.07.20" type="audio" flags="" id="540" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p11_0%L.wav" take-id="2026-11-14 12.07.21" type="audio" flags="" id="550" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p11_0%R.wav" take-id="2026-11-14 12.07.21" type="audio" flags="" id="552" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p11_1%L.wav" take-id="2026-11-14 12.07.21" type="audio" flags="" id="562" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p11_1%R.wav" take-id="2026-11-14 12.07.21" type="audio" flags="" id="564" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p12_0%L.wav" take-id="2026-11-14 12.07.21" type="audio" flags="" id="574" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p12_0%R.wav" take-id="2026-11-14 12.07.21" type="audio" flags="" id="576" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p12_1%L.wav" take-id="2026-11-14 12.07.21" type="audio" flags="" id="586" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p12_1%R.wav" take-id="2026-11-14 12.07.21" type="audio" flags="" id="588" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p13_0%L.wav" take-id="2026-11-14 12.07.22" type="audio" flags="" id="598" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p13_0%R.wav" take-id="2026-11-14 12.07.22" type="audio" flags="" id="600" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p13_1%L.wav" take-id="2026-11-14 12.07.22" type="audio" flags="" id="610" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p13_1%R.wav" take-id="2026-11-14 12.07.22" type="audio" flags="" id="612" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="ctx14%L.wav" take-id="2026-11-14 12.07.22" type="audio" flags="" id="622" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="ctx14%R.wav" take-id="2026-11-14 12.07.22" type="audio" flags="" id="624" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p14_0%L.wav" take-id="2026-11-14 12.07.23" type="audio" flags="" id="634" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p14_0%R.wav" take-id="2026-11-14 12.07.23" type="audio" flags="" id="636" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p14_1%L.wav" take-id="2026-11-14 12.07.23" type="audio" flags="" id="646" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p14_1%R.wav" take-id="2026-11-14 12.07.23" type="audio" flags="" id="648" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p15_0%L.wav" take-id="2026-11-14 12.07.23" type="audio" flags="" id="658" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p15_0%R.wav" take-id="2026-11-14 12.07.23" type="audio" flags="" id="660" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p15_1%L.wav" take-id="2026-11-14 12.07.24" type="audio" flags="" id="670" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p15_1%R.wav" take-id="2026-11-14 12.07.24" type="audio" flags="" id="672" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p16_0%L.wav" take-id="2026-11-14 12.07.24" type="audio" flags="" id="682" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p16_0%R.wav" take-id="2026-11-14 12.07.24" type="audio" flags="" id="684" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p16_1%L.wav" take-id="2026-11-14 12.07.24" type="audio" flags="" id="694" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p16_1%R.wav" take-id="2026-11-14 12.07.24" type="audio" flags="" id="696" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p17_0%L.wav" take-id="2026-11-14 12.07.25" type="audio" flags="" id="706" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p17_0%R.wav" take-id="2026-11-14 12.07.25" type="audio" flags="" id="708" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p17_1%L.wav" take-id="2026-11-14 12.07.25" type="audio" flags="" id="718" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p17_1%R.wav" take-id="2026-11-14 12.07.25" type="audio" flags="" id="720" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p18_0%L.wav" take-id="2026-11-14 12.07.25" type="audio" flags="" id="730" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p18_0%R.wav" take-id="2026-11-14 12.07.25" type="audio" flags="" id="732" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p18_1%L.wav" take-id="2026-11-14 12.07.25" type="audio" flags="" id="742" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p18_1%R.wav" take-id="2026-11-14 12.07.25" type="audio" flags="" id="744" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p19_0%L.wav" take-id="2026-11-14 12.07.26" type="audio" flags="" id="754" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p19_0%R.wav" take-id="2026-11-14 12.07.26" type="audio" flags="" id="756" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p19_1%L.wav" take-id="2026-11-14 12.07.26" type="audio" flags="" id="766" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p19_1%R.wav" take-id="2026-11-14 12.07.26" type="audio" flags="" id="768" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p20_0%L.wav" take-id="2026-11-14 12.07.27" type="audio" flags="" id="778" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p20_0%R.wav" take-id="2026-11-14 12.07.27" type="audio" flags="" id="780" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p20_1%L.wav" take-id="2026-11-14 12.07.27" type="audio" flags="" id="790" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p20_1%R.wav" take-id="2026-11-14 12.07.27" type="audio" flags="" id="792" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p21_0%L.wav" take-id="2026-11-14 12.07.27" type="audio" flags="" id="802" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p21_0%R.wav" take-id="2026-11-14 12.07.27" type="audio" flags="" id="804" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p21_1%L.wav" take-id="2026-11-14 12.07.27" type="audio" flags="" id="814" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p21_1%R.wav" take-id="2026-11-14 12.07.27" type="audio" flags="" id="816" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="ctx22%L.wav" take-id="2026-11-14 12.07.28" type="audio" flags="" id="826" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="ctx22%R.wav" take-id="2026-11-14 12.07.28" type="audio" flags="" id="828" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p22_0%L.wav" take-id="2026-11-14 12.07.28" type="audio" flags="" id="838" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p22_0%R.wav" take-id="2026-11-14 12.07.28" type="audio" flags="" id="840" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p22_1%L.wav" take-id="2026-11-14 12.07.28" type="audio" flags="" id="850" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p22_1%R.wav" take-id="2026-11-14 12.07.28" type="audio" flags="" id="852" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="ctx23%L.wav" take-id="2026-11-14 12.07.29" type="audio" flags="" id="862" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="ctx23%R.wav" take-id="2026-11-14 12.07.29" type="audio" flags="" id="864" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p23_0%L.wav" take-id="2026-11-14 12.07.29" type="audio" flags="" id="874" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p23_0%R.wav" take-id="2026-11-14 12.07.29" type="audio" flags="" id="876" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p23_1%L.wav" take-id="2026-11-14 12.07.29" type="audio" flags="" id="886" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p23_1%R.wav" take-id="2026-11-14 12.07.29" type="audio" flags="" id="888" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="ctx24%L.wav" take-id="2026-11-14 12.07.30" type="audio" flags="" id="898" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="ctx24%R.wav" take-id="2026-11-14 12.07.30" type="audio" flags="" id="900" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p24_0%L.wav" take-id="2026-11-14 12.07.30" type="audio" flags="" id="910" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p24_0%R.wav" take-id="2026-11-14 12.07.30" type="audio" flags="" id="912" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p24_1%L.wav" take-id="2026-11-14 12.07.30" type="audio" flags="" id="922" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p24_1%R.wav" take-id="2026-11-14 12.07.30" type="audio" flags="" id="924" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p25_0%L.wav" take-id="2026-11-14 12.07.31" type="audio" flags="" id="934" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p25_0%R.wav" take-id="2026-11-14 12.07.31" type="audio" flags="" id="936" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p25_1%L.wav" take-id="2026-11-14 12.07.31" type="audio" flags="" id="946" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p25_1%R.wav" take-id="2026-11-14 12.07.31" type="audio" flags="" id="948" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p26_0%L.wav" take-id="2026-11-14 12.07.31" type="audio" flags="" id="958" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p26_0%R.wav" take-id="2026-11-14 12.07.31" type="audio" flags="" id="960" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p26_1%L.wav" take-id="2026-11-14 12.07.32" type="audio" flags="" id="970" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p26_1%R.wav" take-id="2026-11-14 12.07.32" type="audio" flags="" id="972" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p27_0%L.wav" take-id="2026-11-14 12.07.32" type="audio" flags="" id="982" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p27_0%R.wav" take-id="2026-11-14 12.07.32" type="audio" flags="" id="984" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p27_1%L.wav" take-id="2026-11-14 12.07.32" type="audio" flags="" id="994" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="p27_1%R.wav" take-id="2026-11-14 12.07.32" type="audio" flags="" id="996" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="flush%L.wav" take-id="2026-11-14 12.07.34" type="audio" flags="" id="1006" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+    <Source name="flush%R.wav" take-id="2026-11-14 12.07.34" type="audio" flags="" id="1008" natural-position="a0" captured-for="QA" channel="0" origin="" gain="1"/>
+  </Sources>
+  <TriggerBindings/>
+  <Regions>
+    <Region name="warmup" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="254" type="audio" first-edit="nothing" source-0="250" source-1="252" master-source-0="250" master-source-1="252" channels="2"/>
+    <Region name="base" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="266" type="audio" first-edit="nothing" source-0="262" source-1="264" master-source-0="262" master-source-1="264" channels="2"/>
+    <Region name="base2" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="278" type="audio" first-edit="nothing" source-0="274" source-1="276" master-source-0="274" master-source-1="276" channels="2"/>
+    <Region name="p0_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="290" type="audio" first-edit="nothing" source-0="286" source-1="288" master-source-0="286" master-source-1="288" channels="2"/>
+    <Region name="p0_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="302" type="audio" first-edit="nothing" source-0="298" source-1="300" master-source-0="298" master-source-1="300" channels="2"/>
+    <Region name="p1_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="314" type="audio" first-edit="nothing" source-0="310" source-1="312" master-source-0="310" master-source-1="312" channels="2"/>
+    <Region name="p1_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="326" type="audio" first-edit="nothing" source-0="322" source-1="324" master-source-0="322" master-source-1="324" channels="2"/>
+    <Region name="p2_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="338" type="audio" first-edit="nothing" source-0="334" source-1="336" master-source-0="334" master-source-1="336" channels="2"/>
+    <Region name="p2_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="350" type="audio" first-edit="nothing" source-0="346" source-1="348" master-source-0="346" master-source-1="348" channels="2"/>
+    <Region name="p3_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="362" type="audio" first-edit="nothing" source-0="358" source-1="360" master-source-0="358" master-source-1="360" channels="2"/>
+    <Region name="p3_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="374" type="audio" first-edit="nothing" source-0="370" source-1="372" master-source-0="370" master-source-1="372" channels="2"/>
+    <Region name="p4_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="386" type="audio" first-edit="nothing" source-0="382" source-1="384" master-source-0="382" master-source-1="384" channels="2"/>
+    <Region name="p4_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="398" type="audio" first-edit="nothing" source-0="394" source-1="396" master-source-0="394" master-source-1="396" channels="2"/>
+    <Region name="p5_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="410" type="audio" first-edit="nothing" source-0="406" source-1="408" master-source-0="406" master-source-1="408" channels="2"/>
+    <Region name="p5_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="422" type="audio" first-edit="nothing" source-0="418" source-1="420" master-source-0="418" master-source-1="420" channels="2"/>
+    <Region name="p6_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="434" type="audio" first-edit="nothing" source-0="430" source-1="432" master-source-0="430" master-source-1="432" channels="2"/>
+    <Region name="p6_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="446" type="audio" first-edit="nothing" source-0="442" source-1="444" master-source-0="442" master-source-1="444" channels="2"/>
+    <Region name="p7_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="458" type="audio" first-edit="nothing" source-0="454" source-1="456" master-source-0="454" master-source-1="456" channels="2"/>
+    <Region name="p7_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="470" type="audio" first-edit="nothing" source-0="466" source-1="468" master-source-0="466" master-source-1="468" channels="2"/>
+    <Region name="p8_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="482" type="audio" first-edit="nothing" source-0="478" source-1="480" master-source-0="478" master-source-1="480" channels="2"/>
+    <Region name="p8_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="494" type="audio" first-edit="nothing" source-0="490" source-1="492" master-source-0="490" master-source-1="492" channels="2"/>
+    <Region name="p9_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="506" type="audio" first-edit="nothing" source-0="502" source-1="504" master-source-0="502" master-source-1="504" channels="2"/>
+    <Region name="p9_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="518" type="audio" first-edit="nothing" source-0="514" source-1="516" master-source-0="514" master-source-1="516" channels="2"/>
+    <Region name="p10_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="530" type="audio" first-edit="nothing" source-0="526" source-1="528" master-source-0="526" master-source-1="528" channels="2"/>
+    <Region name="p10_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="542" type="audio" first-edit="nothing" source-0="538" source-1="540" master-source-0="538" master-source-1="540" channels="2"/>
+    <Region name="p11_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="554" type="audio" first-edit="nothing" source-0="550" source-1="552" master-source-0="550" master-source-1="552" channels="2"/>
+    <Region name="p11_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="566" type="audio" first-edit="nothing" source-0="562" source-1="564" master-source-0="562" master-source-1="564" channels="2"/>
+    <Region name="p12_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="578" type="audio" first-edit="nothing" source-0="574" source-1="576" master-source-0="574" master-source-1="576" channels="2"/>
+    <Region name="p12_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="590" type="audio" first-edit="nothing" source-0="586" source-1="588" master-source-0="586" master-source-1="588" channels="2"/>
+    <Region name="p13_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="602" type="audio" first-edit="nothing" source-0="598" source-1="600" master-source-0="598" master-source-1="600" channels="2"/>
+    <Region name="p13_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="614" type="audio" first-edit="nothing" source-0="610" source-1="612" master-source-0="610" master-source-1="612" channels="2"/>
+    <Region name="ctx14" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="626" type="audio" first-edit="nothing" source-0="622" source-1="624" master-source-0="622" master-source-1="624" channels="2"/>
+    <Region name="p14_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="638" type="audio" first-edit="nothing" source-0="634" source-1="636" master-source-0="634" master-source-1="636" channels="2"/>
+    <Region name="p14_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="650" type="audio" first-edit="nothing" source-0="646" source-1="648" master-source-0="646" master-source-1="648" channels="2"/>
+    <Region name="p15_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="662" type="audio" first-edit="nothing" source-0="658" source-1="660" master-source-0="658" master-source-1="660" channels="2"/>
+    <Region name="p15_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="674" type="audio" first-edit="nothing" source-0="670" source-1="672" master-source-0="670" master-source-1="672" channels="2"/>
+    <Region name="p16_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="686" type="audio" first-edit="nothing" source-0="682" source-1="684" master-source-0="682" master-source-1="684" channels="2"/>
+    <Region name="p16_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="698" type="audio" first-edit="nothing" source-0="694" source-1="696" master-source-0="694" master-source-1="696" channels="2"/>
+    <Region name="p17_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="710" type="audio" first-edit="nothing" source-0="706" source-1="708" master-source-0="706" master-source-1="708" channels="2"/>
+    <Region name="p17_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="722" type="audio" first-edit="nothing" source-0="718" source-1="720" master-source-0="718" master-source-1="720" channels="2"/>
+    <Region name="p18_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="734" type="audio" first-edit="nothing" source-0="730" source-1="732" master-source-0="730" master-source-1="732" channels="2"/>
+    <Region name="p18_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="746" type="audio" first-edit="nothing" source-0="742" source-1="744" master-source-0="742" master-source-1="744" channels="2"/>
+    <Region name="p19_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="758" type="audio" first-edit="nothing" source-0="754" source-1="756" master-source-0="754" master-source-1="756" channels="2"/>
+    <Region name="p19_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="770" type="audio" first-edit="nothing" source-0="766" source-1="768" master-source-0="766" master-source-1="768" channels="2"/>
+    <Region name="p20_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="782" type="audio" first-edit="nothing" source-0="778" source-1="780" master-source-0="778" master-source-1="780" channels="2"/>
+    <Region name="p20_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="794" type="audio" first-edit="nothing" source-0="790" source-1="792" master-source-0="790" master-source-1="792" channels="2"/>
+    <Region name="p21_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="806" type="audio" first-edit="nothing" source-0="802" source-1="804" master-source-0="802" master-source-1="804" channels="2"/>
+    <Region name="p21_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="818" type="audio" first-edit="nothing" source-0="814" source-1="816" master-source-0="814" master-source-1="816" channels="2"/>
+    <Region name="ctx22" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="830" type="audio" first-edit="nothing" source-0="826" source-1="828" master-source-0="826" master-source-1="828" channels="2"/>
+    <Region name="p22_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="842" type="audio" first-edit="nothing" source-0="838" source-1="840" master-source-0="838" master-source-1="840" channels="2"/>
+    <Region name="p22_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="854" type="audio" first-edit="nothing" source-0="850" source-1="852" master-source-0="850" master-source-1="852" channels="2"/>
+    <Region name="ctx23" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="866" type="audio" first-edit="nothing" source-0="862" source-1="864" master-source-0="862" master-source-1="864" channels="2"/>
+    <Region name="p23_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="878" type="audio" first-edit="nothing" source-0="874" source-1="876" master-source-0="874" master-source-1="876" channels="2"/>
+    <Region name="p23_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="890" type="audio" first-edit="nothing" source-0="886" source-1="888" master-source-0="886" master-source-1="888" channels="2"/>
+    <Region name="ctx24" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="902" type="audio" first-edit="nothing" source-0="898" source-1="900" master-source-0="898" master-source-1="900" channels="2"/>
+    <Region name="p24_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="914" type="audio" first-edit="nothing" source-0="910" source-1="912" master-source-0="910" master-source-1="912" channels="2"/>
+    <Region name="p24_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="926" type="audio" first-edit="nothing" source-0="922" source-1="924" master-source-0="922" master-source-1="924" channels="2"/>
+    <Region name="p25_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="938" type="audio" first-edit="nothing" source-0="934" source-1="936" master-source-0="934" master-source-1="936" channels="2"/>
+    <Region name="p25_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="950" type="audio" first-edit="nothing" source-0="946" source-1="948" master-source-0="946" master-source-1="948" channels="2"/>
+    <Region name="p26_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="962" type="audio" first-edit="nothing" source-0="958" source-1="960" master-source-0="958" master-source-1="960" channels="2"/>
+    <Region name="p26_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="974" type="audio" first-edit="nothing" source-0="970" source-1="972" master-source-0="970" master-source-1="972" channels="2"/>
+    <Region name="p27_0" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="986" type="audio" first-edit="nothing" source-0="982" source-1="984" master-source-0="982" master-source-1="984" channels="2"/>
+    <Region name="p27_1" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a846720000@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="998" type="audio" first-edit="nothing" source-0="994" source-1="996" master-source-0="994" master-source-1="996" channels="2"/>
+    <Region name="flush" muted="0" opaque="1" locked="0" video-locked="0" automatic="0" whole-file="1" import="0" external="0" sync-marked="0" left-of-split="0" right-of-split="0" hidden="0" position-locked="0" valid-transients="0" start="a0" length="a2822400@a0" sync-position="a0" ancestral-start="a0" ancestral-length="a0@a0" stretch="1" shift="1" layering-index="0" tags="(bounce)" contents="0" rgroup="0" envelope-active="0" default-fade-in="0" default-fade-out="0" fade-in-active="1" fade-out-active="1" fade-before-fx="0" scale-amplitude="1" id="1010" type="audio" first-edit="nothing" source-0="1006" source-1="1008" master-source-0="1006" master-source-1="1008" channels="2"/>
+  </Regions>
+  <Selection/>
+  <Locations/>
+  <Bundles/>
+  <VCAManager/>
+  <Routes>
+    <Route version="7004" id="23" name="Master" default-type="audio" strict-io="1" volume-applies-to-output="1" active="1" denormal-protection="0" meter-point="MeterOutput" disk-io-point="DiskIOPreFader" meter-type="MeterK14">
+      <PresentationInfo order="0" flags="MasterOut,OrderSet" color="0"/>
+      <Controllable name="solo" id="31" flags="Toggle,RealTime" value="0" self-solo="0" soloed-by-upstream="0" soloed-by-downstream="0"/>
+      <Controllable name="solo-iso" id="37" flags="Toggle,RealTime" value="0" solo-isolated="0"/>
+      <Controllable name="solo-safe" id="39" flags="Toggle" value="0" solo-safe="0"/>
+      <IO name="Master" id="52" direction="Input" default-type="audio">
+        <Port name="Master/audio_in 1" type="audio" direction="Input">
+          <Connection other="QA/audio_out 1"/>
+        </Port>
+        <Port name="Master/audio_in 2" type="audio" direction="Input">
+          <Connection other="QA/audio_out 2"/>
+        </Port>
+      </IO>
+      <IO name="Master" id="53" direction="Output" default-type="audio">
+        <Port name="Master/audio_out 1" type="audio" direction="Output">
+          <Connection other="system:playback_1"/>
+        </Port>
+        <Port name="Master/audio_out 2" type="audio" direction="Output">
+          <Connection other="system:playback_2"/>
+        </Port>
+      </IO>
+      <MuteMaster mute-point="PostFader,Listen,Main,SurroundSend" muted="0"/>
+      <Controllable name="mute" id="33" flags="Toggle,RealTime" value="0"/>
+      <Controllable name="phase" id="35" flags="Toggle" value="0" phase-invert="00"/>
+      <Controllable name="mastervolume" id="60" flags="GainLike,NotAutomatable" value="1"/>
+      <Automation>
+        <AutomationList automation-id="solo" id="32" interpolation-style="Discrete" time-domain="AudioTime" state="Off"/>
+        <AutomationList automation-id="solo-iso" id="38" interpolation-style="Discrete" time-domain="AudioTime" state="Off"/>
+        <AutomationList automation-id="solo-safe" id="40" interpolation-style="Discrete" time-domain="AudioTime" state="Off"/>
+        <AutomationList automation-id="mute" id="34" interpolation-style="Discrete" time-domain="AudioTime" state="Off"/>
+        <AutomationList automation-id="phase" id="36" interpolation-style="Discrete" time-domain="AudioTime" state="Off"/>
+      </Automation>
+      <Pannable>
+        <Controllable name="pan-azimuth" id="42" flags="" value="0.5"/>
+        <Controllable name="pan-width" id="46" flags="" value="0"/>
+        <Controllable name="pan-elevation" id="44" flags="" value="0"/>
+        <Controllable name="pan-frontback" id="48" flags="" value="0"/>
+        <Controllable name="pan-lfe" id="50" flags="" value="0"/>
+        <Automation>
+          <AutomationList automation-id="pan-azimuth" id="43" interpolation-style="Linear" time-domain="AudioTime" state="Off"/>
+          <AutomationList automation-id="pan-elevation" id="45" interpolation-style="Linear" time-domain="AudioTime" state="Off"/>
+          <AutomationList automation-id="pan-width" id="47" interpolation-style="Linear" time-domain="AudioTime" state="Off"/>
+          <AutomationList automation-id="pan-frontback" id="49" interpolation-style="Linear" time-domain="AudioTime" state="Off"/>
+          <AutomationList automation-id="pan-lfe" id="51" interpolation-style="Linear" time-domain="AudioTime" state="Off"/>
+        </Automation>
+      </Pannable>
+      <musical-mode tuning="TwelveTone" ring="0" type="PitchClass" name="Major" elements="0,2,4,5,7,9,11" root="0"/>
+      <Processor id="55" name="Polarity" active="1" user-latency="0" use-user-latency="0" type="polarity"/>
+      <Processor id="56" name="Amp" active="1" user-latency="0" use-user-latency="0" type="trim">
+        <Automation>
+          <AutomationList automation-id="trim" id="30" interpolation-style="Logarithmic" time-domain="AudioTime" state="Off"/>
+        </Automation>
+        <Controllable name="trimcontrol" id="29" flags="GainLike" value="1"/>
+      </Processor>
+      <Processor id="54" name="Amp" active="1" user-latency="0" use-user-latency="0" type="amp">
+        <Automation>
+          <AutomationList automation-id="gain" id="28" interpolation-style="Exponential" time-domain="AudioTime" state="Off"/>
+        </Automation>
+        <Controllable name="gaincontrol" id="27" flags="GainLike" value="1"/>
+      </Processor>
+      <Processor id="58" name="Master" active="1" user-latency="0" use-user-latency="0" own-input="1" own-output="0" output="Master" type="main-outs" role="Main">
+        <PannerShell bypassed="0" user-panner="" linked-to-route="1"/>
+      </Processor>
+      <Processor id="57" name="meter-Master" active="1" user-latency="0" use-user-latency="0" type="meter"/>
+      <Slavable/>
+    </Route>
+    <Route version="7004" id="116" name="QA" default-type="audio" strict-io="0" active="1" denormal-protection="0" meter-point="MeterPostFader" disk-io-point="DiskIOPreFader" meter-type="MeterPeak" audio-playlist="179" alignment-choice="Automatic" mode="Normal">
+      <PresentationInfo order="1" flags="AudioTrack,OrderSet" color="0"/>
+      <Controllable name="solo" id="141" flags="Toggle,RealTime" value="0" self-solo="0" soloed-by-upstream="0" soloed-by-downstream="0"/>
+      <Controllable name="solo-iso" id="147" flags="Toggle,RealTime" value="0" solo-isolated="0"/>
+      <Controllable name="solo-safe" id="149" flags="Toggle" value="0" solo-safe="0"/>
+      <IO name="QA" id="162" direction="Input" default-type="audio">
+        <Port name="QA/audio_in 1" type="audio" direction="Input">
+          <Connection other="system:capture_1"/>
+        </Port>
+        <Port name="QA/audio_in 2" type="audio" direction="Input">
+          <Connection other="system:capture_2"/>
+        </Port>
+      </IO>
+      <IO name="QA" id="163" direction="Output" default-type="audio">
+        <Port name="QA/audio_out 1" type="audio" direction="Output">
+          <Connection other="Master/audio_in 1"/>
+        </Port>
+        <Port name="QA/audio_out 2" type="audio" direction="Output">
+          <Connection other="Master/audio_in 2"/>
+        </Port>
+      </IO>
+      <MuteMaster mute-point="PostFader,Listen,Main,SurroundSend" muted="0"/>
+      <Controllable name="mute" id="143" flags="Toggle,RealTime" value="0"/>
+      <Controllable name="phase" id="145" flags="Toggle" value="0" phase-invert="00"/>
+      <Automation>
+        <AutomationList automation-id="solo" id="142" interpolation-style="Discrete" time-domain="AudioTime" state="Off"/>
+        <AutomationList automation-id="solo-iso" id="148" interpolation-style="Discrete" time-domain="AudioTime" state="Off"/>
+        <AutomationList automation-id="solo-safe" id="150" interpolation-style="Discrete" time-domain="AudioTime" state="Off"/>
+        <AutomationList automation-id="mute" id="144" interpolation-style="Discrete" time-domain="AudioTime" state="Off"/>
+        <AutomationList automation-id="rec-enable" id="174" interpolation-style="Discrete" time-domain="AudioTime" state="Off"/>
+        <AutomationList automation-id="rec-safe" id="176" interpolation-style="Discrete" time-domain="AudioTime" state="Off"/>
+        <AutomationList automation-id="phase" id="146" interpolation-style="Discrete" time-domain="AudioTime" state="Off"/>
+        <AutomationList automation-id="monitor" id="178" interpolation-style="Discrete" time-domain="AudioTime" state="Off"/>
+      </Automation>
+      <Pannable>
+        <Controllable name="pan-azimuth" id="152" flags="" value="0.5"/>
+        <Controllable name="pan-width" id="156" flags="" value="0"/>
+        <Controllable name="pan-elevation" id="154" flags="" value="0"/>
+        <Controllable name="pan-frontback" id="158" flags="" value="0"/>
+        <Controllable name="pan-lfe" id="160" flags="" value="0"/>
+        <Automation>
+          <AutomationList automation-id="pan-azimuth" id="153" interpolation-style="Linear" time-domain="AudioTime" state="Off"/>
+          <AutomationList automation-id="pan-elevation" id="155" interpolation-style="Linear" time-domain="AudioTime" state="Off"/>
+          <AutomationList automation-id="pan-width" id="157" interpolation-style="Linear" time-domain="AudioTime" state="Off"/>
+          <AutomationList automation-id="pan-frontback" id="159" interpolation-style="Linear" time-domain="AudioTime" state="Off"/>
+          <AutomationList automation-id="pan-lfe" id="161" interpolation-style="Linear" time-domain="AudioTime" state="Off"/>
+        </Automation>
+      </Pannable>
+      <musical-mode tuning="TwelveTone" ring="0" type="PitchClass" name="Major" elements="0,2,4,5,7,9,11" root="0"/>
+      <Processor id="172" name="recorder:QA" active="1" user-latency="0" use-user-latency="0" type="diskwriter" record-safe="0"/>
+      <Processor id="171" name="player:QA" active="1" user-latency="0" use-user-latency="0" type="diskreader"/>
+      <Processor id="120" name="TriggerBox" active="1" user-latency="0" use-user-latency="0" type="triggerbox" data-type="audio" order="0">
+        <Triggers>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="0" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="1" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="2" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="3" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="4" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="5" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="6" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="7" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="8" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="9" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="10" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="11" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="12" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="13" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="14" segment-tempo="0"/>
+          <Trigger name="" gain="1" color="3200171775" follow-count="1" use-follow-length="0" follow-length="1|0|0" capture-duration="1|0|0" legato="0" velocity-effect="0" follow-action-probability="0" quantization="1|0|0" launch-style="OneShot" follow-action-0="Again:0" follow-action-1="Stop:0" stretchable="1" cue_isolated="0" allow_patch_changes="1" stretch_mode="Crisp" index="15" segment-tempo="0"/>
+        </Triggers>
+      </Processor>
+      <Processor id="165" name="Polarity" active="1" user-latency="0" use-user-latency="0" type="polarity"/>
+      <Processor id="167" name="Amp" active="1" user-latency="0" use-user-latency="0" type="trim">
+        <Automation>
+          <AutomationList automation-id="trim" id="140" interpolation-style="Logarithmic" time-domain="AudioTime" state="Off"/>
+        </Automation>
+        <Controllable name="trimcontrol" id="139" flags="GainLike" value="1"/>
+      </Processor>
+      <Processor id="187" name="QA Test Source" active="1" user-latency="0" use-user-latency="0" type="luaproc" unique-id="b17abfd3c59ef111e6035fddbeaa9b5ab2be0939" count="1" custom="0">
+        <Automation>
+          <AutomationList automation-id="parameter-0" id="188" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-1" id="190" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+        </Automation>
+        <ConfiguredInput>
+          <Channels type="audio" count="2"/>
+        </ConfiguredInput>
+        <CustomSinks/>
+        <ConfiguredOutput>
+          <Channels type="audio" count="2"/>
+        </ConfiguredOutput>
+        <PresetOutput/>
+        <InputMap-0/>
+        <OutputMap-0>
+          <Channelmap type="audio" from="0" to="0"/>
+          <Channelmap type="audio" from="1" to="1"/>
+        </OutputMap-0>
+        <ThruMap/>
+        <luaproc last-preset-uri="" last-preset-label="" parameter-changed-since-last-preset="1">
+          <script lua="Lua 5.3" origin="<scratch>/og9_private/opengrid9-runtime/data/scripts/og9_test_source.lua">YXJkb3VyIHsKCVsidHlwZSJdICAgID0gImRzcCIsCgluYW1lICAgICAgICA9ICJRQSBUZXN0IFNvdXJjZSIsCgljYXRlZ29yeSAgICA9ICJHZW5lcmF0b3IiLAoJbGljZW5zZSAgICAgPSAiTUlUIiwKCWF1dGhvciAgICAgID0gInBsdWdpbi1xYSIsCglkZXNjcmlwdGlvbiA9IFtbRGV0ZXJtaW5pc3RpYyB0ZXN0IHNpZ25hbCBmb3IgcGx1Z2luIFFBOiBsb2cgc3dlZXAsIGdhdGVkIG5vaXNlIGFuZCBwdWxzZXMsIHN0ZXJlb11dCn0KCmZ1bmN0aW9uIGRzcF9wYXJhbXMgKCkKCXJldHVybgoJewoJCXsgWyJ0eXBlIl0gPSAiaW5wdXQiLCBuYW1lID0gIkxlbmd0aCIsIG1pbiA9IDAuMSwgbWF4ID0gNjAsIGRlZmF1bHQgPSAzLCB1bml0ID0gInMiIH0sCgkJeyBbInR5cGUiXSA9ICJpbnB1dCIsIG5hbWUgPSAiUmVzdGFydCIsIG1pbiA9IDAsIG1heCA9IDEwMDAwMDAsIGRlZmF1bHQgPSAwIH0sCgl9CmVuZAoKZnVuY3Rpb24gZHNwX2lvY29uZmlnICgpCglyZXR1cm4geyBbMV0gPSB7IGF1ZGlvX2luID0gMCwgYXVkaW9fb3V0ID0gMiB9LCB9CmVuZAoKbG9jYWwgcmF0ZSA9IDQ4MDAwCmxvY2FsIG4gPSAwICAgICAgICAgIC0tIHNhbXBsZXMgc2luY2UgdGhlIGxhc3QgcmVzdGFydApsb2NhbCBsYXN0ID0gMCAgICAgICAtLSByZXN0YXJ0IGNvdW50ZXIgc2VlbiBsYXN0CmxvY2FsIGYwLCBmMSA9IDIwLjAsIDIwMDAwLjAKCmZ1bmN0aW9uIGRzcF9pbml0IChzcikKCXJhdGUgPSBzcgplbmQKCi0tIFN0YXRlbGVzcyBub2lzZTogdGhlIHNhbWUgc2FtcGxlIGluZGV4IGFsd2F5cyBnaXZlcyB0aGUgc2FtZSB2YWx1ZSwgc28gcmVuZGVycyByZXBlYXQgZXhhY3RseS4KbG9jYWwgZnVuY3Rpb24gbm9pc2UgKGkpCglsb2NhbCBoID0gKGkgKiAxMTAzNTE1MjQ1ICsgMTIzNDUpICUgMjE0NzQ4MzY0OAoJcmV0dXJuIChoIC8gMTA3Mzc0MTgyNC4wKSAtIDEuMAplbmQKCmZ1bmN0aW9uIGRzcF9ydW4gKGlucywgb3V0cywgbl9zYW1wbGVzKQoJbG9jYWwgY3RybCA9IEN0cmxQb3J0czphcnJheSgpCglsb2NhbCBzZWNvbmRzID0gY3RybFsxXSBvciAzCglpZiAoY3RybFsyXSBvciAwKSB+PSBsYXN0IHRoZW4KCQlsYXN0ID0gY3RybFsyXSBvciAwCgkJbiA9IDAKCWVuZAoJbG9jYWwgdG90YWwgPSBtYXRoLmZsb29yKHNlY29uZHMgKiByYXRlKQoJbG9jYWwgayA9IG1hdGgubG9nIChmMSAvIGYwKQoJbG9jYWwgbGVmdCwgcmlnaHQgPSB7fSwge30KCWZvciBzID0gMSwgbl9zYW1wbGVzIGRvCgkJbG9jYWwgaSA9IG4gKyBzIC0gMQoJCWxvY2FsIHQgPSBpIC8gcmF0ZQoJCWxvY2FsIHN3ZWVwID0gbWF0aC5zaW4gKDIgKiBtYXRoLnBpICogZjAgKiBzZWNvbmRzIC8gayAqIChtYXRoLmV4cCAodCAvIHNlY29uZHMgKiBrKSAtIDEpKQoJCWxvY2FsIHJpID0gKGkgLSAyNDApICUgdG90YWwKCQlsb2NhbCB0ciA9IHJpIC8gcmF0ZQoJCWxvY2FsIHN3ZWVwX3IgPSBtYXRoLnNpbiAoMiAqIG1hdGgucGkgKiBmMCAqIHNlY29uZHMgLyBrICogKG1hdGguZXhwICh0ciAvIHNlY29uZHMgKiBrKSAtIDEpKQoJCWxvY2FsIG56ID0gbm9pc2UgKGkpICogMC4zICogKCh0ICUgMS4wKSA8IDAuMjUgYW5kIDEgb3IgMCkKCQlsb2NhbCBwdWxzZSA9ICgodCAlIDAuNSkgPCAwLjAwMikgYW5kIDEgb3IgMAoJCWxlZnRbc10gPSAwLjI1ICogKHN3ZWVwICsgbnogKyBwdWxzZSkKCQlyaWdodFtzXSA9IDAuMjUgKiAoc3dlZXBfciArIG56ICogMC41ICsgcHVsc2UpCgllbmQKCW4gPSBuICsgbl9zYW1wbGVzCglvdXRzWzFdOnNldF90YWJsZSAobGVmdCwgbl9zYW1wbGVzKQoJb3V0c1syXTpzZXRfdGFibGUgKHJpZ2h0LCBuX3NhbXBsZXMpCmVuZAo=</script>
+          <Port id="0" value="3"/>
+          <Port id="1" value="64"/>
+        </luaproc>
+        <Controllable name="Length" id="189" flags="" value="3" parameter="0"/>
+        <Controllable name="Restart" id="191" flags="" value="64" parameter="1"/>
+      </Processor>
+      <Processor id="193" name="Harmonic Compressor Dev" active="1" user-latency="0" use-user-latency="0" type="vst3" unique-id="56535448636D646861726D6F6E696320" count="1" custom="0">
+        <Automation>
+          <AutomationList automation-id="parameter-0" id="194" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-1" id="196" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-2" id="198" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-3" id="200" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-4" id="202" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-5" id="204" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-6" id="206" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-7" id="208" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-8" id="210" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-9" id="212" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-10" id="214" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-11" id="216" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-12" id="218" interpolation-style="Discrete" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-13" id="220" interpolation-style="Discrete" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-14" id="222" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-15" id="224" interpolation-style="Discrete" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-16" id="226" interpolation-style="Discrete" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-17" id="228" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-18" id="230" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-19" id="232" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-20" id="234" interpolation-style="Discrete" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-21" id="236" interpolation-style="Discrete" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-22" id="238" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-23" id="240" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-24" id="242" interpolation-style="Linear" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-25" id="244" interpolation-style="Discrete" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-26" id="246" interpolation-style="Discrete" time-domain="BeatTime" state="Off"/>
+          <AutomationList automation-id="parameter-27" id="248" interpolation-style="Discrete" time-domain="BeatTime" state="Off"/>
+        </Automation>
+        <ConfiguredInput>
+          <Channels type="audio" count="2"/>
+        </ConfiguredInput>
+        <CustomSinks>
+          <Channels type="audio" count="4"/>
+        </CustomSinks>
+        <ConfiguredOutput>
+          <Channels type="audio" count="2"/>
+        </ConfiguredOutput>
+        <PresetOutput/>
+        <InputMap-0>
+          <Channelmap type="audio" from="0" to="0"/>
+          <Channelmap type="audio" from="1" to="1"/>
+        </InputMap-0>
+        <OutputMap-0>
+          <Channelmap type="audio" from="0" to="0"/>
+          <Channelmap type="audio" from="1" to="1"/>
+        </OutputMap-0>
+        <ThruMap/>
+        <vst3 last-preset-uri="" last-preset-label="" parameter-changed-since-last-preset="1">
+          <Port id="1144492722" value="0.1666666716337204"/>
+          <Port id="602006635" value="0.5"/>
+          <Port id="108285963" value="0.86997860670089722"/>
+          <Port id="740224584" value="0.24065729975700378"/>
+          <Port id="1090594823" value="0.61014586687088013"/>
+          <Port id="3296579" value="0.97916668653488159"/>
+          <Port id="1226400808" value="0.35000002384185791"/>
+          <Port id="108124" value="0.71999996900558472"/>
+          <Port id="1727365029" value="0.090000003576278687"/>
+          <Port id="1727365030" value="0.46000000834465027"/>
+          <Port id="1727365031" value="0.82999998331069946"/>
+          <Port id="1727365032" value="0.20000000298023224"/>
+          <Port id="1243241169" value="1"/>
+          <Port id="652086327" value="1"/>
+          <Port id="513139184" value="0.31306001543998718"/>
+          <Port id="1846996824" value="1"/>
+          <Port id="1249540311" value="0"/>
+          <Port id="1706566249" value="0.42083334922790527"/>
+          <Port id="873230368" value="0.78958338499069214"/>
+          <Port id="1057129025" value="0"/>
+          <Port id="2083021974" value="1"/>
+          <Port id="2104521047" value="1"/>
+          <Port id="513666418" value="0.27000001072883606"/>
+          <Port id="1862223929" value="0.63999998569488525"/>
+          <Port id="33059805" value="0"/>
+          <Port id="1438330318" value="0"/>
+          <Port id="95468472" value="1"/>
+          <Port id="1652125811" value="0"/>
+          <chunk>VlNUMwEAAAA1NjUzNTQ0ODYzNkQ2NDY4NjE3MjZENkY2RTY5NjMyMJkFAAAAAAAAVnN0VwAAAAgAAAABAAAAAENjbksAAAVRRkJDaAAAAAJIY21kAAEFAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABLlWQzIhdAQAADw/eG1sIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IlVURi04Ij8+IDxQYXJhbWV0ZXJzPjxQQVJBTSBpZD0iYWxnb3JpdGhtTW9kZSIgdmFsdWU9IjEuMCIvPjxQQVJBTSBpZD0iYXR0YWNrIiB2YWx1ZT0iMi43MDAwMDAwNDc2ODM3MTYiLz48UEFSQU0gaWQ9ImF1dG9BdHRhY2siIHZhbHVlPSIwLjAiLz48UEFSQU0gaWQ9ImF1dG9HYWluIiB2YWx1ZT0iMC4wIi8+PFBBUkFNIGlkPSJhdXRvUmVsZWFzZSIgdmFsdWU9IjEuMCIvPjxQQVJBTSBpZD0iZGVsdGEiIHZhbHVlPSIxLjAiLz48UEFSQU0gaWQ9Imhhcm1vbmljMiIgdmFsdWU9IjkuMCIvPjxQQVJBTSBpZD0iaGFybW9uaWMzIiB2YWx1ZT0iNDYuMCIvPjxQQVJBTSBpZD0iaGFybW9uaWM0IiB2YWx1ZT0iODMuMCIvPjxQQVJBTSBpZD0iaGFybW9uaWM1IiB2YWx1ZT0iMjAuMCIvPjxQQVJBTSBpZD0iaW5wdXRHYWluIiB2YWx1ZT0iLTMuNzk5OTk5NzEzODk3NzA1Ii8+PFBBUkFNIGlkPSJrbmVlIiB2YWx1ZT0iMjMuNSIvPjxQQVJBTSBpZD0ibWFrZXVwR2FpbiIgdmFsdWU9IjAuNjAwMDAwMjAyNjU1NzkyMiIvPjxQQVJBTSBpZD0ibWl4IiB2YWx1ZT0iMC43MTk5OTk5NjkwMDU1ODQ3Ii8+PFBBUkFNIGlkPSJvdXRwdXRHYWluIiB2YWx1ZT0iMTMuOTAwMDAwNTcyMjA0NTkiLz48UEFSQU0gaWQ9Im92ZXJzYW1wbGVGaWx0ZXIiIHZhbHVlPSIxLjAiLz48UEFSQU0gaWQ9Im92ZXJzYW1wbGVNb2RlIiB2YWx1ZT0iMC4wIi8+PFBBUkFNIGlkPSJyYXRpbyIgdmFsdWU9Ijc1LjIwMDAwNDU3NzYzNjcyIi8+PFBBUkFNIGlkPSJyZWxlYXNlIiB2YWx1ZT0iNTgyLjAiLz48UEFSQU0gaWQ9InNjRW5hYmxlZCIgdmFsdWU9IjEuMCIvPjxQQVJBTSBpZD0ic2NIUEZyZXEiIHZhbHVlPSIzMC4wIi8+PFBBUkFNIGlkPSJzY0xpc3RlbiIgdmFsdWU9IjEuMCIvPjxQQVJBTSBpZD0idGhyZXNob2xkIiB2YWx1ZT0iLTMwLjAiLz48UEFSQU0gaWQ9InRyYW5zaWVudEF0dGFjayIgdmFsdWU9Ii00Ni4wIi8+PFBBUkFNIGlkPSJ0cmFuc2llbnRFbmFibGVkIiB2YWx1ZT0iMS4wIi8+PFBBUkFNIGlkPSJ0cmFuc2llbnRTcGVlZCIgdmFsdWU9IjAuNSIvPjxQQVJBTSBpZD0idHJhbnNpZW50U3VzdGFpbiIgdmFsdWU9IjI4LjAwMDAwMTkwNzM0ODYzIi8+PC9QYXJhbWV0ZXJzPgAAAAAAAAAAAEpVQ0VQcml2YXRlRGF0YQABAUJ5cGFzcwABAQMAHQAAAAAAAABKVUNFUHJpdmF0ZURhdGFMaXN0AQAAAENvbXAwAAAAAAAAAGkFAAAAAAAA</chunk>
+        </vst3>
+        <Controllable name="Algorithm" id="195" flags="" value="0.1666666716337204" parameter="0"/>
+        <Controllable name="Threshold" id="197" flags="" value="0.5" parameter="1"/>
+        <Controllable name="Ratio" id="199" flags="" value="0.86997860670089722" parameter="2"/>
+        <Controllable name="Attack" id="201" flags="" value="0.24065729975700378" parameter="3"/>
+        <Controllable name="Release" id="203" flags="" value="0.61014586687088013" parameter="4"/>
+        <Controllable name="Knee" id="205" flags="" value="0.97916668653488159" parameter="5"/>
+        <Controllable name="Makeup Gain" id="207" flags="" value="0.35000002384185791" parameter="6"/>
+        <Controllable name="Mix" id="209" flags="" value="0.71999996900558472" parameter="7"/>
+        <Controllable name="2nd Harmonic" id="211" flags="" value="0.090000003576278687" parameter="8"/>
+        <Controllable name="3rd Harmonic" id="213" flags="" value="0.46000000834465027" parameter="9"/>
+        <Controllable name="4th Harmonic" id="215" flags="" value="0.82999998331069946" parameter="10"/>
+        <Controllable name="5th Harmonic" id="217" flags="" value="0.20000000298023224" parameter="11"/>
+        <Controllable name="Sidechain Enable" id="219" flags="Toggle" value="1" parameter="12"/>
+        <Controllable name="Sidechain Listen" id="221" flags="Toggle" value="1" parameter="13"/>
+        <Controllable name="Sidechain HP Freq" id="223" flags="" value="0.31306001543998718" parameter="14"/>
+        <Controllable name="Auto Release" id="225" flags="Toggle" value="1" parameter="15"/>
+        <Controllable name="Auto Attack" id="227" flags="Toggle" value="0" parameter="16"/>
+        <Controllable name="Input Gain" id="229" flags="" value="0.42083334922790527" parameter="17"/>
+        <Controllable name="Output Gain" id="231" flags="" value="0.78958338499069214" parameter="18"/>
+        <Controllable name="Oversample" id="233" flags="" value="0" parameter="19"/>
+        <Controllable name="Oversample Filter" id="235" flags="Toggle" value="1" parameter="20"/>
+        <Controllable name="Transient Enable" id="237" flags="Toggle" value="1" parameter="21"/>
+        <Controllable name="Transient Attack" id="239" flags="" value="0.27000001072883606" parameter="22"/>
+        <Controllable name="Transient Sustain" id="241" flags="" value="0.63999998569488525" parameter="23"/>
+        <Controllable name="Transient Speed" id="243" flags="" value="0" parameter="24"/>
+        <Controllable name="Auto Gain" id="245" flags="Toggle" value="0" parameter="25"/>
+        <Controllable name="Delta Monitor" id="247" flags="Toggle" value="1" parameter="26"/>
+        <Controllable name="Bypass" id="249" flags="Toggle" value="0" parameter="27"/>
+      </Processor>
+      <Processor id="164" name="Amp" active="1" user-latency="0" use-user-latency="0" type="amp">
+        <Automation>
+          <AutomationList automation-id="gain" id="138" interpolation-style="Exponential" time-domain="AudioTime" state="Off"/>
+        </Automation>
+        <Controllable name="gaincontrol" id="137" flags="GainLike" value="1"/>
+      </Processor>
+      <Processor id="168" name="meter-QA" active="1" user-latency="0" use-user-latency="0" type="meter"/>
+      <Processor id="169" name="QA" active="1" user-latency="0" use-user-latency="0" own-input="1" own-output="0" output="QA" type="main-outs" role="Main">
+        <PannerShell bypassed="0" user-panner="" linked-to-route="1"/>
+      </Processor>
+      <Slavable/>
+      <Controllable name="monitor" id="177" flags="RealTime" value="0" monitoring=""/>
+      <Controllable name="rec-safe" id="175" flags="Toggle,RealTime" value="0"/>
+      <Controllable name="rec-enable" id="173" flags="Toggle,RealTime" value="0"/>
+    </Route>
+  </Routes>
+  <Playlists>
+    <Playlist id="179" name="QA.1" type="audio" orig-track-id="116" pgroup-id="" shared-with-ids="" frozen="0" combine-ops="0"/>
+  </Playlists>
+  <UnusedPlaylists/>
+  <RouteGroups/>
+  <Speakers>
+    <Speaker azimuth="240" elevation="0" distance="1"/>
+    <Speaker azimuth="120" elevation="0" distance="1"/>
+  </Speakers>
+  <TempoMap superclocks-per-second="282240000">
+    <Tempos>
+      <Tempo npm="120" enpm="120" note-type="4" type="Constant" locked-to-meter="0" continuing="0" active="1" sclock="0" quarters="0:0" bbt="1|1|0" omega="0"/>
+    </Tempos>
+    <Meters>
+      <Meter note-value="4" divisions-per-bar="4" sclock="0" quarters="0:0" bbt="1|1|0"/>
+    </Meters>
+    <MusicTimes/>
+  </TempoMap>
+  <ControlProtocols>
+    <Protocol name="Ableton Push 2" active="0"/>
+    <Protocol name="ContourDesign" active="0"/>
+    <Protocol name="Generic MIDI" active="0"/>
+    <Protocol name="MCP HTTP Server (Experimental)" active="0"/>
+    <Protocol name="Mackie" active="0"/>
+    <Protocol name="Novation Launch Control XL" active="0"/>
+    <Protocol name="Novation Launchkey 4" active="0"/>
+    <Protocol name="Novation Launchpad Mini" active="0"/>
+    <Protocol name="Novation Launchpad Pro" active="0"/>
+    <Protocol name="Novation Launchpad X" active="0"/>
+    <Protocol name="Open Sound Control (OSC)" active="0"/>
+    <Protocol name="PreSonus FaderPort" active="0"/>
+    <Protocol name="PreSonus FaderPort16" active="0"/>
+    <Protocol name="PreSonus FaderPort2" active="0"/>
+    <Protocol name="PreSonus FaderPort8" active="0"/>
+    <Protocol name="SSL 360: UF8 UF1" active="0"/>
+    <Protocol name="Softube Console1" active="0"/>
+    <Protocol name="Steinberg CC121" active="0"/>
+    <Protocol name="Tascam US-2400" active="0"/>
+    <Protocol name="WebSockets Server (Experimental)" active="0"/>
+  </ControlProtocols>
+  <Script lua="Lua 5.3">c2NyaXB0cyA9IHt9IA==</Script>
+  <IOPlugins/>
+</Session>

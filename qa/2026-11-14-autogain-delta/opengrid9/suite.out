@@ -1,0 +1,37 @@
+PASS     loads Harmonic Compressor Dev, 28 parameters
+PASS     finite output peak -8.5 dBFS
+PASS     not silent rms -18.3 dBFS
+PASS     deterministic render repeat differs by -240.0 dB
+SKIPPED  editor opens visual checks disabled
+  Algorithm                        audio=ok       visual=-
+  Threshold                        audio=ok       visual=-
+  Ratio                            audio=ok       visual=-
+  Attack                           audio=ok       visual=-
+  Release                          audio=ok       visual=-
+  Knee                             audio=ok       visual=-
+  Makeup Gain                      audio=ok       visual=-
+  Mix                              audio=ok       visual=-
+  2nd Harmonic                     audio=ok       visual=-
+  3rd Harmonic                     audio=ok       visual=-
+  4th Harmonic                     audio=ok       visual=-
+  5th Harmonic                     audio=ok       visual=-
+  Sidechain Enable                 audio=ok       visual=-
+  Sidechain Listen                 audio=ok       visual=-
+  Sidechain HP Freq                audio=ok       visual=-
+  Auto Release                     audio=ok       visual=-
+  Auto Attack                      audio=ok       visual=-
+  Input Gain                       audio=ok       visual=-
+  Output Gain                      audio=ok       visual=-
+  Oversample                       audio=ok       visual=-
+  Oversample Filter                audio=ok       visual=-
+  Transient Enable                 audio=ok       visual=-
+  Transient Attack                 audio=ok       visual=-
+  Transient Sustain                audio=ok       visual=-
+  Transient Speed                  audio=ok       visual=-
+  Auto Gain                        audio=ok       visual=-
+  Delta Monitor                    audio=ok       visual=-
+  Bypass                           audio=ok       visual=-
+PASS     every parameter changes the sound 
+FAIL     state survives save and reopen Ratio (0.87 -> 0.869979), Attack (0.24 -> 0.240657), Release (0.61 -> 0.610146), Knee (0.98 -> 0.979167), Sidechain HP Freq (0.31 -> 0.31306), Input Gain (0.42 -> 0.420833), Output Gain (0.79 -> 0.789583), Transient Speed (0.01 -> 0)
+PASS     editor reopens 5 close/open cycles
+report: /Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-14-autogain-delta/opengrid9/report.md

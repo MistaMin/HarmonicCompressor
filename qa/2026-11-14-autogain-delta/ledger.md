@@ -45,3 +45,47 @@ Both fixed in the same session; see `qa/2026-11-14-processor-fixes/ledger.md` an
 ## Open questions
 
 - None blocking. Both new parameters are global (not remembered per algorithm), like Oversample and the gain trims.
+
+## OpenGrid9 host run (2026-11-14)
+
+Build under test: `Harmonic Compressor Dev.vst3` installed in `~/Library/Audio/Plug-Ins/VST3`, commit 1b1c72a. Evidence folder: `qa/2026-11-14-autogain-delta/opengrid9/`.
+
+| ID | Item | Result | Evidence |
+|---|---|---|---|
+| H1 | GUI coverage, static (profile command, corrected script path) | verified: 27/27 bound | `opengrid9/gui-coverage.log` |
+| H2 | CTest on `build-autogain` (Release, no rebuild) | verified: 4/4 passed | `opengrid9/ctest.log` |
+| H3 | OpenGrid9 suite on `VST3: Harmonic Compressor Dev` (private runtime), checks: loads (28 params), finite output, not silent, deterministic render (-240 dB) | verified: all PASS | `opengrid9/report.md`, `report.json` |
+| H3a | every parameter changes the sound, incl. `Auto Gain` (-15.1 dB) and `Delta Monitor` (-5.1 dB) | verified: PASS, none DEAD/SILENT; 4 context lines from `qa/exceptions.txt` applied (Sidechain HP Freq, Transient Attack/Sustain/Speed), all `ok`; no lines added | `opengrid9/report.md` |
+| H3b | state survives save and reopen | FAIL (harness artifact, not a plugin defect): Ratio, Attack, Release, Knee, Sidechain HP Freq, Input Gain, Output Gain, Transient Speed differ by the parameter's `interval` snap on reload (e.g. Ratio 0.87 -> 75.2038 snapped to 75.2 -> 0.869979; Transient Speed 0.01 -> 0.5005 snapped to 0.5 -> 0). The OpenGrid9 bridge returns an empty state chunk, so the suite compares host-displayed normalised values exactly, and `set_param` only snaps to the host-reported `step` (0 for these). Reproduced by hand for 5 params from the ranges at PluginProcessor.cpp:196-251. `Auto Gain` and `Delta Monitor` are not in the diff: both survive. All 8 listed params are 1.5.1 parameters with unchanged ranges (S18). Not excused in `exceptions.txt` (would weaken the check); needs a decision | `opengrid9/report.md` |
+| H4 | Auto Gain 3 s history vs deterministic render | not triggered: deterministic render repeated to -240 dB with Auto Gain off (default); the sweep toggled it per-parameter and every render differed from reference as expected | `opengrid9/report.md` |
+| H5 | editor opens, editor reopens, visual sweep | SKIPPED: headless OpenGrid9 has no window; covered by `AutoGainDeltaTest` snapshots (S14-S16) and the user in REAPER | `opengrid9/report.md` |
+| H6 | pluginval | unverified: not installed, downloads not allowed in this run | none |
+| H7 | auval | SKIPPED: needs a release build installed over 1.5.1; no bundle installs allowed in this run | none |
+
+Run notes: the shared OpenGrid9 runtime stamp did not match, so the run used a private runtime (scratchpad `og9_private/opengrid9-runtime`). OpenGrid9 had not scanned the Dev bundle (its plug-in cache is the user's), so it was scanned with the app's `ardour-vst3-scanner` into a private copy of the cache; the user's `~/Library/Caches` was not written. The WAV renders in `opengrid9/` are git-ignored; the run's `home/` (symlinks) was deleted.
+
+## REAPER host run (2026-11-14)
+
+Build under test: `Harmonic Compressor Dev.vst3` (VST3 only, commit 1b1c72a), isolated hidden REAPER instance started by `reaper_qa.py launch`. Evidence folder: `qa/2026-11-14-autogain-delta/reaper-vst3/` (`report.md`, `report.json`, `editor_*.png`, `roundtrip.rpp`, `reaper.log`; WAVs and PNGs are git-ignored).
+
+| ID | Item | Result | Evidence |
+|---|---|---|---|
+| R1 | loads (31 params: 27 plugin + 4 host-owned Bypass/Bypass/Wet/Delta), finite output, not silent, deterministic render (-240 dB) | verified: PASS | `reaper-vst3/report.md` |
+| R2 | every parameter changes the sound, incl. `Auto Gain` (-13.4 dB) and `Delta Monitor` (-3.5 dB); existing context lines applied | verified: PASS; none DEAD, CONDITIONAL or SILENT; no exceptions lines added | `reaper-vst3/report.md` |
+| R3 | every parameter is shown in the GUI (visual sweep) | verified: PASS; `Auto Gain` 18.1% and `Delta Monitor` 15.0% pixel change, none NOT SHOWN. `editor_p25.png` looked at: AUTO key lit ("AUTO 0.0 dB"), DELTA key present | `reaper-vst3/report.md`, `editor_p25.png` |
+| R4 | editor opens (1080x847, 0.0% self-animation) and reopens (5 cycles) | verified: PASS | `reaper-vst3/report.md` |
+| R5 | state survives save and reopen, including Ratio, Attack, Release, Knee, Sidechain HP Freq, Input Gain, Output Gain, Transient Speed, Auto Gain, Delta Monitor | verified: PASS. The 8 parameters that failed in OpenGrid9 pass here (REAPER compares the plugin's own serialized state), which settles H3b as an OpenGrid9 bridge artifact, not a plugin defect | `reaper-vst3/report.md`, `roundtrip.rpp` |
+| R6 | AU, CLAP, LV2 formats | not run: only the Dev VST3 is installed | none |
+| R7 | pluginval, auval | as H6, H7 | none |
+
+## Validators (2026-11-14)
+
+Release-config build `build-autogain` (commit 1b1c72a); `ninja HarmonicCompressor_VST3 HarmonicCompressor_CLAP` reported "no work to do" (build current, no rebuild). Bundles were validated by path, nothing installed. Tools as in the 1.5.1 release QA: pluginval 1.0.4, clap-validator 0.4.1. Evidence: `qa/2026-11-14-autogain-delta/validators/`.
+
+| ID | Item | Result | Evidence |
+|---|---|---|---|
+| V1 | pluginval VST3, strictness 10, in-process, run 1 | verified: SUCCESS | `validators/pluginval-vst3-1.log` |
+| V2 | same, run 2 | verified: SUCCESS | `validators/pluginval-vst3-2.log` |
+| V3 | same, run 3 | verified: SUCCESS | `validators/pluginval-vst3-3.log` |
+| V4 | clap-validator 0.4.1 | verified: 44 tests, 32 passed, 0 failed, 1 warning, 11 skipped, identical counts to 1.5.1; the one warning is the known JUCE wrapper plugin_id suffix (`com.opengrid.harmoniccompressorx1` vs `com.opengrid.harmoniccompressor`) | `validators/clap-validator.log` |
+| V5 | auval, AU/CLAP/LV2 host runs | on hold: waiting for the user's decision about the password | none |

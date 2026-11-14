@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "Build architecture for macOS")
 set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS deployment target")
 
-project(HarmonicCompressor VERSION 1.5.1)
+project(HarmonicCompressor VERSION 1.5.2)
 
 if(MSVC)
     add_compile_definitions(_USE_MATH_DEFINES)
@@ -222,6 +222,18 @@ target_include_directories(ProcessorBench PRIVATE Source
 target_link_libraries(ProcessorBench PRIVATE HarmonicCompressor
     juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
 set_target_properties(ProcessorBench PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED TRUE
+    EXCLUDE_FROM_ALL TRUE)
+
+# Renders the knob bar with the settings of each user-manual screenshot (release 1.5.2 doc refresh).
+add_executable(DocKnobBarRender EXCLUDE_FROM_ALL)
+target_sources(DocKnobBarRender PRIVATE qa/2026-11-14-release-1.5.2/doc_knobbar.cpp)
+target_include_directories(DocKnobBarRender PRIVATE Source
+    $<TARGET_PROPERTY:HarmonicCompressor,INCLUDE_DIRECTORIES>)
+target_link_libraries(DocKnobBarRender PRIVATE HarmonicCompressor
+    juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
+set_target_properties(DocKnobBarRender PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED TRUE
     EXCLUDE_FROM_ALL TRUE)

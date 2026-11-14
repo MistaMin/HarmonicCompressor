@@ -1,0 +1,400 @@
+{
+ "fx": "VST3: Harmonic Compressor Dev",
+ "checks": [
+  {
+   "check": "loads",
+   "status": "PASS",
+   "detail": "VST3: Harmonic Compressor Dev (OpenGrid), 31 parameters"
+  },
+  {
+   "check": "finite output",
+   "status": "PASS",
+   "detail": "peak -6.9 dBFS"
+  },
+  {
+   "check": "not silent",
+   "status": "PASS",
+   "detail": "rms -18.3 dBFS"
+  },
+  {
+   "check": "deterministic render",
+   "status": "PASS",
+   "detail": "repeat differs by -240.0 dB"
+  },
+  {
+   "check": "editor opens",
+   "status": "PASS",
+   "detail": "1080x847, 0.0% animates by itself"
+  },
+  {
+   "check": "every parameter changes the sound",
+   "status": "PASS",
+   "detail": ""
+  },
+  {
+   "check": "every parameter is shown in the GUI",
+   "status": "PASS",
+   "detail": ""
+  },
+  {
+   "check": "state survives save and reopen",
+   "status": "PASS",
+   "detail": ""
+  },
+  {
+   "check": "editor reopens",
+   "status": "PASS",
+   "detail": "5 close/open cycles"
+  }
+ ],
+ "params": [
+  {
+   "index": 0,
+   "name": "Algorithm",
+   "ident": "0:1144492722",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -18.1,
+   "audio": "ok",
+   "visualChange": 18.33,
+   "visual": "ok"
+  },
+  {
+   "index": 1,
+   "name": "Threshold",
+   "ident": "1:602006635",
+   "default": 0.6999999881,
+   "context": "",
+   "audioDiffDb": -7.4,
+   "audio": "ok",
+   "visualChange": 22.221,
+   "visual": "ok"
+  },
+  {
+   "index": 2,
+   "name": "Ratio",
+   "ident": "2:108285963",
+   "default": 0.2425356209,
+   "context": "",
+   "audioDiffDb": -15.8,
+   "audio": "ok",
+   "visualChange": 17.262,
+   "visual": "ok"
+  },
+  {
+   "index": 3,
+   "name": "Attack",
+   "ident": "3:740224584",
+   "default": 0.359416157,
+   "context": "",
+   "audioDiffDb": -14.0,
+   "audio": "ok",
+   "visualChange": 17.57,
+   "visual": "ok"
+  },
+  {
+   "index": 4,
+   "name": "Release",
+   "ident": "4:1090594823",
+   "default": 0.3551387191,
+   "context": "",
+   "audioDiffDb": -18.9,
+   "audio": "ok",
+   "visualChange": 18.12,
+   "visual": "ok"
+  },
+  {
+   "index": 5,
+   "name": "Knee",
+   "ident": "5:3296579",
+   "default": 0.25,
+   "context": "",
+   "audioDiffDb": -29.4,
+   "audio": "ok",
+   "visualChange": 17.407,
+   "visual": "ok"
+  },
+  {
+   "index": 6,
+   "name": "Makeup Gain",
+   "ident": "6:1226400808",
+   "default": 0.3333333433,
+   "context": "",
+   "audioDiffDb": -0.6,
+   "audio": "ok",
+   "visualChange": 20.228,
+   "visual": "ok"
+  },
+  {
+   "index": 7,
+   "name": "Mix",
+   "ident": "7:108124",
+   "default": 1,
+   "context": "",
+   "audioDiffDb": -13.3,
+   "audio": "ok",
+   "visualChange": 17.504,
+   "visual": "ok"
+  },
+  {
+   "index": 8,
+   "name": "2nd Harmonic",
+   "ident": "8:1727365029",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -20.9,
+   "audio": "ok",
+   "visualChange": 18.162,
+   "visual": "ok"
+  },
+  {
+   "index": 9,
+   "name": "3rd Harmonic",
+   "ident": "9:1727365030",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -13.8,
+   "audio": "ok",
+   "visualChange": 15.712,
+   "visual": "ok"
+  },
+  {
+   "index": 10,
+   "name": "4th Harmonic",
+   "ident": "10:1727365031",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -24.8,
+   "audio": "ok",
+   "visualChange": 17.899,
+   "visual": "ok"
+  },
+  {
+   "index": 11,
+   "name": "5th Harmonic",
+   "ident": "11:1727365032",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -19.6,
+   "audio": "ok",
+   "visualChange": 17.368,
+   "visual": "ok"
+  },
+  {
+   "index": 12,
+   "name": "Sidechain Enable",
+   "ident": "12:1243241169",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -15.6,
+   "audio": "ok",
+   "visualChange": 17.636,
+   "visual": "ok"
+  },
+  {
+   "index": 13,
+   "name": "Sidechain Listen",
+   "ident": "13:652086327",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -13.3,
+   "audio": "ok",
+   "visualChange": 17.997,
+   "visual": "ok"
+  },
+  {
+   "index": 14,
+   "name": "Sidechain HP Freq",
+   "ident": "14:513139184",
+   "default": 0.6757882237,
+   "context": "Sidechain Enable=1, Threshold=0.2, Ratio=0.8",
+   "audioDiffDb": -13.2,
+   "audio": "ok",
+   "visualChange": 36.143,
+   "visual": "ok"
+  },
+  {
+   "index": 15,
+   "name": "Auto Release",
+   "ident": "15:1846996824",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -39.2,
+   "audio": "ok",
+   "visualChange": 18.593,
+   "visual": "ok"
+  },
+  {
+   "index": 16,
+   "name": "Auto Attack",
+   "ident": "16:1249540311",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -24.8,
+   "audio": "ok",
+   "visualChange": 17.048,
+   "visual": "ok"
+  },
+  {
+   "index": 17,
+   "name": "Input Gain",
+   "ident": "17:1706566249",
+   "default": 0.5,
+   "context": "",
+   "audioDiffDb": -1.0,
+   "audio": "ok",
+   "visualChange": 19.858,
+   "visual": "ok"
+  },
+  {
+   "index": 18,
+   "name": "Output Gain",
+   "ident": "18:873230368",
+   "default": 0.5,
+   "context": "",
+   "audioDiffDb": -0.6,
+   "audio": "ok",
+   "visualChange": 20.267,
+   "visual": "ok"
+  },
+  {
+   "index": 19,
+   "name": "Oversample",
+   "ident": "19:1057129025",
+   "default": 0.3333333433,
+   "context": "",
+   "audioDiffDb": 1.2,
+   "audio": "ok",
+   "visualChange": 17.232,
+   "visual": "ok"
+  },
+  {
+   "index": 20,
+   "name": "Oversample Filter",
+   "ident": "20:2083021974",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -4.9,
+   "audio": "ok",
+   "visualChange": 17.108,
+   "visual": "ok"
+  },
+  {
+   "index": 21,
+   "name": "Transient Enable",
+   "ident": "21:2104521047",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -6.1,
+   "audio": "ok",
+   "visualChange": 18.087,
+   "visual": "ok"
+  },
+  {
+   "index": 22,
+   "name": "Transient Attack",
+   "ident": "22:513666418",
+   "default": 0.5,
+   "context": "Transient Enable=1",
+   "audioDiffDb": -1.7,
+   "audio": "ok",
+   "visualChange": 13.69,
+   "visual": "ok"
+  },
+  {
+   "index": 23,
+   "name": "Transient Sustain",
+   "ident": "23:1862223929",
+   "default": 0.5,
+   "context": "Transient Enable=1",
+   "audioDiffDb": -26.1,
+   "audio": "ok",
+   "visualChange": 17.905,
+   "visual": "ok"
+  },
+  {
+   "index": 24,
+   "name": "Transient Speed",
+   "ident": "24:33059805",
+   "default": 0.5167105794,
+   "context": "Transient Enable=1, Transient Attack=1",
+   "audioDiffDb": -1.8,
+   "audio": "ok",
+   "visualChange": 14.624,
+   "visual": "ok"
+  },
+  {
+   "index": 25,
+   "name": "Auto Gain",
+   "ident": "25:1438330318",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -13.4,
+   "audio": "ok",
+   "visualChange": 18.142,
+   "visual": "ok"
+  },
+  {
+   "index": 26,
+   "name": "Delta Monitor",
+   "ident": "26:95468472",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -3.5,
+   "audio": "ok",
+   "visualChange": 14.994,
+   "visual": "ok"
+  },
+  {
+   "index": 27,
+   "name": "Bypass",
+   "ident": "27:1652125811",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -3.9,
+   "audio": "ok",
+   "visualChange": 15.132,
+   "visual": "ok"
+  },
+  {
+   "index": 28,
+   "name": "Bypass",
+   "ident": "28:bypass",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -6.1,
+   "audio": "ok",
+   "visualChange": 17.341,
+   "visual": "ok"
+  },
+  {
+   "index": 29,
+   "name": "Wet",
+   "ident": "29:wet",
+   "default": 1,
+   "context": "",
+   "audioDiffDb": -6.6,
+   "audio": "ok",
+   "visualChange": 17.032,
+   "visual": "ok"
+  },
+  {
+   "index": 30,
+   "name": "Delta",
+   "ident": "30:delta",
+   "default": 0,
+   "context": "",
+   "audioDiffDb": -3.5,
+   "audio": "ok",
+   "visualChange": 17.032,
+   "visual": "ok"
+  }
+ ],
+ "info": {
+  "name": "VST3: Harmonic Compressor Dev (OpenGrid)",
+  "latency": "3",
+  "fx": 0,
+  "numParams": 31
+ },
+ "failed": []
+}
