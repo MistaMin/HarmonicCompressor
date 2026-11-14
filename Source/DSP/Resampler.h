@@ -5,7 +5,6 @@
 #include <array>
 #include <cmath>
 #include <memory>
-#include <vector>
 
 namespace hcdsp
 {
@@ -14,8 +13,13 @@ enum class OversampleMode : int { Native = 0, TwoX = 1, FourX = 2, EightX = 3 };
 enum class ResamplerFilter : int { MinPhaseIIR = 0, LinPhaseFIR = 1 };
 
 // Multirate oversampling engine (1x / 2x / 4x / 8x) supporting both Minimum Phase (polyphase IIR)
-// and Linear Phase (equiripple FIR) half-band filters, plus a pre-allocated fractional-delay
-// compensator so parallel dry/wet Mix stays phase-aligned with the oversampled wet path.
+// and Linear Phase (equiripple FIR) half-band filters.
+//
+// Dry-path alignment: the dry signals (the dry for parallel Mix, and the untouched input used by Delta)
+// run through a second, identical up/down filter chain with no processing in between. They therefore get
+// exactly the wet path's magnitude and phase response, not just its nominal latency. A delay line cannot
+// do this: the latency is fractional (e.g. 4.433 samples at 4x Min Phase), interpolation low-passes the
+// dry, and a minimum-phase filter is not a delay at all, so its phase cannot be matched by one.
 class MultirateEngine
 {
 public:
@@ -25,28 +29,9 @@ public:
         baseBlockSize = std::max (1, samplesPerBlock);
         channels = std::max (1, numChannels);
 
-        for (size_t f = 0; f < 2; ++f)
-        {
-            const auto filterType = (f == 0)
-                ? juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR
-                : juce::dsp::Oversampling<float>::filterHalfBandFIREquiripple;
-
-            oversamplers2x[f] = std::make_unique<juce::dsp::Oversampling<float>> (
-                static_cast<size_t> (channels), 1, filterType, true);
-            oversamplers4x[f] = std::make_unique<juce::dsp::Oversampling<float>> (
-                static_cast<size_t> (channels), 2, filterType, true);
-            oversamplers8x[f] = std::make_unique<juce::dsp::Oversampling<float>> (
-                static_cast<size_t> (channels), 3, filterType, true);
-
-            oversamplers2x[f]->initProcessing (static_cast<size_t> (baseBlockSize));
-            oversamplers4x[f]->initProcessing (static_cast<size_t> (baseBlockSize));
-            oversamplers8x[f]->initProcessing (static_cast<size_t> (baseBlockSize));
-        }
-
-        // Pre-allocate dry delay ring buffer (max 8x FIR latency < 512 samples; 2048 gives ample margin).
-        delayRingSize = 2048;
-        delayRing.assign (static_cast<size_t> (channels * delayRingSize), 0.0f);
-        delayWritePos = 0;
+        wet.build (channels, baseBlockSize);
+        dry.build (2 * channels, baseBlockSize);              // dry channels, then reference channels
+        dryWork.setSize (2 * channels, baseBlockSize, false, true, false);
         reset();
     }
 
@@ -89,54 +74,29 @@ public:
 
     void reset() noexcept
     {
-        for (size_t f = 0; f < 2; ++f)
-        {
-            if (oversamplers2x[f]) oversamplers2x[f]->reset();
-            if (oversamplers4x[f]) oversamplers4x[f]->reset();
-            if (oversamplers8x[f]) oversamplers8x[f]->reset();
-        }
-        std::fill (delayRing.begin(), delayRing.end(), 0.0f);
-        delayWritePos = 0;
+        wet.reset();
+        dry.reset();
     }
 
     juce::dsp::AudioBlock<float> upsample (juce::AudioBuffer<float>& buffer)
     {
         juce::dsp::AudioBlock<float> block (buffer);
-        const size_t f = static_cast<size_t> (filter);
-        switch (mode)
-        {
-            case OversampleMode::TwoX:   return oversamplers2x[f]->processSamplesUp (block);
-            case OversampleMode::FourX:  return oversamplers4x[f]->processSamplesUp (block);
-            case OversampleMode::EightX: return oversamplers8x[f]->processSamplesUp (block);
-            case OversampleMode::Native: return block;
-        }
+        if (auto* os = wet.get (mode, filter))
+            return os->processSamplesUp (block);
         return block;
     }
 
     void downsample (juce::AudioBuffer<float>& buffer)
     {
         juce::dsp::AudioBlock<float> block (buffer);
-        const size_t f = static_cast<size_t> (filter);
-        switch (mode)
-        {
-            case OversampleMode::TwoX:   oversamplers2x[f]->processSamplesDown (block); break;
-            case OversampleMode::FourX:  oversamplers4x[f]->processSamplesDown (block); break;
-            case OversampleMode::EightX: oversamplers8x[f]->processSamplesDown (block); break;
-            case OversampleMode::Native: break;
-        }
+        if (auto* os = wet.get (mode, filter))
+            os->processSamplesDown (block);
     }
 
     float getLatencySamplesFor (OversampleMode m, ResamplerFilter flt) const noexcept
     {
-        const size_t f = static_cast<size_t> (flt);
-        switch (m)
-        {
-            case OversampleMode::TwoX:   return oversamplers2x[f] ? oversamplers2x[f]->getLatencyInSamples() : 0.0f;
-            case OversampleMode::FourX:  return oversamplers4x[f] ? oversamplers4x[f]->getLatencyInSamples() : 0.0f;
-            case OversampleMode::EightX: return oversamplers8x[f] ? oversamplers8x[f]->getLatencyInSamples() : 0.0f;
-            case OversampleMode::Native: return 0.0f;
-        }
-        return 0.0f;
+        auto* os = wet.get (m, flt);
+        return os != nullptr ? os->getLatencyInSamples() : 0.0f;
     }
 
     float getLatencySamples() const noexcept
@@ -144,50 +104,82 @@ public:
         return getLatencySamplesFor (mode, filter);
     }
 
-    // Delays `dryBuffer` in-place by `getLatencySamples()` so parallel Mix aligns with oversampled wet signal.
-    // Must be called every block so the delay ring history stays warm across Mix automation.
-    void delayDryBuffer (juce::AudioBuffer<float>& dryBuffer, int numSamples) noexcept
+    // Runs `dryBuffer` and `referenceBuffer` (same channel count as the wet path) in place through the
+    // matched filter chain, so each lines up with the oversampled wet signal in magnitude and phase.
+    // Must be called every block, with the same number of samples as the wet path, to keep its state
+    // in step with the wet chain. At 1x it does nothing.
+    void alignDryBuffers (juce::AudioBuffer<float>& dryBuffer, juce::AudioBuffer<float>& referenceBuffer,
+                          int numSamples) noexcept
     {
-        if (delayRing.empty() || delayRingSize <= 4)
+        auto* os = dry.get (mode, filter);
+        if (os == nullptr || numSamples <= 0)
             return;
 
-        const float delay = std::clamp (getLatencySamples(), 0.0f, static_cast<float> (delayRingSize - 4));
-        const int numCh = std::min (dryBuffer.getNumChannels(), channels);
-        const int dInt = static_cast<int> ( std::floor (delay));
-        const float frac = delay - static_cast<float> (dInt);
-        const int mask = delayRingSize - 1; // delayRingSize == 2048 (power of two)
-
-        int wp = delayWritePos;
-        for (int s = 0; s < numSamples; ++s)
+        const int numCh = std::min ({ dryBuffer.getNumChannels(), referenceBuffer.getNumChannels(), channels });
+        for (int ch = 0; ch < numCh; ++ch)
         {
-            const int r0 = (wp - dInt + delayRingSize) & mask;
-            const int r1 = (r0 - 1 + delayRingSize) & mask;
-            for (int ch = 0; ch < numCh; ++ch)
-            {
-                float* ring = delayRing.data() + static_cast<size_t> (ch * delayRingSize);
-                float* data = dryBuffer.getWritePointer (ch);
-                ring[wp] = data[s];
-                data[s] = (frac <= 1.0e-5f) ? ring[r0] : (ring[r0] + frac * (ring[r1] - ring[r0]));
-            }
-            wp = (wp + 1) & mask;
+            dryWork.copyFrom (ch, 0, dryBuffer, ch, 0, numSamples);
+            dryWork.copyFrom (channels + ch, 0, referenceBuffer, ch, 0, numSamples);
         }
-        delayWritePos = wp;
+
+        auto block = juce::dsp::AudioBlock<float> (dryWork).getSubsetChannelBlock (0, (size_t) (2 * channels))
+                                                           .getSubBlock (0, (size_t) numSamples);
+        os->processSamplesUp (block);
+        os->processSamplesDown (block);
+
+        for (int ch = 0; ch < numCh; ++ch)
+        {
+            dryBuffer.copyFrom (ch, 0, dryWork, ch, 0, numSamples);
+            referenceBuffer.copyFrom (ch, 0, dryWork, channels + ch, 0, numSamples);
+        }
     }
 
 private:
+    // One set of oversamplers: {2x, 4x, 8x} x {Min Phase IIR, Lin Phase FIR}.
+    struct Chain
+    {
+        std::unique_ptr<juce::dsp::Oversampling<float>> stages[3][2];
+
+        void build (int numChannels, int blockSize)
+        {
+            for (size_t f = 0; f < 2; ++f)
+            {
+                const auto filterType = (f == 0)
+                    ? juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR
+                    : juce::dsp::Oversampling<float>::filterHalfBandFIREquiripple;
+                for (size_t order = 1; order <= 3; ++order)
+                {
+                    auto& os = stages[order - 1][f];
+                    os = std::make_unique<juce::dsp::Oversampling<float>> (
+                        static_cast<size_t> (numChannels), order, filterType, true);
+                    os->initProcessing (static_cast<size_t> (blockSize));
+                }
+            }
+        }
+
+        void reset() noexcept
+        {
+            for (auto& row : stages)
+                for (auto& os : row)
+                    if (os) os->reset();
+        }
+
+        juce::dsp::Oversampling<float>* get (OversampleMode m, ResamplerFilter flt) const noexcept
+        {
+            if (m == OversampleMode::Native)
+                return nullptr;
+            return stages[static_cast<size_t> (m) - 1][static_cast<size_t> (flt)].get();
+        }
+    };
+
     double baseSampleRate = 44100.0;
     int baseBlockSize = 512;
     int channels = 2;
     OversampleMode mode = OversampleMode::TwoX;
     ResamplerFilter filter = ResamplerFilter::MinPhaseIIR;
 
-    std::unique_ptr<juce::dsp::Oversampling<float>> oversamplers2x[2];
-    std::unique_ptr<juce::dsp::Oversampling<float>> oversamplers4x[2];
-    std::unique_ptr<juce::dsp::Oversampling<float>> oversamplers8x[2];
-
-    int delayRingSize = 2048;
-    int delayWritePos = 0;
-    std::vector<float> delayRing;
+    Chain wet, dry;
+    juce::AudioBuffer<float> dryWork;
 };
 
 } // namespace hcdsp

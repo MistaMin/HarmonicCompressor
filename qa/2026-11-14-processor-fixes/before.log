@@ -1,0 +1,17 @@
+source: master @ d5b833c (before the fixes)
+PASS [F1] switch to Hybrid loads its remembered threshold (-18): -18.0
+PASS [F1] switch back to Red restores -30: -30.0
+PASS [F1] Hybrid remembers -40: -40.0
+PASS [F1] Bridge, Bus VCA, Red queued together end on Red's -30: -30.0
+PASS [F1] and Hybrid's -40 survived the queued switches: -40.0
+PASS [F1] mode switch queued before a restore does not overwrite it: threshold -12.0, mode 0
+PASS [F1] latency report follows 8x Lin Phase: 64
+PASS [F1] and 1x: 0
+PASS [F2] 1x: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+FAIL [F2] 2x Min Phase: Mix 50%/0% vs 100%, worst 10.668 / 2.251 dB  (per freq, dB: 0.1k:-0.00/-0.00 1.0k:-0.00/-0.01 5.0k:-0.11/-0.22 10.0k:-0.53/-0.84 15.0k:-2.68/-1.72 18.0k:-10.67/-2.25)
+PASS [F2] 2x Lin Phase: Mix 50%/0% vs 100%, worst 0.001 / 0.002 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+FAIL [F2] 4x Min Phase: Mix 50%/0% vs 100%, worst 9.413 / 7.907 dB  (per freq, dB: 0.1k:-0.00/-0.00 1.0k:-0.01/-0.02 5.0k:-0.23/-0.46 10.0k:-1.05/-1.96 15.0k:-3.96/-4.93 18.0k:-9.41/-7.91)
+FAIL [F2] 4x Lin Phase: Mix 50%/0% vs 100%, worst 3.206 / 8.341 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:-0.01/-0.02 5.0k:-0.23/-0.47 10.0k:-0.95/-2.01 15.0k:-2.18/-5.10 18.0k:-3.21/-8.34)
+FAIL [F2] 8x Min Phase: Mix 50%/0% vs 100%, worst 9.332 / 0.746 dB  (per freq, dB: 0.1k:-0.00/-0.00 1.0k:-0.00/-0.00 5.0k:-0.04/-0.08 10.0k:-0.26/-0.31 15.0k:-1.98/-0.59 18.0k:-9.33/-0.75)
+FAIL [F2] 8x Lin Phase: Mix 50%/0% vs 100%, worst 2.022 / 4.433 dB  (per freq, dB: 0.1k:0.00/0.01 1.0k:-0.00/-0.01 5.0k:-0.17/-0.34 10.0k:-0.68/-1.41 15.0k:-1.46/-3.17 18.0k:-2.02/-4.43)
+exit code: 139

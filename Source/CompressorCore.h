@@ -42,6 +42,10 @@ namespace ParamIDs
     static constexpr auto transientAttack  = "transientAttack";  // -100..+100 %
     static constexpr auto transientSustain = "transientSustain"; // -100..+100 %
     static constexpr auto transientSpeed   = "transientSpeed";   // 0.5..50 ms
+
+    // Appended v1.6 parameters (preserving indices 0..24 for existing sessions)
+    static constexpr auto autoGain         = "autoGain";         // bool, loudness-matched output
+    static constexpr auto delta            = "delta";            // bool, output minus dry
 }
 
 /**

@@ -26,6 +26,9 @@ Harmonic Compressor is a mastering-grade analogue dynamics processor and harmoni
 - **Built-in Transient Designer:**
   - Independent Attack and Sustain controls (-100% to +100%) with 0.5-50 ms detector speed, after the dry/wet mix and before output trim.
   - Sidechain High-Pass Filter (20 to 500 Hz, with bypass and audition modes).
+- **Auto Gain & Delta:**
+  - Auto Gain matches the output to the input's K-weighted short-term loudness (BS.1770 / EBU R128), so processing is judged without a level change.
+  - Delta plays only what the plugin changes (output minus the delay-compensated dry signal).
 - **Visual Ergonomics & 4 Themes:**
   - **Soft White:** Minimalist high-contrast studio chassis.
   - **Matrix Phosphor:** Retro CRT green glow.
@@ -66,7 +69,7 @@ python3 tools/build_user_manual.py
 
 ## Documentation
 
-A color user manual with model descriptions, signal flow and all 25 host parameters is available in [`Docs/UserManual.md`](Docs/UserManual.md) and compiles to `output/pdf/HarmonicCompressor-User-Manual.pdf`.
+A color user manual with model descriptions, signal flow and all 27 host parameters is available in [`Docs/UserManual.md`](Docs/UserManual.md) and compiles to `output/pdf/HarmonicCompressor-User-Manual.pdf`.
 
 ## Licensing & Compliance
 

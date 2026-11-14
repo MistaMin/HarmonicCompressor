@@ -1,0 +1,71 @@
+PASS [S8] K-weighting design at 48 kHz matches BS.1770-4 table, max |diff| = 0.000000000000
+PASS [S8] K-weighting response at 44.1 kHz within 0.05 dB of 48 kHz (20 Hz..10 kHz), max dev = 0.00 dB
+PASS [S8] K-weighting response at 96.0 kHz within 0.05 dB of 48 kHz (20 Hz..10 kHz), max dev = 0.03 dB
+PASS [S8] K-weighting response at 192.0 kHz within 0.05 dB of 48 kHz (20 Hz..10 kHz), max dev = 0.04 dB
+PASS [S8] test meter: 0 dBFS 997 Hz one channel = -3.010 LUFS (expected -3.01)
+PASS [S3] 48.0 kHz heavy compression (thr -30, 8:1): output-input loudness off -10.28 LU -> on -0.01 LU (RMS diff while matched 0.35 dB)
+PASS [S4] 48.0 kHz input drive +12 dB (thr -18, 4:1): output-input loudness off 4.03 LU -> on -0.01 LU (RMS diff while matched 0.24 dB)
+PASS [S4] 48.0 kHz makeup +12 dB (thr -24, 4:1): output-input loudness off 7.31 LU -> on -0.00 LU (RMS diff while matched 0.27 dB)
+PASS [S4] 48.0 kHz saturation (3rd 100%, 5th 60%, makeup +6): output-input loudness off -2.66 LU -> on 0.00 LU (RMS diff while matched -0.03 dB)
+PASS [S4] 48.0 kHz transient attack +100%, mix 50%: output-input loudness off 2.72 LU -> on -0.01 LU (RMS diff while matched -1.39 dB)
+PASS [S8] 44.1 kHz heavy compression (thr -30, 8:1): output-input loudness off -10.26 LU -> on -0.00 LU (RMS diff while matched 0.34 dB)
+PASS [S8] 44.1 kHz saturation (3rd 100%, 5th 60%, makeup +6): output-input loudness off -2.65 LU -> on 0.01 LU (RMS diff while matched -0.03 dB)
+PASS [S8] 96.0 kHz heavy compression (thr -30, 8:1): output-input loudness off -10.27 LU -> on 0.00 LU (RMS diff while matched 0.36 dB)
+PASS [S8] 96.0 kHz saturation (3rd 100%, 5th 60%, makeup +6): output-input loudness off -2.65 LU -> on -0.00 LU (RMS diff while matched -0.04 dB)
+INFO latency (samples): 1x=0 2x Min=3 2x Lin=49 4x Min=4 4x Lin=60 8x Min=5 8x Lin=64
+INFO engine latency (fractional samples): 1x=0.000 2x Min=3.137 2x Lin=49.000 4x Min=4.433 4x Lin=59.500 8x Min=4.951 8x Lin=64.250
+PASS [S3] oversample mode 0 filter 0: matched within -0.01 LU
+PASS [S3] oversample mode 1 filter 0: matched within -0.01 LU
+PASS [S3] oversample mode 1 filter 1: matched within -0.01 LU
+PASS [S3] oversample mode 2 filter 0: matched within -0.01 LU
+PASS [S3] oversample mode 2 filter 1: matched within -0.01 LU
+PASS [S3] oversample mode 3 filter 0: matched within -0.01 LU
+PASS [S3] oversample mode 3 filter 1: matched within -0.01 LU
+PASS [S3] model Red: off -10.28 LU, on -0.01 LU, applied 10.28 dB
+PASS [S3] model Hybrid: off -7.96 LU, on -0.01 LU, applied 7.96 dB
+PASS [S3] model Bridge: off -12.65 LU, on -0.01 LU, applied 12.66 dB
+PASS [S3] model Bus VCA: off -13.53 LU, on -0.01 LU, applied 13.53 dB
+PASS [S3] model 76: off -26.15 LU, on -2.15 LU, applied 24.00 dB (at the +24 dB clamp)
+PASS [S3] model Opto Leveler: off -17.61 LU, on -0.02 LU, applied 17.61 dB
+PASS [S3] model VCA 160: off -10.38 LU, on -0.01 LU, applied 10.38 dB
+INFO saturated 55 Hz bass: loudness match error -0.00 LU; an RMS match would leave the output 0.02 LU from the input
+INFO saturated 200 Hz: loudness match error -0.00 LU; an RMS match would leave the output 0.00 LU from the input
+INFO saturated 1 kHz: loudness match error -0.00 LU; an RMS match would leave the output 0.02 LU from the input
+INFO saturated program: loudness match error 0.02 LU; an RMS match would leave the output 0.28 LU from the input
+PASS [S5] gain through 6 s silence then -80 dBFS hiss: 10.26 dB -> 10.23 dB (drift 0.03 dB)
+PASS [S6] -36 dB of processing loss clamps at +24 dB: applied 24.00 dB
+PASS [S7] autoGain switched on mid-signal: max sample step 0.00406 vs steady 0.00418 (no click)
+PASS [S9] delta switched on mid-signal: max sample step 0.00169 vs steady 0.00170 (no click)
+PASS [S11] neutral null 1x: delta is -279.80 dB relative to input
+PASS [S11] neutral null 2x Min Phase: delta is -279.80 dB relative to input
+PASS [S11] neutral null 2x Lin Phase: delta is -279.80 dB relative to input
+PASS [S11] neutral null 4x Min Phase: delta is -279.80 dB relative to input
+PASS [S11] neutral null 4x Lin Phase: delta is -279.80 dB relative to input
+PASS [S11] neutral null 8x Min Phase: delta is -279.80 dB relative to input
+PASS [S11] neutral null 8x Lin Phase: delta is -279.80 dB relative to input
+PASS [S9] Auto Gain off, input +6 dB: delta = output - dry after input gain, max error 0.000000119
+PASS [S10] Auto Gain on, input +6 dB: delta = level-matched output - untouched input, max error 0.000000000
+PASS [S13] Output Gain -6 dB scales the delta + auto-gained output by -6.00 dB
+PASS [S12] Sidechain Listen output identical with Delta + Auto Gain on (max diff 0.000000000, auto gain applied 0.00 dB)
+PASS [S18] 1.5.1 parameter IDs keep their order; total 27
+PASS [S1] autoGain appended at index 25, delta at 26
+PASS [S2] both default Off
+PASS [S17] state round-trip restores Auto Gain and Delta On
+PASS [S17] 1.5.1 state (no new IDs) loads both Off
+PASS [S14] AUTO GAIN key is visible (reopen 0)
+PASS [S15] DELTA key is visible (reopen 0)
+PASS [S14] keys do not overlap Threshold/Ratio/Makeup/Mix
+PASS [S16] clicking AUTO GAIN and DELTA turns both parameters On
+PASS [S16] host automation to Off releases both keys
+PASS [S16] host automation to On lights both keys
+PASS [S14] AUTO GAIN key shows applied gain: 'AUTO +3.1 dB'
+PASS [S14] negative gain readout: 'AUTO -7.1 dB'
+PASS [S14] AUTO GAIN key is visible (reopen 1)
+PASS [S15] DELTA key is visible (reopen 1)
+PASS [S14] keys do not overlap Threshold/Ratio/Makeup/Mix
+PASS [S16] clicking AUTO GAIN and DELTA turns both parameters On
+PASS [S16] host automation to Off releases both keys
+PASS [S16] host automation to On lights both keys
+PASS [S14] AUTO GAIN key shows applied gain: 'AUTO +3.1 dB'
+PASS [S14] negative gain readout: 'AUTO -7.1 dB'
+64 checks, 0 failures

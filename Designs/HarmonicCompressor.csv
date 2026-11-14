@@ -1,9 +1,9 @@
 GoodLookinUI design version 1
 id,parameter,label,style,colour,x,y,width,height,font size
-threshold,threshold,THRESHOLD,Mtl,#C7A66A,19,6,196,64,9.5
-ratio,ratio,RATIO,Mtl,#C7A66A,237,6,196,64,9.5
-makeupGain,makeupGain,MAKEUP,Mtl,#5899C4,455,6,196,64,9.5
-mix,mix,MIX,Mtl,#5899C4,673,6,196,64,9.5
+threshold,threshold,THRESHOLD,Mtl,#C7A66A,12,6,170,64,9.5
+ratio,ratio,RATIO,Mtl,#C7A66A,196,6,170,64,9.5
+makeupGain,makeupGain,MAKEUP,Mtl,#5899C4,380,6,170,64,9.5
+mix,mix,MIX,Mtl,#5899C4,564,6,170,64,9.5
 inputGain,inputGain,GAIN,Mtl,#2E86C1,6,26,84,44,9.0
 outputGain,outputGain,GAIN,Mtl,#3CCF5A,6,26,84,44,9.0
 attack,attack,ATTACK,Mtl,#C7A66A,10,6,122,42,9.5

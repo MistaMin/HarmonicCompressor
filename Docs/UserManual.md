@@ -11,8 +11,10 @@ Harmonic Compressor implements a pristine, zero-latency direct signal path desig
 1. **Input Gain:** Input trim precedes the dry/wet split and compressor processing.
 2. **Compression and Sidechain:** The selected model computes gain reduction. Sidechain filtering affects detection; the Listen modes audition the detector input.
 3. **Harmonic Saturation:** Four independent controls set 2nd, 3rd, 4th and 5th harmonic contributions after compression. Even-order coloration includes DC blocking. The smooth rail stage is active with harmonic coloration; it is not a guaranteed output ceiling after later gain stages.
-4. **Dry/Wet Mix:** The processed signal is blended with the latency-aligned dry signal.
-5. **Transient Designer and Output Gain:** The transient designer runs after the mix and before output trim. Output gain can raise the level above digital full scale; leave appropriate headroom.
+4. **Dry/Wet Mix:** The processed signal is blended with the dry signal. With oversampling on, the dry signal passes through the same oversampling filters as the processed signal, so blending causes no phase cancellation or treble loss.
+5. **Transient Designer:** The transient designer runs after the mix.
+6. **Auto Gain and Delta:** Auto Gain, when on, matches the output loudness to the untouched plugin input. Delta, when on, replaces the output with the difference between the output and the dry signal.
+7. **Output Gain:** Final trim, after Auto Gain and Delta. Output gain can raise the level above digital full scale; leave appropriate headroom.
 
 ## The Seven Analogue Topologies
 
@@ -50,6 +52,26 @@ Harmonic Compressor integrates a stereo-linked differential-envelope transient p
 - **Attack (-100% to +100%):** Emphasizes or softens transient onsets after compression and mixing.
 - **Sustain (-100% to +100%):** Extends or tightens decay and room tails. Speed (0.5-50 ms) adjusts the detector response.
 - **Sidechain High-Pass Filter (20-500 Hz, with bypass):** Prevents heavy bass and kick transients from excessively triggering pumping artifacts on stereo busses.
+
+## Auto Gain & Delta
+
+The **AUTO GAIN** and **DELTA** keys sit at the right end of the knob bar. Both are global: they do not change when you switch compressor model.
+
+**Auto Gain** keeps the output as loud as the plugin's input, so you judge compression and saturation by their sound, not by a level change. It measures loudness the way the ear weighs it: K-weighted short-term loudness (ITU-R BS.1770, the 3-second window of EBU R128), which counts low bass less and the presence region more than a plain RMS meter. The key shows the gain it is applying, for example `AUTO +4.2 dB`.
+
+- The reference is the untouched input, before Input Gain. With Auto Gain on, Input Gain works as a drive control: push it to compress or saturate harder at the same output loudness.
+- Makeup still changes the sound with Auto Gain on, because it sets how hard the signal drives the harmonics stage.
+- The 3-second window follows the average level and does not undo the compression itself. After you change a control, the level settles within about 3 seconds.
+- Passages below -70 LUFS (silence, fades) hold the current gain instead of raising it.
+- The range is +/-24 dB. Settings that remove more than 24 dB of loudness stay quieter than the input.
+- Output Gain applies after Auto Gain, as a final trim.
+
+**Delta** plays only what the plugin changes: the output minus the dry signal, delay-compensated.
+
+- With Auto Gain off, the dry signal is taken after Input Gain, so you hear what compression, makeup, saturation and the transient designer add or remove.
+- With Auto Gain on, the dry signal is the untouched input, so you hear the level-matched difference from bypass.
+- The dry signal passes through the same oversampling filters as the processed signal, so with neutral settings Delta is silent at every oversampling setting.
+- Sidechain Listen takes priority over Delta.
 
 ![Dynamic Auto-Scaling Real-Time Metering](harmonic-compressor-autoscale.png)
 
@@ -133,5 +155,7 @@ Use a host that supports the selected plugin format. Compatibility and validatio
 | `transientAttack` | Transient Attack | -100 to +100 | 0 | % | Onset emphasis or softening |
 | `transientSustain` | Transient Sustain | -100 to +100 | 0 | % | Tail emphasis or tightening |
 | `transientSpeed` | Transient Speed | 0.5 to 50 | 10 | ms | Transient detector timing |
+| `autoGain` | Auto Gain | Off / On | Off | bool | Match output loudness to the untouched input |
+| `delta` | Delta Monitor | Off / On | Off | bool | Play output minus dry signal |
 
 The colour theme, curve visibility and module positions are saved interface settings. They are not additional host parameters. The Harmonics preset selector sets the four harmonic controls; the Sidechain selector combines its enable and listen switches.

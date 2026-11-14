@@ -108,6 +108,7 @@ target_sources(HarmonicCompressor
         Source/DSP/Adaa.h
         Source/DSP/Resampler.h
         Source/DSP/TransientDesigner.h
+        Source/DSP/LoudnessMatch.h
         Source/UI/Toolkit.h
         Source/UI/Panel.h
         Source/UI/Knob.h
@@ -179,3 +180,48 @@ if(BUILD_TESTING)
     add_test(NAME SliderClickTest COMMAND SliderClickTest)
     add_test(NAME EditorSliderTest COMMAND EditorSliderTest)
 endif()
+
+# Auto Gain (loudness match) and Delta: DSP, state and editor checks against the real processor.
+# Optional argument: a folder for editor snapshots.
+add_executable(AutoGainDeltaTest EXCLUDE_FROM_ALL)
+target_sources(AutoGainDeltaTest PRIVATE qa/2026-11-14-autogain-delta/autogain_delta_test.cpp)
+target_include_directories(AutoGainDeltaTest PRIVATE Source
+    $<TARGET_PROPERTY:HarmonicCompressor,INCLUDE_DIRECTORIES>)
+target_link_libraries(AutoGainDeltaTest PRIVATE HarmonicCompressor
+    juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
+set_target_properties(AutoGainDeltaTest PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED TRUE
+    EXCLUDE_FROM_ALL TRUE)
+if(BUILD_TESTING)
+    add_test(NAME AutoGainDeltaTest COMMAND AutoGainDeltaTest)
+endif()
+
+# Queued message-thread work vs processor lifetime, mode memory and restore race; dry-path response
+# against the wet resampler chain in every oversampling mode.
+add_executable(ProcessorFixesTest EXCLUDE_FROM_ALL)
+target_sources(ProcessorFixesTest PRIVATE qa/2026-11-14-processor-fixes/processor_fixes_test.cpp)
+target_include_directories(ProcessorFixesTest PRIVATE Source
+    $<TARGET_PROPERTY:HarmonicCompressor,INCLUDE_DIRECTORIES>)
+target_link_libraries(ProcessorFixesTest PRIVATE HarmonicCompressor
+    juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
+set_target_properties(ProcessorFixesTest PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED TRUE
+    EXCLUDE_FROM_ALL TRUE)
+if(BUILD_TESTING)
+    add_test(NAME ProcessorFixesTest COMMAND ProcessorFixesTest)
+endif()
+
+# processBlock cost per oversampling mode (not a pass/fail test; run by hand, compare against
+# dsp/evidence/bench_matrix.txt).
+add_executable(ProcessorBench EXCLUDE_FROM_ALL)
+target_sources(ProcessorBench PRIVATE qa/2026-11-14-processor-fixes/processor_bench.cpp)
+target_include_directories(ProcessorBench PRIVATE Source
+    $<TARGET_PROPERTY:HarmonicCompressor,INCLUDE_DIRECTORIES>)
+target_link_libraries(ProcessorBench PRIVATE HarmonicCompressor
+    juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
+set_target_properties(ProcessorBench PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED TRUE
+    EXCLUDE_FROM_ALL TRUE)
