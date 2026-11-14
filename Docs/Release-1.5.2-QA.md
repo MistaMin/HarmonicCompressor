@@ -26,3 +26,15 @@ and `qa/2026-11-14-processor-fixes/`).
 - Pro Tools interactive session, Logic, Studio One.
 - Plugin Manager site upload (`upload_release_binaries.sh`, run by the owner in their own Terminal).
 - Windows and Linux builds (native machines required).
+
+## Published (2026-11-14)
+
+- GitHub release `v1.5.2` (tag on e0f615e), marked Latest. Assets: the `.pkg`, the manual PDF, their
+  `.sha256` files and `opengrid-manifest.json`. Downloaded back: both checksums OK, manifest identical.
+- README download links and pictures on master return 200.
+- Commits 8b21e93, 3d4d99b, e0f615e show author login `MistaMin` on GitHub; no assistant attribution
+  lines. Pull request #1 (the same changes, earlier commit identity) was closed with a pointer to 8b21e93;
+  its branch `feature/autogain-delta` still exists on GitHub.
+- Repository description corrected to the formats and platform actually shipped (macOS only).
+- Staged in `Release Binaries/MistaMin/HarmonicCompressor/1.5.2/` with `RELEASE-READY`; the upload
+  script's dry run lists it as approved. The site upload itself is still to be run by the owner.

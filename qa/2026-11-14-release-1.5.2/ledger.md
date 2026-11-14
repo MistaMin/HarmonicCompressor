@@ -29,7 +29,7 @@ scratch-folder path in five OpenGrid9 QA logs, so no build input differs. Depend
 | R15 | auval, pluginval AU | need the AU installed over the 1.5.1 copy in `/Library` (administrator password) | unverified: not installed in this run |
 | R16 | REAPER suite AU, CLAP, LV2 on this build | same reason as R15; VST3 9/9 PASS on the same source (`qa/2026-11-14-autogain-delta/reaper-vst3/`) | unverified: not installed in this run |
 | R17 | Manifest (schema 2) from the final stapled `.pkg` | `opengrid-manifest.json`: 24,641,380 bytes, SHA-256 2434ac8cfc2decd15b43cb6c85795c2ae76c66a9f7be60bd64e483e9aafd6a2d | verified |
-| R18 | Commits as MistaMin, no assistant attribution lines | `git log --format='%an %ae%n%B'` | verified before push; GitHub author login checked after push (Docs/Release-1.5.2-QA.md) |
+| R18 | Commits as MistaMin, no assistant attribution lines | `git log --format='%an %ae%n%B'` | verified: GitHub author login MistaMin on all three commits (Docs/Release-1.5.2-QA.md) |
 | R19 | Windows and Linux builds | need user-owned native machines | out of scope (user decision 2026-11-08) |
 | R20 | Pro Tools interactive session, Logic, Studio One | not run; AAX Validator is the automated AAX evidence | unverified |
 
