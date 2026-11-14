@@ -87,5 +87,5 @@ Release-config build `build-autogain` (commit 1b1c72a); `ninja HarmonicCompresso
 | V1 | pluginval VST3, strictness 10, in-process, run 1 | verified: SUCCESS | `validators/pluginval-vst3-1.log` |
 | V2 | same, run 2 | verified: SUCCESS | `validators/pluginval-vst3-2.log` |
 | V3 | same, run 3 | verified: SUCCESS | `validators/pluginval-vst3-3.log` |
-| V4 | clap-validator 0.4.1 | verified: 44 tests, 32 passed, 0 failed, 1 warning, 11 skipped, identical counts to 1.5.1; the one warning is the known JUCE wrapper plugin_id suffix (`com.opengrid.harmoniccompressorx1` vs `com.opengrid.harmoniccompressor`) | `validators/clap-validator.log` |
+| V4 | clap-validator 0.4.1 | verified: 44 tests, 32 passed, 0 failed, 1 warning, 11 skipped, identical counts to 1.5.1; the one counted warning is `state-invalid-random` (the plugin accepts 3x1 MB of random state bytes without crashing), as in 1.5.1; the validator also prints a note about the JUCE wrapper's plugin_id suffix (`com.opengrid.harmoniccompressorx1`) | `validators/clap-validator.log` |
 | V5 | auval, AU/CLAP/LV2 host runs | on hold: waiting for the user's decision about the password | none |

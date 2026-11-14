@@ -1,0 +1,27 @@
+Using the default wraptool account for this operation: mistamin
+Performing a "verify" operation...
+
+  using the installed wrapper binaries located here: "/Applications/PACEAntiPiracy/Eden/Fusion/Versions/6/lib/wrapper"
+
+Checking the "PACE Tools" license to run this tool...
+  License Verified.
+The digital signature was verified:
+  Signature version:      kBinarySigVersion1
+  Signer name:            Mista Min
+  Signer GUID:            89DFC074-ED5E-7197-7FE4-E95E3107D50C
+  Signer PublisherId:     0x116f0e65
+  Product name:           Harmonic Compressor
+  Product GUID:           56C67100-D558-11F1-804C-005056928F3B
+  Product AuthId:         0x56d7e407
+  Platform:               mac
+  Signing system name:    Darwin
+  Signing system release: 24.6.0
+  Signing system version: Darwin Kernel Version 24.6.0: Fri Feb 27 19:31:41 PST 2026; root:xnu-11417.140.69.709.8~1/RELEASE_ARM64_T6000
+  Signing tool:           WrapInstaller v6.0.2, 7088da2c
+  Date signed GMT:        2026-11-14T13:07:03
+  Date Signed local:      2026-11-14T14:07:03
+
+The binary was signed, but not wrapped.
+
+Verify operation completed.
+

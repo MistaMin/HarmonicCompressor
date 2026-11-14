@@ -1,0 +1,7 @@
+source 7e8b956bb16cd79022c195fe9c077858a9f960b4
+JUCE 91ad83ae34a81e0833b1a2b0866f54846370ae53 dirty=0
+../HybridEQ/third_party/GoodLookinUI 54ad7984b63daf4008ddc9844cb7c21f0238005a dirty=0
+../clap-juce-extensions 6bde108329ff9fc24404b79b8b397261a75cf6a8 dirty=0
+ProductName:		macOS ProductVersion:		15.7.5 BuildVersion:		24G624 
+arm64
+Xcode 16.0

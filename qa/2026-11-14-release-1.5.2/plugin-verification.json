@@ -1,0 +1,52 @@
+[
+  {
+    "format": "vst3",
+    "path": "Library/Audio/Plug-Ins/VST3/Harmonic Compressor.vst3",
+    "arches": [
+      "x86_64",
+      "arm64"
+    ],
+    "sha256": "5f72aa8a3d448a187c4cbd60b7c50b029ac166e3bdfbb129c420fc2eb37e238c",
+    "signature": "verified"
+  },
+  {
+    "format": "au",
+    "path": "Library/Audio/Plug-Ins/Components/Harmonic Compressor.component",
+    "arches": [
+      "x86_64",
+      "arm64"
+    ],
+    "sha256": "c068a417b7bf7e3a0070f44771cbbc43b7ee22a219f4c605925290fdec353112",
+    "signature": "verified"
+  },
+  {
+    "format": "clap",
+    "path": "Library/Audio/Plug-Ins/CLAP/Harmonic Compressor.clap",
+    "arches": [
+      "x86_64",
+      "arm64"
+    ],
+    "sha256": "7204122fb7d89f25f14399b3ef0396526784a20c7f555bb87f5acc5eee9b53ea",
+    "signature": "verified"
+  },
+  {
+    "format": "lv2",
+    "path": "Library/Audio/Plug-Ins/LV2/Harmonic Compressor.lv2",
+    "arches": [
+      "x86_64",
+      "arm64"
+    ],
+    "sha256": "02bfa959cb971342d2d9425dedb6190254cd46abbc2c148f67cc25e1818c9898",
+    "signature": "verified"
+  },
+  {
+    "format": "aax",
+    "path": "Library/Application Support/Avid/Audio/Plug-Ins/Harmonic Compressor.aaxplugin",
+    "arches": [
+      "x86_64",
+      "arm64"
+    ],
+    "sha256": "36a9729988efd2d903b31cb47827c636e655d64b6768c18eb2fe437871a7ac8d",
+    "signature": "verified"
+  }
+]

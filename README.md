@@ -9,6 +9,25 @@ Harmonic Compressor is a mastering-grade analogue dynamics processor and harmoni
 
 ![Harmonic Compressor Soft White Interface](Docs/harmonic-compressor-soft-white.png)
 
+| Themes | Movable modules | Auto Gain on, live metering |
+|---|---|---|
+| ![All four themes](Docs/harmonic-compressor-themes-grid.png) | ![Floating modules](Docs/harmonic-compressor-modules.png) | ![Auto Gain and metering](Docs/harmonic-compressor-autoscale.png) |
+
+## Version 1.5.2
+
+- **Auto Gain:** matches the output to the input's loudness (K-weighted, 3 s window, ±24 dB), so you hear the processing without a level change. The key shows the applied gain.
+- **Delta:** plays only what the plugin adds or removes.
+- **Fixed parallel Mix with oversampling:** the dry signal is no longer dulled or phase-shifted.
+- **Fixed** a possible crash when a host removed the plugin right after a model or oversampling change.
+- Existing sessions load unchanged; the two new switches start off.
+
+## Download
+
+- **macOS (11 or later, Apple silicon and Intel):** [Harmonic-Compressor-1.5.2-macos.pkg](https://github.com/MistaMin/HarmonicCompressor/releases/download/v1.5.2/Harmonic-Compressor-1.5.2-macos.pkg) ([SHA-256](https://github.com/MistaMin/HarmonicCompressor/releases/download/v1.5.2/Harmonic-Compressor-1.5.2-macos.pkg.sha256)). The installer puts VST3, AU, CLAP, LV2 and AAX in the standard plug-in folders and the manual and licences in `/Library/Application Support/Harmonic Compressor`. It is signed with a Developer ID and notarized by Apple; the AAX is PACE-signed for Pro Tools.
+- **User manual:** [HarmonicCompressor-1.5.2-User-Manual.pdf](https://github.com/MistaMin/HarmonicCompressor/releases/download/v1.5.2/HarmonicCompressor-1.5.2-User-Manual.pdf)
+- All releases: [GitHub Releases](https://github.com/MistaMin/HarmonicCompressor/releases). Also available through the OpenGrid Plugin Manager.
+- Not available yet: Windows and Linux builds, and a Standalone app. Tested hosts for 1.5.2: REAPER (VST3) and OpenGrid9; Pro Tools, Logic and Studio One were not tested with this version.
+
 ## Highlights & Features
 
 - **7 Analogue Modeled Topologies:**
@@ -54,14 +73,12 @@ cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
 ninja -C build HarmonicCompressor_VST3 HarmonicCompressor_AU HarmonicCompressor_CLAP HarmonicCompressor_LV2 HarmonicCompressor_AAX
 ```
 
-JUCE and GoodLookinUI must be available locally before configuring. The pinned
-dependency checkouts used for release builds are recorded in
-[the cross-platform workflow](.github/workflows/build-crossplatform.yml).
+JUCE and GoodLookinUI must be available locally before configuring. The dependency
+revisions used for the 1.5.2 release build are recorded in
+[`qa/2026-11-14-release-1.5.2/build-env.txt`](qa/2026-11-14-release-1.5.2/build-env.txt).
 Pass `-DGOODLOOKINUI_ROOT=/path/to/GoodLookinUI` if it is not in the default sibling location.
 
-Version 1.5.2 adds Auto Gain (loudness-matched output) and Delta monitoring, and fixes
-parallel Mix with oversampling on. Existing parameter IDs and saved sessions are preserved;
-older sessions load with both new switches off. See [release notes](RELEASE_NOTES.md).
+See the [release notes](RELEASE_NOTES.md) for every version.
 
 To compile the versioned PDF user manual:
 ```bash
@@ -74,6 +91,7 @@ A color user manual with model descriptions, signal flow and all 27 host paramet
 
 ## Licensing & Compliance
 
-- **Plugin Code:** Open-source under the [MIT License](LICENSE).
+- **Plugin Code:** Open-source under the [MIT License](LICENSE), copyright Marcos Quirino Deida.
+- **Official binaries:** freeware under [LICENSE-BINARIES.txt](LICENSE-BINARIES.txt); third-party notices in [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
 - **Framework:** Depends on [JUCE](https://juce.com) (dual-licensed under AGPLv3 / Commercial Starter/Pro).
 - **Trademarks:** AAX and Pro Tools are trademarks of Avid Technology, Inc.

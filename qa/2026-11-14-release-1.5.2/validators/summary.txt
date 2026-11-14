@@ -1,0 +1,5 @@
+pluginval run 1 exit=0
+pluginval run 2 exit=0
+pluginval run 3 exit=0
+clap-validator exit=0
+aax exit=0

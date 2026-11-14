@@ -1,0 +1,48 @@
+{
+  "schema": 2,
+  "plugin": "Harmonic Compressor",
+  "version": "1.5.2",
+  "released": "2026-11-14",
+  "highlights": [
+    "Add Auto Gain: output matched to the input's loudness",
+    "Add Delta: hear only what the compressor changes",
+    "Fix parallel Mix with oversampling (dull, phase-shifted dry signal)",
+    "Fix a crash after model or oversampling changes on plugin removal",
+    "Signed, notarized universal macOS installer: VST3, AU, CLAP, LV2, AAX"
+  ],
+  "archives": [
+    {
+      "os": "macos",
+      "arch": [
+        "universal"
+      ],
+      "min_os": "11.0",
+      "build_class": "modern",
+      "name": "Harmonic-Compressor-1.5.2-macos.pkg",
+      "size": 24641380,
+      "sha256": "2434ac8cfc2decd15b43cb6c85795c2ae76c66a9f7be60bd64e483e9aafd6a2d",
+      "installs": [
+        {
+          "format": "vst3",
+          "path": "Library/Audio/Plug-Ins/VST3/Harmonic Compressor.vst3"
+        },
+        {
+          "format": "au",
+          "path": "Library/Audio/Plug-Ins/Components/Harmonic Compressor.component"
+        },
+        {
+          "format": "clap",
+          "path": "Library/Audio/Plug-Ins/CLAP/Harmonic Compressor.clap"
+        },
+        {
+          "format": "lv2",
+          "path": "Library/Audio/Plug-Ins/LV2/Harmonic Compressor.lv2"
+        },
+        {
+          "format": "aax",
+          "path": "Library/Application Support/Avid/Audio/Plug-Ins/Harmonic Compressor.aaxplugin"
+        }
+      ]
+    }
+  ]
+}

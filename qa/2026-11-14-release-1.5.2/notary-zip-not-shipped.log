@@ -1,0 +1,11 @@
+Conducting pre-submission checks for Harmonic-Compressor-1.5.2-macos.zip and initiating connection to the Apple notary service...
+Submission ID received
+  id: 24e2eedc-6bcb-4774-86d2-350df49e4db5
+Successfully uploaded file
+  id: 24e2eedc-6bcb-4774-86d2-350df49e4db5
+  path: /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/Harmonic-Compressor-1.5.2-macos.zip
+Waiting for processing to complete.
+Current status: In Progress...Current status: In Progress....Current status: In Progress.....Current status: In Progress......Current status: Accepted.......Processing complete
+  id: 24e2eedc-6bcb-4774-86d2-350df49e4db5
+  status: Accepted
+

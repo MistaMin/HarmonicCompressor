@@ -1,0 +1,55 @@
+== Harmonic Compressor installer builder ==
+Artefacts dir: /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg-input/HarmonicCompressor_artefacts/Release
+  + LICENSE-BINARIES.txt included
+  + User Manual PDF included
+  + VST3 included
+  + AU included
+  + CLAP included
+  + LV2 included
+  + AAX included (PACE Eden signed)
+pkgbuild: Inferring bundle components from contents of /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg/staging
+pkgbuild: Writing new component property list to /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg/component.plist
+pkgbuild: Reading components from /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg/component.plist
+pkgbuild: Adding component at Library/Application Support/Avid/Audio/Plug-Ins/Harmonic Compressor.aaxplugin
+pkgbuild: Adding component at Library/Application Support/Avid/Audio/Plug-Ins/Harmonic Compressor.aaxplugin/Contents/__Pace_Eden.bundle
+pkgbuild: Adding component at Library/Audio/Plug-Ins/CLAP/Harmonic Compressor.clap
+pkgbuild: Adding component at Library/Audio/Plug-Ins/VST3/Harmonic Compressor.vst3
+pkgbuild: Adding component at Library/Audio/Plug-Ins/Components/Harmonic Compressor.component
+pkgbuild: Wrote package to /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg/HarmonicCompressor-component.pkg
+productbuild: Wrote synthesized distribution to /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg/distribution.xml
+== Synthesizing product distribution package ==
+productbuild: Wrote product to /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg/HarmonicCompressor-1.5.2-macOS-unsigned.pkg
+== Signing installer package with Developer ID Installer ==
+productsign: using timestamp authority for signature
+productsign: signing product with identity "Developer ID Installer: Marcos Deida (ZQYU67JUBH)" from keychain /Users/marcosdeida/Library/Keychains/login.keychain-db
+productsign: adding certificate "Developer ID Certification Authority"
+productsign: adding certificate "Apple Root CA"
+productsign: Wrote signed product archive to /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg/HarmonicCompressor-1.5.2-macOS.pkg
+== Submitting installer package to Apple Notary Service ==
+Conducting pre-submission checks for HarmonicCompressor-1.5.2-macOS.pkg and initiating connection to the Apple notary service...
+Submission ID received
+  id: f5a77ef9-f960-4e0f-9252-8753feb09cbf
+Successfully uploaded file
+  id: f5a77ef9-f960-4e0f-9252-8753feb09cbf
+  path: /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg/HarmonicCompressor-1.5.2-macOS.pkg
+Waiting for processing to complete.
+Current status: In Progress...Current status: In Progress....Current status: In Progress.....Current status: Accepted......Processing complete
+  id: f5a77ef9-f960-4e0f-9252-8753feb09cbf
+  status: Accepted
+
+== Stapling notarization ticket to installer package ==
+Processing: /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg/HarmonicCompressor-1.5.2-macOS.pkg
+Processing: /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg/HarmonicCompressor-1.5.2-macOS.pkg
+The staple and validate action worked!
+Processing: /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg/HarmonicCompressor-1.5.2-macOS.pkg
+The validate action worked!
+== Stapling notarization ticket to standalone app ==
+File /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg-input/HarmonicCompressor_artefacts/Release/Standalone/Harmonic Compressor.app does not exist. Error Domain=NSCocoaErrorDomain Code=260 "The file “Harmonic Compressor.app” couldn’t be opened because there is no such file." UserInfo={NSURL=file:///Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg-input/HarmonicCompressor_artefacts/Release/Standalone/Harmonic%20Compressor.app, NSFilePath=/Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg-input/HarmonicCompressor_artefacts/Release/Standalone/Harmonic Compressor.app, NSUnderlyingError=0x14e005110 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+File /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg-input/HarmonicCompressor_artefacts/Release/Standalone/Harmonic Compressor.app does not exist. Error Domain=NSCocoaErrorDomain Code=260 "The file “Harmonic Compressor.app” couldn’t be opened because there is no such file." UserInfo={NSURL=file:///Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg-input/HarmonicCompressor_artefacts/Release/Standalone/Harmonic%20Compressor.app, NSFilePath=/Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg-input/HarmonicCompressor_artefacts/Release/Standalone/Harmonic Compressor.app, NSUnderlyingError=0x130904400 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+File /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg-input/HarmonicCompressor_artefacts/Release/Standalone/Harmonic Compressor.app does not exist. Error Domain=NSCocoaErrorDomain Code=260 "The file “Harmonic Compressor.app” couldn’t be opened because there is no such file." UserInfo={NSURL=file:///Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg-input/HarmonicCompressor_artefacts/Release/Standalone/Harmonic%20Compressor.app, NSFilePath=/Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg-input/HarmonicCompressor_artefacts/Release/Standalone/Harmonic Compressor.app, NSUnderlyingError=0x1579041e0 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+== Gatekeeper assessment ==
+/Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg/HarmonicCompressor-1.5.2-macOS.pkg: accepted
+source=Notarized Developer ID
+
+== Done ==
+Notarized installer package: /Volumes/Developer/OpenGrid/HarmonicCompressor/dist/release-1.5.2/pkg/HarmonicCompressor-1.5.2-macOS.pkg

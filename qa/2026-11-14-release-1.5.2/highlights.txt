@@ -1,0 +1,5 @@
+Add Auto Gain: output matched to the input's loudness
+Add Delta: hear only what the compressor changes
+Fix parallel Mix with oversampling (dull, phase-shifted dry signal)
+Fix a crash after model or oversampling changes on plugin removal
+Signed, notarized universal macOS installer: VST3, AU, CLAP, LV2, AAX
