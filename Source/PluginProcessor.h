@@ -4,6 +4,7 @@
 #include "CompressorCore.h"
 #include "DSP/Resampler.h"
 #include "DSP/TransientDesigner.h"
+#include "DSP/LoudnessMatch.h"
 
 //==============================================================================
 /** AAX client extensions: names the control-surface page table shipped in Contents/Resources.
@@ -24,7 +25,8 @@ struct HarmonicCompressorAAXExtensions : juce::AAXClientExtensions
     lock-free.
 */
 class HarmonicCompressorAudioProcessor : public juce::AudioProcessor,
-                                          private juce::AudioProcessorValueTreeState::Listener
+                                          private juce::AudioProcessorValueTreeState::Listener,
+                                          private juce::AsyncUpdater
 {
 public:
     //==============================================================================
@@ -90,6 +92,8 @@ public:
     std::atomic<float> peakOutputDbL { -60.0f }, peakOutputDbR { -60.0f };
     std::atomic<float> vuGrDb     { 0.0f };
     std::atomic<float> lastTransientGainDb { 0.0f };
+    // Gain Auto Gain is applying (smoothed, dB); 0 when Auto Gain is off and settled.
+    std::atomic<float> autoGainAppliedDb { 0.0f };
 
 private:
     //==============================================================================
@@ -98,6 +102,16 @@ private:
     hcdsp::MultirateEngine multirate;
     hcdsp::TransientDesigner transientDesigner;
     juce::AudioBuffer<float> dryBuffer;
+    // Untouched plugin input (before Input Gain), aligned with the wet path through the matched resampler
+    // chain: Delta's dry signal while Auto Gain is on.
+    juce::AudioBuffer<float> referenceBuffer;
+    // Unfiltered copy of the same input: Auto Gain's loudness reference. It is what bypass sounds like,
+    // so the match is to bypass, not to the band-limited signal the resampler filters produce.
+    juce::AudioBuffer<float> loudnessInputBuffer;
+    hcdsp::LoudnessMatcher loudnessMatcher;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> autoGainSmoothed;
+    juce::SmoothedValue<float> deltaSmoothed;          // 0 = normal output, 1 = output minus dry
+    juce::SmoothedValue<float> deltaReferenceSmoothed; // 0 = dry after Input Gain, 1 = untouched input
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> inputGainSmoothed;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> outputGainSmoothed;
     void updateReportedLatency();
@@ -156,6 +170,15 @@ private:
     double hostSampleRate = 44100.0;
 
     void parameterChanged (const juce::String& parameterID, float newValue) override;
+
+    // Work that parameterChanged() hands to the message thread. An AsyncUpdater owned by the processor
+    // is cancelled when the processor is destroyed, so a queued update can never run on a freed object
+    // (MessageManager::callAsync with a captured `this` could), and triggering it does not allocate.
+    void handleAsyncUpdate() override;
+    std::atomic<bool> latencyUpdatePending { false };
+    // Pending mode switch packed as (restore generation << 32) | (mode index + 1); 0 = none. One atomic
+    // so the index and the generation it was requested under are always read as a pair.
+    std::atomic<uint64_t> pendingModeSwitch { 0 };
     void saveSnapshot (int modeIndex);
     void loadSnapshot (int modeIndex);
 
@@ -186,6 +209,8 @@ private:
     std::atomic<float>* transientAttackParam = nullptr;
     std::atomic<float>* transientSustainParam = nullptr;
     std::atomic<float>* transientSpeedParam = nullptr;
+    std::atomic<float>* autoGainParam = nullptr;
+    std::atomic<float>* deltaParam = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HarmonicCompressorAudioProcessor)
 };

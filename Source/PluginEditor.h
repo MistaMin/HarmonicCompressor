@@ -28,7 +28,8 @@
       the Compression History field: Compression (timing & knee), Harmonics, Sidechain,
       and end-of-chain Transient Designer.
     - Input and Output Gain horizontal sliders directly beneath their respective segmented lamp meters.
-    - Four electro-optical turbine rotary knobs (Threshold, Ratio, Makeup, Mix) with OLED readouts.
+    - Four electro-optical turbine rotary knobs (Threshold, Ratio, Makeup, Mix) with OLED readouts,
+      followed by the AUTO GAIN (loudness-matched output) and DELTA (output minus dry) keys.
     - Top toolbar with Compressor Model, Oversampling factor (1x..8x), Oversampling Filter
       (Minimum Phase / Linear Phase), Transient Designer modifier toggle, Curve toggle, and
       4-mode Colour selector.
@@ -52,6 +53,8 @@ public:
     FloatingModule& getSidechainModule() noexcept { return scModule; }
     FloatingModule& getTransientModule() noexcept { return transientModule; }
     DropdownButton& getColourModeSelector() noexcept { return colourModeSelector; }
+    KeyButton& getAutoGainKey() noexcept { return autoGainKey; }
+    KeyButton& getDeltaKey() noexcept { return deltaKey; }
 
     Knob* findControl (const std::string& id) const
     {
@@ -147,7 +150,11 @@ private:
               autoReleaseKey     { "AUTO RELEASE", juce::Colour (0xff29ec6b) },
               transientHeaderKey { "TRANSIENT",    juce::Colour (0xff42f5bd) },
               transientModuleKey { "ACTIVE",       juce::Colour (0xff42f5bd) },
-              curveToggleKey     { "CURVE",        juce::Colour (0xff36deb8) };
+              curveToggleKey     { "CURVE",        juce::Colour (0xff36deb8) },
+              autoGainKey        { "AUTO GAIN",    juce::Colour (0xff36deb8) },
+              deltaKey           { "DELTA",        juce::Colour (0xfff5cc36) };
+    void updateAutoGainKeyText();
+    bool autoGainState = false;
     std::vector<std::unique_ptr<KeyBinding>> keyBindings;
 
     std::vector<std::unique_ptr<Knob>> knobs;
