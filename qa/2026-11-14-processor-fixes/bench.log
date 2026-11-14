@@ -1,0 +1,16 @@
+== before (master @ d5b833c)
+BENCH 1x 0.0548 ms/block 1.03 % of deadline
+BENCH 2x Min 0.1140 ms/block 2.14 % of deadline
+BENCH 2x Lin 0.1380 ms/block 2.59 % of deadline
+BENCH 4x Min 0.2224 ms/block 4.17 % of deadline
+BENCH 4x Lin 0.2491 ms/block 4.67 % of deadline
+BENCH 8x Min 0.4457 ms/block 8.36 % of deadline
+BENCH 8x Lin 0.4867 ms/block 9.13 % of deadline
+== after (this change)
+BENCH 1x 0.0591 ms/block 1.11 % of deadline
+BENCH 2x Min 0.1404 ms/block 2.63 % of deadline
+BENCH 2x Lin 0.2023 ms/block 3.79 % of deadline
+BENCH 4x Min 0.2724 ms/block 5.11 % of deadline
+BENCH 4x Lin 0.3572 ms/block 6.70 % of deadline
+BENCH 8x Min 0.5430 ms/block 10.18 % of deadline
+BENCH 8x Lin 0.6734 ms/block 12.63 % of deadline

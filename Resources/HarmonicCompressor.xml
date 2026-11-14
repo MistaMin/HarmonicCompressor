@@ -39,6 +39,8 @@
 				</Page>
 				<Page num='2'>
 					<Cell row='1' col='1' knobID="transientSpeed" inOutButtonID="" selectButtonID=""/>
+					<Cell row='1' col='2' knobID="autoGain" inOutButtonID="" selectButtonID=""/>
+					<Cell row='1' col='3' knobID="delta" inOutButtonID="" selectButtonID=""/>
 				</Page>
 			</PageTable>
 		</PTLayout>
@@ -67,6 +69,8 @@
 			<CtrlID>oversampleMode</CtrlID>
 			<CtrlID>oversampleFilter</CtrlID>
 			<CtrlID>transientEnabled</CtrlID>
+			<CtrlID>autoGain</CtrlID>
+			<CtrlID>delta</CtrlID>
 			<CtrlID>MasterBypassID</CtrlID>
 		</DiscCtrls>
 	</Editor>

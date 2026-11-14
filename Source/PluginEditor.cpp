@@ -273,7 +273,8 @@ HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (
     // --- Top Toolbar: Model, Oversampling (1x..8x + Min/Lin Phase), Transient modifier, Curve toggle, 4-Mode Colour selector ---
     for (auto* dd : { &algorithmSelector, &oversampleSelector, &osFilterSelector, &colourModeSelector, &harmAlgoSelector, &scModeSelector })
         dd->setSkin (&skin);
-    for (auto* kb : { &autoAttackKey, &autoReleaseKey, &transientHeaderKey, &transientModuleKey, &curveToggleKey })
+    for (auto* kb : { &autoAttackKey, &autoReleaseKey, &transientHeaderKey, &transientModuleKey, &curveToggleKey,
+                      &autoGainKey, &deltaKey })
         kb->setSkin (&skin);
 
     for (auto* c : std::initializer_list<juce::Component*> {
@@ -390,10 +391,23 @@ HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (
 
     // --- Four electro-optical turbine rotary knobs (Threshold, Ratio, Makeup, Mix) in the bottom bar ---
     const juce::Colour gold (0xffc7a66a), blue (0xff5899c4);
-    addKnob (knobBar, ParamIDs::threshold,  "THRESHOLD", gold, [] (double v) { return dbText (v); },                  {  19, 6, 196, 64 }, true, false);
-    addKnob (knobBar, ParamIDs::ratio,      "RATIO",     gold, ratioText,                                             { 237, 6, 196, 64 }, true, false);
-    addKnob (knobBar, ParamIDs::makeupGain, "MAKEUP",    blue, [] (double v) { return dbText (v, true); },            { 455, 6, 196, 64 }, true, true);
-    addKnob (knobBar, ParamIDs::mix,        "MIX",       blue, [] (double v) { return percentText (v * 100.0, 0); },  { 673, 6, 196, 64 }, true, true);
+    addKnob (knobBar, ParamIDs::threshold,  "THRESHOLD", gold, [] (double v) { return dbText (v); },                  {  12, 6, 170, 64 }, true, false);
+    addKnob (knobBar, ParamIDs::ratio,      "RATIO",     gold, ratioText,                                             { 196, 6, 170, 64 }, true, false);
+    addKnob (knobBar, ParamIDs::makeupGain, "MAKEUP",    blue, [] (double v) { return dbText (v, true); },            { 380, 6, 170, 64 }, true, true);
+    addKnob (knobBar, ParamIDs::mix,        "MIX",       blue, [] (double v) { return percentText (v * 100.0, 0); },  { 564, 6, 170, 64 }, true, true);
+
+    // --- Output monitoring keys at the right end of the knob bar: Auto Gain and Delta ---
+    knobBar.addAndMakeVisible (autoGainKey);
+    knobBar.addAndMakeVisible (deltaKey);
+    autoGainKey.setBounds (750,  8, 126, 28);
+    deltaKey   .setBounds (750, 40, 126, 28);
+    autoGainKey.setTooltip ("Auto Gain: match the output loudness (K-weighted, 3 s) to the plugin input, "
+                            "so you hear the processing without a level change. Output Gain still applies after it.");
+    deltaKey.setTooltip ("Delta: hear only what the processing changes (output minus dry). "
+                         "With Auto Gain on, the difference is taken against the untouched, level-matched input.");
+    keyBindings.push_back (std::make_unique<KeyBinding> (audioProcessor, ParamIDs::autoGain, autoGainKey,
+        [this] (bool on) { autoGainState = on; updateAutoGainKeyText(); }));
+    keyBindings.push_back (std::make_unique<KeyBinding> (audioProcessor, ParamIDs::delta, deltaKey));
 
     // --- 1. Compression floating module (Attack, Release, Knee sliders + Auto Attack/Release toggles) ---
     addKnob (compModule.content(), ParamIDs::attack,  "ATTACK",  gold, msText,                               {  10, 6, 122, 42 }, false, false);
@@ -606,6 +620,21 @@ HarmonicCompressorAudioProcessorEditor::~HarmonicCompressorAudioProcessorEditor(
 void HarmonicCompressorAudioProcessorEditor::timerCallback()
 {
     updateModuleSummaries();
+    updateAutoGainKeyText();
+}
+
+// The Auto Gain key shows the gain it is applying while on, so the compensation is never hidden.
+void HarmonicCompressorAudioProcessorEditor::updateAutoGainKeyText()
+{
+    juce::String text ("AUTO GAIN");
+    if (autoGainState)
+    {
+        const float db = audioProcessor.autoGainAppliedDb.load (std::memory_order_relaxed);
+        text = "AUTO " + juce::String (std::abs (db) < 0.05f ? "" : (db > 0.0f ? "+" : "-"))
+             + juce::String (std::abs (db), 1) + " dB";
+    }
+    if (autoGainKey.getButtonText() != text)
+        autoGainKey.setButtonText (text);
 }
 
 void HarmonicCompressorAudioProcessorEditor::setColourMode (int modeIndex)
@@ -825,6 +854,8 @@ void HarmonicCompressorAudioProcessorEditor::applySkin()
     transientHeaderKey.setLamp (threshCol);
     transientModuleKey.setLamp (threshCol);
     curveToggleKey    .setLamp (secondary);
+    autoGainKey       .setLamp (secondary);
+    deltaKey          .setLamp (warn);
 
     for (auto& k : knobs)
     {
@@ -832,7 +863,8 @@ void HarmonicCompressorAudioProcessorEditor::applySkin()
         k->setTextColours (skin.text(), skin.mid());
     }
 
-    for (auto* key : { &autoAttackKey, &autoReleaseKey, &transientHeaderKey, &transientModuleKey, &curveToggleKey })
+    for (auto* key : { &autoAttackKey, &autoReleaseKey, &transientHeaderKey, &transientModuleKey, &curveToggleKey,
+                       &autoGainKey, &deltaKey })
     {
         key->setSkin (&skin);
         key->setStyle (skin.pushStyle);

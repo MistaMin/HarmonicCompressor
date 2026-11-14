@@ -1,0 +1,17 @@
+PASS [F1] switch to Hybrid loads its remembered threshold (-18): -18.0
+PASS [F1] switch back to Red restores -30: -30.0
+PASS [F1] Hybrid remembers -40: -40.0
+PASS [F1] Bridge, Bus VCA, Red queued together end on Red's -30: -30.0
+PASS [F1] and Hybrid's -40 survived the queued switches: -40.0
+PASS [F1] mode switch queued before a restore does not overwrite it: threshold -12.0, mode 0
+PASS [F1] latency report follows 8x Lin Phase: 64
+PASS [F1] and 1x: 0
+PASS [F2] 1x: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [F2] 2x Min Phase: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [F2] 2x Lin Phase: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [F2] 4x Min Phase: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [F2] 4x Lin Phase: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [F2] 8x Min Phase: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [F2] 8x Lin Phase: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [F1] 50 processors destroyed with model and oversampling changes queued; message loop ran without a crash
+16 checks, 0 failures

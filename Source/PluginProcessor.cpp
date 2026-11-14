@@ -36,6 +36,8 @@ HarmonicCompressorAudioProcessor::HarmonicCompressorAudioProcessor()
     transientAttackParam  = apvts.getRawParameterValue (ParamIDs::transientAttack);
     transientSustainParam = apvts.getRawParameterValue (ParamIDs::transientSustain);
     transientSpeedParam   = apvts.getRawParameterValue (ParamIDs::transientSpeed);
+    autoGainParam         = apvts.getRawParameterValue (ParamIDs::autoGain);
+    deltaParam            = apvts.getRawParameterValue (ParamIDs::delta);
 
     // Seed each mode's remembered parameters with that mode's hardware-style
     // defaults for attack/release/knee, and sensible shared defaults for
@@ -67,6 +69,7 @@ HarmonicCompressorAudioProcessor::HarmonicCompressorAudioProcessor()
 
 HarmonicCompressorAudioProcessor::~HarmonicCompressorAudioProcessor()
 {
+    cancelPendingUpdate();
     apvts.removeParameterListener (ParamIDs::algorithmMode, this);
     apvts.removeParameterListener (ParamIDs::oversampleMode, this);
     apvts.removeParameterListener (ParamIDs::oversampleFilter, this);
@@ -135,9 +138,12 @@ void HarmonicCompressorAudioProcessor::loadSnapshot (int modeIndex)
 
 void HarmonicCompressorAudioProcessor::parameterChanged (const juce::String& parameterID, float newValue)
 {
+    // Both reactions must run on the message thread (setLatencySamples, setValueNotifyingHost), and
+    // automation can deliver this callback from any thread, including the audio thread.
     if (parameterID == ParamIDs::oversampleMode || parameterID == ParamIDs::oversampleFilter)
     {
-        juce::MessageManager::callAsync ([this] { updateReportedLatency(); });
+        latencyUpdatePending.store (true, std::memory_order_release);
+        triggerAsyncUpdate();
         return;
     }
 
@@ -145,28 +151,34 @@ void HarmonicCompressorAudioProcessor::parameterChanged (const juce::String& par
         return;
 
     const int newIndex = juce::jlimit (0, (int) CompressorMode::Count - 1, juce::roundToInt (newValue));
+    const uint64_t restoreGeneration = stateRestoreGeneration.load (std::memory_order_acquire);
+    pendingModeSwitch.store ((restoreGeneration << 32) | (uint64_t) (newIndex + 1), std::memory_order_release);
+    triggerAsyncUpdate();
+}
 
+void HarmonicCompressorAudioProcessor::handleAsyncUpdate()
+{
+    if (latencyUpdatePending.exchange (false, std::memory_order_acq_rel))
+        updateReportedLatency();
+
+    // Several switches before delivery coalesce to the last one; the end state is the same as applying
+    // each in turn, since every intermediate mode would only re-save the snapshot it had just loaded.
+    const uint64_t pending = pendingModeSwitch.exchange (0, std::memory_order_acq_rel);
+    if (pending == 0)
+        return;
+
+    // A state restore after this switch was queued wins: applying the remembered
+    // snapshot now would overwrite the values the host just restored.
+    if ((uint32_t) (pending >> 32) != stateRestoreGeneration.load (std::memory_order_acquire))
+        return;
+
+    const int newIndex = (int) (pending & 0xffffffffu) - 1;
     if (newIndex == currentModeIndex)
         return;
 
-    const auto restoreGeneration = stateRestoreGeneration.load (std::memory_order_acquire);
-
-    // setValueNotifyingHost() below must run on the message thread; automation
-    // can deliver this callback from other threads, so hop over if needed.
-    juce::MessageManager::callAsync ([this, newIndex, restoreGeneration]
-    {
-        // A state restore after this switch was queued wins: applying the remembered
-        // snapshot now would overwrite the values the host just restored.
-        if (restoreGeneration != stateRestoreGeneration.load (std::memory_order_acquire))
-            return;
-
-        if (newIndex == currentModeIndex)
-            return;
-
-        saveSnapshot (currentModeIndex);
-        currentModeIndex = newIndex;
-        loadSnapshot (currentModeIndex);
-    });
+    saveSnapshot (currentModeIndex);
+    currentModeIndex = newIndex;
+    loadSnapshot (currentModeIndex);
 }
 
 //==============================================================================
@@ -237,6 +249,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout HarmonicCompressorAudioProce
     layout.add (std::make_unique<juce::AudioParameterFloat> (ParamIDs::transientSpeed, "Transient Speed",
                                                              juce::NormalisableRange<float> (0.5f, 50.0f, 0.1f, 0.4f), 10.0f));
 
+    // Appended v1.6 parameters (preserving indices 0..24 for existing sessions)
+    layout.add (std::make_unique<juce::AudioParameterBool> (ParamIDs::autoGain, "Auto Gain", false));
+    layout.add (std::make_unique<juce::AudioParameterBool> (ParamIDs::delta, "Delta Monitor", false));
+
     return layout;
 }
 
@@ -261,6 +277,14 @@ void HarmonicCompressorAudioProcessor::prepareToPlay (double sampleRate, int sam
     multirate.setConfig (osMode, osFilter);
 
     transientDesigner.prepare (sampleRate);
+    loudnessMatcher.prepare (sampleRate);
+    autoGainSmoothed.reset (sampleRate, 0.100);
+    autoGainSmoothed.setCurrentAndTargetValue (1.0f);
+    autoGainAppliedDb.store (0.0f, std::memory_order_relaxed);
+    deltaSmoothed.reset (sampleRate, 0.020);
+    deltaSmoothed.setCurrentAndTargetValue (deltaParam->load (std::memory_order_relaxed) > 0.5f ? 1.0f : 0.0f);
+    deltaReferenceSmoothed.reset (sampleRate, 0.050);
+    deltaReferenceSmoothed.setCurrentAndTargetValue (autoGainParam->load (std::memory_order_relaxed) > 0.5f ? 1.0f : 0.0f);
 
     inputGainSmoothed.reset (sampleRate, 0.010);
     inputGainSmoothed.setCurrentAndTargetValue (
@@ -278,6 +302,8 @@ void HarmonicCompressorAudioProcessor::prepareToPlay (double sampleRate, int sam
     engine.reset();
 
     dryBuffer.setSize (mainNumChannels, samplesPerBlock, false, false, true);
+    referenceBuffer.setSize (mainNumChannels, samplesPerBlock, false, false, true);
+    loudnessInputBuffer.setSize (mainNumChannels, samplesPerBlock, false, false, true);
     updateReportedLatency();
 }
 
@@ -290,6 +316,13 @@ void HarmonicCompressorAudioProcessor::reset()
 {
     multirate.reset();
     transientDesigner.reset();
+    loudnessMatcher.reset();
+    autoGainSmoothed.setCurrentAndTargetValue (1.0f);
+    autoGainAppliedDb.store (0.0f, std::memory_order_relaxed);
+    if (deltaParam != nullptr)
+        deltaSmoothed.setCurrentAndTargetValue (deltaParam->load (std::memory_order_relaxed) > 0.5f ? 1.0f : 0.0f);
+    if (autoGainParam != nullptr)
+        deltaReferenceSmoothed.setCurrentAndTargetValue (autoGainParam->load (std::memory_order_relaxed) > 0.5f ? 1.0f : 0.0f);
     engine.reset();
     vuInputBallisticsL.reset (-60.0f);
     vuInputBallisticsR.reset (-60.0f);
@@ -347,6 +380,10 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     // declared in prepareToPlay.
     if (dryBuffer.getNumSamples() < numSamples || dryBuffer.getNumChannels() != numChannels)
         dryBuffer.setSize (numChannels, numSamples, false, false, true);
+    if (referenceBuffer.getNumSamples() < numSamples || referenceBuffer.getNumChannels() != numChannels)
+        referenceBuffer.setSize (numChannels, numSamples, false, false, true);
+    if (loudnessInputBuffer.getNumSamples() < numSamples || loudnessInputBuffer.getNumChannels() != numChannels)
+        loudnessInputBuffer.setSize (numChannels, numSamples, false, false, true);
 
     multirate.ensureBlockSize (numSamples);
 
@@ -379,11 +416,21 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     const float trSustain = transientSustainParam->load (std::memory_order_relaxed);
     const float trSpeed   = transientSpeedParam->load (std::memory_order_relaxed);
 
+    const bool autoGainOn = autoGainParam->load (std::memory_order_relaxed) > 0.5f;
+    const bool deltaOn    = deltaParam->load (std::memory_order_relaxed) > 0.5f;
+
     // Harmonics are stored as 0..100 % in the APVTS; the engine expects 0..1.
     const float h2 = harmonic2Param->load (std::memory_order_relaxed) / 100.0f;
     const float h3 = harmonic3Param->load (std::memory_order_relaxed) / 100.0f;
     const float h4 = harmonic4Param->load (std::memory_order_relaxed) / 100.0f;
     const float h5 = harmonic5Param->load (std::memory_order_relaxed) / 100.0f;
+
+    // --- Untouched plugin input: Auto Gain loudness reference and Delta's dry signal with Auto Gain on ---
+    for (int ch = 0; ch < numChannels; ++ch)
+    {
+        referenceBuffer.copyFrom (ch, 0, mainBuffer, ch, 0, numSamples);
+        loudnessInputBuffer.copyFrom (ch, 0, mainBuffer, ch, 0, numSamples);
+    }
 
     // --- Input Gain stage (drives input meter, history PRE trace, and compressor threshold) ---
     inputGainSmoothed.setTargetValue (juce::Decibels::decibelsToGain (inGainDb));
@@ -417,11 +464,12 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     const float makeupGainLinear = juce::Decibels::decibelsToGain (params.makeupGainDb);
     const float mixWet = params.mix;
 
-    // Always capture and latency-compensate dryBuffer so parallel Mix aligns phase-coherently
-    // across 1x/2x/4x/8x Min Phase (IIR) and Lin Phase (FIR) oversampling modes.
+    // Always capture the dry signal and run it, with the untouched-input reference, through the matched
+    // resampler chain, so parallel Mix and Delta line up with the wet path in magnitude and phase in
+    // every 1x/2x/4x/8x Min Phase (IIR) and Lin Phase (FIR) mode.
     for (int ch = 0; ch < numChannels; ++ch)
         dryBuffer.copyFrom (ch, 0, mainBuffer, ch, 0, numSamples);
-    multirate.delayDryBuffer (dryBuffer, numSamples);
+    multirate.alignDryBuffers (dryBuffer, referenceBuffer, numSamples);
 
     float inputPeak = 0.0f;
     float inputPeakCh[2] = { 0.0f, 0.0f };
@@ -534,6 +582,52 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     if (! scListen)
         transientDesigner.processBlock (mainBuffer, numSamples, trEnabled, trAttack, trSustain, trSpeed);
     lastTransientGainDb.store (transientDesigner.getLastAppliedGainDb(), std::memory_order_relaxed);
+
+    // --- Auto Gain: match short-term K-weighted loudness to the untouched input (feed-forward) ---
+    // Measurement always runs so engaging Auto Gain lands on a settled value. Sidechain Listen is an
+    // audition of the detector, so it freezes the measurement and bypasses compensation. The few samples
+    // of oversampling latency between the two signals are irrelevant to a 3 s loudness window.
+    if (! scListen)
+        loudnessMatcher.process (loudnessInputBuffer, mainBuffer, numSamples);
+
+    const float autoGainTargetDb = (autoGainOn && ! scListen) ? loudnessMatcher.getTargetGainDb() : 0.0f;
+    autoGainSmoothed.setTargetValue (juce::Decibels::decibelsToGain (autoGainTargetDb));
+    if (autoGainSmoothed.isSmoothing() || std::abs (autoGainSmoothed.getCurrentValue() - 1.0f) > 1.0e-6f)
+    {
+        for (int s = 0; s < numSamples; ++s)
+        {
+            const float g = autoGainSmoothed.getNextValue();
+            for (int ch = 0; ch < numChannels; ++ch)
+                mainBuffer.getWritePointer (ch)[s] *= g;
+        }
+    }
+    autoGainAppliedDb.store (juce::Decibels::gainToDecibels (autoGainSmoothed.getCurrentValue(), -100.0f),
+                             std::memory_order_relaxed);
+
+    // --- Delta: output minus the dry signal the output is compared with ---
+    // Auto Gain off: the latency-aligned dry after Input Gain (what the processing changed).
+    // Auto Gain on: the latency-aligned untouched input (what changed relative to bypass, level-matched).
+    // Both the on/off switch and the reference change are crossfaded so neither clicks.
+    deltaSmoothed.setTargetValue ((deltaOn && ! scListen) ? 1.0f : 0.0f);
+    deltaReferenceSmoothed.setTargetValue (autoGainOn ? 1.0f : 0.0f);
+    if (deltaSmoothed.isSmoothing() || deltaSmoothed.getCurrentValue() > 0.0f)
+    {
+        for (int s = 0; s < numSamples; ++s)
+        {
+            const float amount = deltaSmoothed.getNextValue();
+            const float useInput = deltaReferenceSmoothed.getNextValue();
+            for (int ch = 0; ch < numChannels; ++ch)
+            {
+                const float dry = dryBuffer.getReadPointer (ch)[s];
+                const float reference = dry + useInput * (referenceBuffer.getReadPointer (ch)[s] - dry);
+                mainBuffer.getWritePointer (ch)[s] -= amount * reference;
+            }
+        }
+    }
+    else
+    {
+        deltaReferenceSmoothed.skip (numSamples);
+    }
 
     // --- Output Gain stage ---
     outputGainSmoothed.setTargetValue (juce::Decibels::decibelsToGain (outGainDb));
