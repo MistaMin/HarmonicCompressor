@@ -1,3 +1,18 @@
+# Harmonic Compressor 1.5.3
+
+- Fixed Red and Hybrid in stereo: both channels shared one detector, so release ran about twice as fast as set, the gain stepped at every host buffer, and the result depended on the buffer size. All seven models now detect stereo-linked (the louder channel sets one gain for both). Saved Red and Hybrid sessions sound different (slower, smoother release).
+- Hybrid now blends its feedback path as described (75 % feed-forward, 25 % feedback). It was never fed, so Hybrid compressed less than its Ratio setting. Saved Hybrid sessions compress somewhat more.
+- Fixed Hybrid at ratios between 0:1 and 1:1, which boosted loud signals without limit (up to hundreds of dB). It now only reduces gain there, like the other models.
+- Fixed external sidechain ducking: a sidechain that went silent between hits made the compressor detect the main input. Once the sidechain has carried signal, silence on it now means no compression.
+- Each model's remembered settings are now saved with the session. Choosing a model in the plugin window recalls them; a model change from host automation changes only the model, so offline renders no longer depend on timing.
+- The Knee control is enabled only in Red, the one model with a soft knee; in the other models it had no effect. The transfer curve draws a hard knee for them.
+- Dragging the transfer curve no longer resets an infinite or negative ratio to 20:1 or 1:1.
+- Lower CPU use, mainly with oversampling: Delta's reference filters run only while Delta and Auto Gain are on (4x Lin Phase: 0.37 to 0.28 ms per 256-sample block at 48 kHz in Red; measured on Apple silicon).
+
+macOS: universal Apple silicon/Intel build (arm64 and x86_64), macOS 11 or later. Plugin Manager package: VST3, AU, CLAP, LV2 and PACE-signed AAX. This plugin ships no Standalone app. Windows and Linux builds are listed only after their native builds and tests pass on their own machines.
+
+Approved binary downloads are published on the GitHub release page and through the OpenGrid Plugin Manager.
+
 # Harmonic Compressor 1.5.2
 
 - Added Auto Gain: matches the output to the input's K-weighted short-term loudness (ITU-R BS.1770, 3 s window), gated at -70 LUFS, +/-24 dB range. The AUTO GAIN key shows the applied gain.

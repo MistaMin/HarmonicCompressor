@@ -1,0 +1,7 @@
+BENCH 1x 0.0489 ms/block 0.92 % of deadline
+BENCH 2x Min 0.1090 ms/block 2.04 % of deadline
+BENCH 2x Lin 0.1579 ms/block 2.96 % of deadline
+BENCH 4x Min 0.2220 ms/block 4.16 % of deadline
+BENCH 4x Lin 0.2805 ms/block 5.26 % of deadline
+BENCH 8x Min 0.4380 ms/block 8.21 % of deadline
+BENCH 8x Lin 0.5205 ms/block 9.76 % of deadline

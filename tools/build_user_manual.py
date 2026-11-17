@@ -15,6 +15,7 @@ VERSION_FILE = ROOT / "VERSION"
 VERSION = VERSION_FILE.read_text().strip() if VERSION_FILE.exists() else "1.5.0"
 SOURCE = ROOT / "Docs/UserManual.md"
 OUTPUT = ROOT / "output/pdf/HarmonicCompressor-User-Manual.pdf"
+NUMBERED = re.compile(r"\d+\. ")
 
 def inline(text):
     text = escape(text)
@@ -105,17 +106,18 @@ def main():
             continue
         if line.startswith("!["):
             target = re.fullmatch(r"!\[[^\]]*\]\(([^)]+)\)", line)
-            path = SOURCE.parent / target.group(1)
-            if path.exists():
-                w, h = ImageReader(str(path)).getSize()
-                # Max image height to avoid overflow
-                max_h = 320
-                render_w = width
-                render_h = width * h / w
-                if render_h > max_h:
-                    render_h = max_h
-                    render_w = max_h * w / h
-                story.extend([Image(str(path), width=render_w, height=render_h), Spacer(1, 10)])
+            path = SOURCE.parent / target.group(1) if target else None
+            if path is None or not path.exists():
+                raise SystemExit(f"Image not found: {line}")
+            w, h = ImageReader(str(path)).getSize()
+            # Max image height to avoid overflow
+            max_h = 320
+            render_w = width
+            render_h = width * h / w
+            if render_h > max_h:
+                render_h = max_h
+                render_w = max_h * w / h
+            story.extend([Image(str(path), width=render_w, height=render_h), Spacer(1, 10)])
             i += 1
             continue
         if line.startswith("|"):
@@ -162,8 +164,8 @@ def main():
             story.append(Paragraph(inline(line[4:]), sub3))
             i += 1
             continue
-        if line.startswith("- "):
-            story.append(Paragraph("• " + inline(line[2:]), bullet))
+        if line.startswith("- ") or NUMBERED.match(line):
+            story.append(Paragraph("• " + inline(line[2:]) if line.startswith("- ") else inline(line), bullet))
             i += 1
             continue
         if line.startswith("$$") and line.endswith("$$"):
@@ -175,7 +177,8 @@ def main():
         
         paragraph = [line]
         i += 1
-        while i < len(lines) and lines[i].strip() and not lines[i].startswith(("#", "|", "- ", "![", "<!--", "$$")):
+        while (i < len(lines) and lines[i].strip() and not lines[i].startswith(("#", "|", "- ", "![", "<!--", "$$"))
+               and not NUMBERED.match(lines[i])):
             paragraph.append(lines[i].strip())
             i += 1
         story.append(Paragraph(inline(" ".join(paragraph)), body))

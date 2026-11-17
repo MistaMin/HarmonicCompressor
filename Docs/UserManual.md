@@ -1,4 +1,4 @@
-# Harmonic Compressor (version 1.5.2)
+# Harmonic Compressor (version 1.5.3)
 
 Harmonic Compressor is a mastering-grade, multi-topology analogue dynamics processor and harmonic saturation engine. Built with physical-circuit component modeling and first-order Antiderivative Anti-Aliasing (ADAA), it combines seven distinct analogue compression topologies, an integrated transient designer, a multi-order harmonic saturation stage, and an interactive real-time transfer curve display.
 
@@ -6,7 +6,7 @@ Harmonic Compressor is a mastering-grade, multi-topology analogue dynamics proce
 
 ## Architecture & Signal Flow
 
-Harmonic Compressor implements a pristine, zero-latency direct signal path designed for both individual tracks and master bus processing.
+Harmonic Compressor implements a pristine direct signal path, with zero latency at 1x oversampling, designed for both individual tracks and master bus processing.
 
 1. **Input Gain:** Input trim precedes the dry/wet split and compressor processing.
 2. **Compression and Sidechain:** The selected model computes gain reduction. Sidechain filtering affects detection; the Listen modes audition the detector input.
@@ -27,6 +27,10 @@ Harmonic Compressor features seven meticulously modeled compressor engines, cove
 - **76:** Ultra-fast discrete Field Effect Transistor (FET) peak limiter. Delivers lightning attack speeds down to 20 microseconds and a program-dependent dual-time-constant release that adds aggression, excitement, and presence to vocals, snares, and bass.
 - **Opto Leveler:** Electro-luminescent optical attenuator circuit modeled after the classic T4B opto-cell. Features a smooth, two-stage memory-dependent release curve where initial gain recovery is swift while deep compression decays slowly, yielding transparent, effortless vocal and bass leveling.
 - **VCA 160:** Legendary feed-forward VCA compressor with RMS level detection and a punchy hard knee. World-renowned for its snappy attack on kicks, snares, slap bass, and percussive synths.
+
+All models detect stereo-linked: the louder channel sets one gain for both channels.
+
+Each model remembers its own Threshold, Ratio, Attack, Release, Knee, Makeup, Mix, harmonics, sidechain switches and automatic timing. Choosing a model in the plugin window stores the current model's settings and recalls the new model's. The memory is saved with the session. A model change from host automation or a generic host editor changes only the model.
 
 The shared Attack and Release controls expose 0.1-300 ms and 5-3000 ms respectively. Individual models interpret timing differently; circuit-timed models may disable automatic timing switches. Model names describe the intended character, rather than a claim of measured equivalence to a particular hardware unit.
 
@@ -52,6 +56,7 @@ Harmonic Compressor integrates a stereo-linked differential-envelope transient p
 - **Attack (-100% to +100%):** Emphasizes or softens transient onsets after compression and mixing.
 - **Sustain (-100% to +100%):** Extends or tightens decay and room tails. Speed (0.5-50 ms) adjusts the detector response.
 - **Sidechain High-Pass Filter (20-500 Hz, with bypass):** Prevents heavy bass and kick transients from excessively triggering pumping artifacts on stereo busses.
+- **External sidechain:** When the host routes a signal to the sidechain input, that signal drives detection. Until it first carries signal, the main input is detected. After that, silence on the sidechain means no compression, so ducking releases between hits.
 
 ## Auto Gain & Delta
 
@@ -135,7 +140,7 @@ Use a host that supports the selected plugin format. Compatibility and validatio
 | `ratio` | Ratio | -2 to 100 | 4 | :1 | Shared ratio control; top of range displays infinity |
 | `attack` | Attack | 0.1 to 300 | 10 | ms | Model attack control |
 | `release` | Release | 5 to 3000 | 100 | ms | Model release control |
-| `knee` | Knee | 0 to 24 | 6 | dB | Soft-knee width |
+| `knee` | Knee | 0 to 24 | 6 | dB | Soft-knee width (Red only; the other models have a fixed knee) |
 | `makeupGain` | Makeup Gain | -12 to +24 | 0 | dB | Processed-signal makeup |
 | `mix` | Mix | 0 to 1 | 1 | fraction | Displayed as 0-100% wet |
 | `harmonic2` | 2nd Harmonic | 0 to 100 | 0 | % | Even-order coloration |

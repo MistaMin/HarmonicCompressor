@@ -50,6 +50,7 @@ private:
     std::atomic<float>* thresholdParam = nullptr;
     std::atomic<float>* ratioParam = nullptr;
     std::atomic<float>* kneeParam = nullptr;
+    std::atomic<float>* modeParam = nullptr;
     std::atomic<float>* makeupParam = nullptr;
 
     juce::RangedAudioParameter* thresholdParamObj = nullptr;

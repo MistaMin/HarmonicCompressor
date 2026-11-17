@@ -39,30 +39,22 @@ HarmonicCompressorAudioProcessor::HarmonicCompressorAudioProcessor()
     autoGainParam         = apvts.getRawParameterValue (ParamIDs::autoGain);
     deltaParam            = apvts.getRawParameterValue (ParamIDs::delta);
 
-    // Seed each mode's remembered parameters with that mode's hardware-style
-    // defaults for attack/release/knee, and sensible shared defaults for
-    // everything else, so the very first switch to a mode still lands on its
-    // characteristic ballistics.
+    // Seed each mode's remembered parameters with the parameter defaults and that mode's hardware-style
+    // attack/release/knee, so the very first switch to a mode still lands on its characteristic ballistics.
     for (int i = 0; i < (int) CompressorMode::Count; ++i)
     {
-        auto defaults = AlgorithmDefaults::forMode (static_cast<CompressorMode> (i));
         auto& snap = modeSnapshots[(size_t) i];
-        snap.thresholdDb  = -18.0f;
-        snap.ratio        = 4.0f;
-        snap.attackMs     = defaults.attackMs;
-        snap.releaseMs    = defaults.releaseMs;
-        snap.kneeDb       = defaults.kneeDb;
-        snap.makeupGainDb = 0.0f;
-        snap.mix          = 1.0f;
-        snap.harmonic2 = snap.harmonic3 = snap.harmonic4 = snap.harmonic5 = 0.0f;
-        snap.scHPFreq   = 150.0f;
-        snap.scEnabled  = false;
-        snap.scListen   = false;
-        snap.autoRelease = false;
-        snap.autoAttack  = false;
+        for (size_t k = 0; k < snapshotIds.size(); ++k)
+        {
+            auto* param = apvts.getParameter (snapshotIds[k]);
+            snap[k] = param->convertFrom0to1 (param->getDefaultValue());
+        }
+        const auto defaults = AlgorithmDefaults::forMode (static_cast<CompressorMode> (i));
+        snap[2] = defaults.attackMs;
+        snap[3] = defaults.releaseMs;
+        snap[4] = defaults.kneeDb;
     }
 
-    apvts.addParameterListener (ParamIDs::algorithmMode, this);
     apvts.addParameterListener (ParamIDs::oversampleMode, this);
     apvts.addParameterListener (ParamIDs::oversampleFilter, this);
 }
@@ -70,7 +62,6 @@ HarmonicCompressorAudioProcessor::HarmonicCompressorAudioProcessor()
 HarmonicCompressorAudioProcessor::~HarmonicCompressorAudioProcessor()
 {
     cancelPendingUpdate();
-    apvts.removeParameterListener (ParamIDs::algorithmMode, this);
     apvts.removeParameterListener (ParamIDs::oversampleMode, this);
     apvts.removeParameterListener (ParamIDs::oversampleFilter, this);
 }
@@ -90,95 +81,48 @@ void HarmonicCompressorAudioProcessor::updateReportedLatency()
 void HarmonicCompressorAudioProcessor::saveSnapshot (int modeIndex)
 {
     auto& snap = modeSnapshots[(size_t) modeIndex];
-    snap.thresholdDb  = thresholdParam->load (std::memory_order_relaxed);
-    snap.ratio        = ratioParam->load (std::memory_order_relaxed);
-    snap.attackMs     = attackParam->load (std::memory_order_relaxed);
-    snap.releaseMs    = releaseParam->load (std::memory_order_relaxed);
-    snap.kneeDb       = kneeParam->load (std::memory_order_relaxed);
-    snap.makeupGainDb = makeupGainParam->load (std::memory_order_relaxed);
-    snap.mix          = mixParam->load (std::memory_order_relaxed);
-    snap.harmonic2    = harmonic2Param->load (std::memory_order_relaxed);
-    snap.harmonic3    = harmonic3Param->load (std::memory_order_relaxed);
-    snap.harmonic4    = harmonic4Param->load (std::memory_order_relaxed);
-    snap.harmonic5    = harmonic5Param->load (std::memory_order_relaxed);
-    snap.scHPFreq     = scHPFreqParam->load (std::memory_order_relaxed);
-    snap.scEnabled    = scEnabledParam->load (std::memory_order_relaxed) > 0.5f;
-    snap.scListen     = scListenParam->load (std::memory_order_relaxed) > 0.5f;
-    snap.autoRelease  = autoReleaseParam->load (std::memory_order_relaxed) > 0.5f;
-    snap.autoAttack   = autoAttackParam->load (std::memory_order_relaxed) > 0.5f;
+    for (size_t k = 0; k < snapshotIds.size(); ++k)
+        snap[k] = apvts.getRawParameterValue (snapshotIds[k])->load (std::memory_order_relaxed);
 }
 
 void HarmonicCompressorAudioProcessor::loadSnapshot (int modeIndex)
 {
     const auto& snap = modeSnapshots[(size_t) modeIndex];
-
-    auto set = [this] (const char* paramID, float value)
+    for (size_t k = 0; k < snapshotIds.size(); ++k)
     {
-        if (auto* p = apvts.getParameter (paramID))
-            p->setValueNotifyingHost (p->convertTo0to1 (value));
-    };
-
-    set (ParamIDs::threshold,   snap.thresholdDb);
-    set (ParamIDs::ratio,       snap.ratio);
-    set (ParamIDs::attack,      snap.attackMs);
-    set (ParamIDs::release,     snap.releaseMs);
-    set (ParamIDs::knee,        snap.kneeDb);
-    set (ParamIDs::makeupGain,  snap.makeupGainDb);
-    set (ParamIDs::mix,         snap.mix);
-    set (ParamIDs::harmonic2,   snap.harmonic2);
-    set (ParamIDs::harmonic3,   snap.harmonic3);
-    set (ParamIDs::harmonic4,   snap.harmonic4);
-    set (ParamIDs::harmonic5,   snap.harmonic5);
-    set (ParamIDs::scHPFreq,    snap.scHPFreq);
-    set (ParamIDs::scEnabled,   snap.scEnabled  ? 1.0f : 0.0f);
-    set (ParamIDs::scListen,    snap.scListen   ? 1.0f : 0.0f);
-    set (ParamIDs::autoRelease, snap.autoRelease ? 1.0f : 0.0f);
-    set (ParamIDs::autoAttack,  snap.autoAttack  ? 1.0f : 0.0f);
+        auto* param = apvts.getParameter (snapshotIds[k]);
+        param->beginChangeGesture();
+        param->setValueNotifyingHost (param->convertTo0to1 (snap[k]));
+        param->endChangeGesture();
+    }
 }
 
-void HarmonicCompressorAudioProcessor::parameterChanged (const juce::String& parameterID, float newValue)
+void HarmonicCompressorAudioProcessor::selectMode (int newIndex)
 {
-    // Both reactions must run on the message thread (setLatencySamples, setValueNotifyingHost), and
-    // automation can deliver this callback from any thread, including the audio thread.
-    if (parameterID == ParamIDs::oversampleMode || parameterID == ParamIDs::oversampleFilter)
-    {
-        latencyUpdatePending.store (true, std::memory_order_release);
-        triggerAsyncUpdate();
-        return;
-    }
-
-    if (parameterID != ParamIDs::algorithmMode || restoringState.load (std::memory_order_acquire))
+    newIndex = juce::jlimit (0, (int) CompressorMode::Count - 1, newIndex);
+    const int oldIndex = juce::jlimit (0, (int) CompressorMode::Count - 1,
+                                       juce::roundToInt (modeParam->load (std::memory_order_relaxed)));
+    if (newIndex == oldIndex)
         return;
 
-    const int newIndex = juce::jlimit (0, (int) CompressorMode::Count - 1, juce::roundToInt (newValue));
-    const uint64_t restoreGeneration = stateRestoreGeneration.load (std::memory_order_acquire);
-    pendingModeSwitch.store ((restoreGeneration << 32) | (uint64_t) (newIndex + 1), std::memory_order_release);
+    saveSnapshot (oldIndex);
+    auto* param = apvts.getParameter (ParamIDs::algorithmMode);
+    param->beginChangeGesture();
+    param->setValueNotifyingHost (param->convertTo0to1 ((float) newIndex));
+    param->endChangeGesture();
+    loadSnapshot (newIndex);
+}
+
+void HarmonicCompressorAudioProcessor::parameterChanged (const juce::String&, float)
+{
+    // Oversampling changed: setLatencySamples must run on the message thread, and automation can deliver
+    // this callback from any thread, including the audio thread.
     triggerAsyncUpdate();
 }
 
 void HarmonicCompressorAudioProcessor::handleAsyncUpdate()
 {
-    if (latencyUpdatePending.exchange (false, std::memory_order_acq_rel))
-        updateReportedLatency();
-
-    // Several switches before delivery coalesce to the last one; the end state is the same as applying
-    // each in turn, since every intermediate mode would only re-save the snapshot it had just loaded.
-    const uint64_t pending = pendingModeSwitch.exchange (0, std::memory_order_acq_rel);
-    if (pending == 0)
-        return;
-
-    // A state restore after this switch was queued wins: applying the remembered
-    // snapshot now would overwrite the values the host just restored.
-    if ((uint32_t) (pending >> 32) != stateRestoreGeneration.load (std::memory_order_acquire))
-        return;
-
-    const int newIndex = (int) (pending & 0xffffffffu) - 1;
-    if (newIndex == currentModeIndex)
-        return;
-
-    saveSnapshot (currentModeIndex);
-    currentModeIndex = newIndex;
-    loadSnapshot (currentModeIndex);
+    updateReportedLatency();
 }
 
 //==============================================================================
@@ -260,11 +204,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout HarmonicCompressorAudioProce
 void HarmonicCompressorAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     hostSampleRate = sampleRate;
+    externalSidechainSeen = false;
+    referenceRunning = false;
     vuInputBallisticsL.reset (-60.0f);
     vuInputBallisticsR.reset (-60.0f);
     vuOutputBallisticsL.reset (-60.0f);
     vuOutputBallisticsR.reset (-60.0f);
-    vuGrBallistics.reset (0.0f);
     peakInputL = peakInputR = peakOutputL = peakOutputR = PeakBallistics {};
 
     const int mainNumChannels = juce::jmax (1, getMainBusNumOutputChannels());
@@ -315,6 +260,7 @@ void HarmonicCompressorAudioProcessor::releaseResources()
 void HarmonicCompressorAudioProcessor::reset()
 {
     multirate.reset();
+    referenceRunning = false;
     transientDesigner.reset();
     loudnessMatcher.reset();
     autoGainSmoothed.setCurrentAndTargetValue (1.0f);
@@ -328,7 +274,6 @@ void HarmonicCompressorAudioProcessor::reset()
     vuInputBallisticsR.reset (-60.0f);
     vuOutputBallisticsL.reset (-60.0f);
     vuOutputBallisticsR.reset (-60.0f);
-    vuGrBallistics.reset (0.0f);
     peakInputL = peakInputR = peakOutputL = peakOutputR = PeakBallistics {};
     if (inputGainParam != nullptr)
         inputGainSmoothed.setCurrentAndTargetValue (
@@ -447,7 +392,7 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     // --- Configure multirate oversampling & propagate effective sample rate ---
     multirate.setConfig (osMode, osFilter);
     engine.ensureSampleRate (multirate.getEffectiveSampleRate());
-    engine.updateBlockParameters (mode, params, scHpHz, scEnabled, scListen, h2, h3, h4, h5);
+    engine.updateBlockParameters (mode, params, scHpHz);
 
     auto* alg       = engine.getActiveAlgorithm();
     auto& harmonics = engine.getHarmonics();
@@ -457,9 +402,13 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     juce::AudioBuffer<float> extScBus;
     if (getBusCount (true) > 1)
         extScBus = getBusBuffer (buffer, true, 1);
-    const bool hasExternalSc = extScBus.getNumChannels() > 0
-                            && extScBus.getNumSamples() >= numSamples
-                            && extScBus.getMagnitude (0, numSamples) > 1.0e-7f;
+    // Some hosts deliver a silent sidechain bus when nothing is routed, so the main input is detected until
+    // the sidechain first carries signal. From then on a silent sidechain means no compression (ducking gaps).
+    // shortcut: unrouting a used sidechain keeps it selected until the host re-prepares; check the bus state if that matters.
+    const bool scBusUsable = extScBus.getNumChannels() > 0 && extScBus.getNumSamples() >= numSamples;
+    if (scBusUsable && ! externalSidechainSeen && extScBus.getMagnitude (0, numSamples) > 1.0e-7f)
+        externalSidechainSeen = true;
+    const bool hasExternalSc = scBusUsable && externalSidechainSeen;
 
     const float makeupGainLinear = juce::Decibels::decibelsToGain (params.makeupGainDb);
     const float mixWet = params.mix;
@@ -467,9 +416,17 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     // Always capture the dry signal and run it, with the untouched-input reference, through the matched
     // resampler chain, so parallel Mix and Delta line up with the wet path in magnitude and phase in
     // every 1x/2x/4x/8x Min Phase (IIR) and Lin Phase (FIR) mode.
+    // Delta's untouched-input reference is only heard while Delta and Auto Gain are on, so its filters run only
+    // then; Delta's 20 ms fade-in covers their warm-up after a reset.
+    const bool referenceNeeded = ((deltaOn && ! scListen) || deltaSmoothed.getCurrentValue() > 0.0f)
+                              && (autoGainOn || deltaReferenceSmoothed.getCurrentValue() > 0.0f);
+    if (referenceNeeded && ! referenceRunning)
+        multirate.resetReference();
+    referenceRunning = referenceNeeded;
+
     for (int ch = 0; ch < numChannels; ++ch)
         dryBuffer.copyFrom (ch, 0, mainBuffer, ch, 0, numSamples);
-    multirate.alignDryBuffers (dryBuffer, referenceBuffer, numSamples);
+    multirate.alignDryBuffers (dryBuffer, referenceBuffer, numSamples, referenceNeeded);
 
     float inputPeak = 0.0f;
     float inputPeakCh[2] = { 0.0f, 0.0f };
@@ -508,61 +465,32 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
         return scPtr[i0] + frac * (scPtr[i1] - scPtr[i0]);
     };
 
-    float blockReduction = 0.0f;
-    if (mode >= CompressorMode::Bridge)
+    // Stereo-linked: one detector (the louder channel) and one gain for all channels, in every model.
+    float minGain = 1.0f;
+    for (int s = 0; s < osNumSamples; ++s)
     {
-        for (int s = 0; s < osNumSamples; ++s)
+        float detector = 0.0f;
+        float scCh[2] = { 0.0f, 0.0f };
+        for (int ch = 0; ch < osNumChannels; ++ch)
         {
-            float detector = 0.0f;
-            float scCh[2] = { 0.0f, 0.0f };
-            for (int ch = 0; ch < osNumChannels; ++ch)
-            {
-                const float rawSc = readRawSidechain (ch, s);
-                const float scVal = scEnabled ? sidechain.processSample (ch, rawSc) : rawSc;
-                if (ch < 2)
-                    scCh[ch] = scVal;
-                detector = juce::jmax (detector, std::abs (scVal));
-            }
-            const float gr = alg->processSidechain (detector);
-            blockReduction = juce::jmax (blockReduction, -juce::Decibels::gainToDecibels (gr, -120.0f));
-            for (int ch = 0; ch < osNumChannels; ++ch)
-            {
-                auto* data = oversampledBlock.getChannelPointer (static_cast<size_t> (ch));
-                if (scListen)
-                    data[s] = (ch < 2) ? scCh[ch] : 0.0f;
-                else
-                {
-                    const float y = alg->processAudio (data[s], gr, ch) * makeupGainLinear;
-                    data[s] = harmonics.processSample (y, h2, h3, h4, h5, ch);
-                }
-            }
+            const float rawSc = readRawSidechain (ch, s);
+            const float scVal = scEnabled ? sidechain.processSample (ch, rawSc) : rawSc;
+            if (ch < 2)
+                scCh[ch] = scVal;
+            detector = juce::jmax (detector, std::abs (scVal));
         }
-    }
-    else
-    {
+        const float gr = alg->processSidechain (detector);
+        minGain = juce::jmin (minGain, gr);
         for (int ch = 0; ch < osNumChannels; ++ch)
         {
             auto* data = oversampledBlock.getChannelPointer (static_cast<size_t> (ch));
-
-            for (int s = 0; s < osNumSamples; ++s)
-            {
-                const float rawSc = readRawSidechain (ch, s);
-                const float scSample = scEnabled ? sidechain.processSample (ch, rawSc) : rawSc;
-                const float gr = alg->processSidechain (scSample);
-                blockReduction = juce::jmax (blockReduction, -juce::Decibels::gainToDecibels (gr, -120.0f));
-                if (scListen)
-                {
-                    data[s] = scSample;
-                }
-                else
-                {
-                    float y = alg->processAudio (data[s], gr, ch) * makeupGainLinear;
-                    y = harmonics.processSample (y, h2, h3, h4, h5, ch);
-                    data[s] = y;
-                }
-            }
+            if (scListen)
+                data[s] = (ch < 2) ? scCh[ch] : 0.0f;
+            else
+                data[s] = harmonics.processSample (data[s] * gr * makeupGainLinear, h2, h3, h4, h5, ch);
         }
     }
+    const float blockReduction = -juce::Decibels::gainToDecibels (minGain, -120.0f);
 
     multirate.downsample (mainBuffer);
 
@@ -581,7 +509,6 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     // --- End-of-chain Transient Designer modifier (post-mix, pre-output-gain) ---
     if (! scListen)
         transientDesigner.processBlock (mainBuffer, numSamples, trEnabled, trAttack, trSustain, trSpeed);
-    lastTransientGainDb.store (transientDesigner.getLastAppliedGainDb(), std::memory_order_relaxed);
 
     // --- Auto Gain: match short-term K-weighted loudness to the untouched input (feed-forward) ---
     // Measurement always runs so engaging Auto Gain lands on a settled value. Sidechain Listen is an
@@ -698,7 +625,6 @@ void HarmonicCompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     vuInputDbR.store  (vuInputBallisticsR.process  (inputRmsDbR,  vuCoeff), std::memory_order_relaxed);
     vuOutputDbL.store (vuOutputBallisticsL.process (outputRmsDbL, vuCoeff), std::memory_order_relaxed);
     vuOutputDbR.store (vuOutputBallisticsR.process (outputRmsDbR, vuCoeff), std::memory_order_relaxed);
-    vuGrDb.store (vuGrBallistics.process (alg->getLastGainReductionDb(), vuCoeff), std::memory_order_relaxed);
 
     const float inputPeakDbL  = juce::jmax (-60.0f, juce::Decibels::gainToDecibels (inputPeakCh[0]));
     const float inputPeakDbR  = juce::jmax (-60.0f, juce::Decibels::gainToDecibels (inputPeakCh[1]));
@@ -779,6 +705,15 @@ void HarmonicCompressorAudioProcessor::changeProgramName (int index, const juce:
 void HarmonicCompressorAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     auto state = apvts.copyState();
+    juce::ValueTree modes (modeSnapshotsType);
+    for (const auto& snap : modeSnapshots)
+    {
+        juce::ValueTree mode ("Mode");
+        for (size_t k = 0; k < snapshotIds.size(); ++k)
+            mode.setProperty (snapshotIds[k], snap[k], nullptr);
+        modes.appendChild (mode, nullptr);
+    }
+    state.appendChild (modes, nullptr);
     if (auto xml = state.createXml())
         copyXmlToBinary (*xml, destData);
 }
@@ -796,15 +731,17 @@ void HarmonicCompressorAudioProcessor::setStateInformation (const void* data, in
 
     if (tree.isValid())
     {
-        // Invalidate any mode switch that is still queued: the state being restored is the
-        // truth from here on, and a stale snapshot must not overwrite it.
-        stateRestoreGeneration.fetch_add (1, std::memory_order_acq_rel);
-        restoringState.store (true, std::memory_order_release);
+        // Per-mode memory (absent in sessions saved by 1.5.2 and earlier: those keep the defaults). Values are
+        // clamped to each parameter's range when a mode is recalled; non-numbers are ignored here.
+        const auto modes = tree.getChildWithName (modeSnapshotsType);
+        for (int m = 0; m < juce::jmin (modes.getNumChildren(), (int) CompressorMode::Count); ++m)
+            for (size_t k = 0; k < snapshotIds.size(); ++k)
+                if (const auto* v = modes.getChild (m).getPropertyPointer (snapshotIds[k]))
+                    if (const float f = (float) *v; std::isfinite (f))
+                        modeSnapshots[(size_t) m][k] = f;
+        tree.removeChild (modes, nullptr);
+
         apvts.replaceState (tree);
-        currentModeIndex = juce::jlimit (0, (int) CompressorMode::Count - 1,
-                                         juce::roundToInt (modeParam->load (std::memory_order_relaxed)));
-        saveSnapshot (currentModeIndex);
-        restoringState.store (false, std::memory_order_release);
         updateReportedLatency();
     }
 }

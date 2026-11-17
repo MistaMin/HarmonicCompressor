@@ -1,0 +1,48 @@
+== Harmonic Compressor installer builder ==
+Artefacts dir: <scratch>/installer-test/build/HarmonicCompressor_artefacts/Release
+  + LICENSE-BINARIES.txt included
+  + User Manual PDF included
+  + VST3 included
+  + AU included
+  + CLAP included
+  + LV2 included
+pkgbuild: Inferring bundle components from contents of <scratch>/installer-test/out/staging
+pkgbuild: Writing new component property list to <scratch>/installer-test/out/component.plist
+pkgbuild: Reading components from <scratch>/installer-test/out/component.plist
+pkgbuild: Adding component at Library/Audio/Plug-Ins/CLAP/Harmonic Compressor.clap
+pkgbuild: Adding component at Library/Audio/Plug-Ins/VST3/Harmonic Compressor.vst3
+pkgbuild: Adding component at Library/Audio/Plug-Ins/Components/Harmonic Compressor.component
+pkgbuild: Wrote package to <scratch>/installer-test/out/HarmonicCompressor-component.pkg
+productbuild: Wrote synthesized distribution to <scratch>/installer-test/out/distribution.xml
+== Synthesizing product distribution package ==
+productbuild: Wrote product to <scratch>/installer-test/out/HarmonicCompressor-1.5.2-macOS-unsigned.pkg
+== Signing installer package with Developer ID Installer ==
+productsign: using timestamp authority for signature
+productsign: signing product with identity "Developer ID Installer: Marcos Deida (ZQYU67JUBH)" from keychain ~/Library/Keychains/login.keychain-db
+productsign: adding certificate "Developer ID Certification Authority"
+productsign: adding certificate "Apple Root CA"
+productsign: Wrote signed product archive to <scratch>/installer-test/out/Harmonic-Compressor-1.5.2-macos.pkg
+== Submitting installer package to Apple Notary Service ==
+Conducting pre-submission checks for Harmonic-Compressor-1.5.2-macos.pkg and initiating connection to the Apple notary service...
+Submission ID received
+  id: da61d46f-3d62-465b-ada0-6070e64e7bdc
+Successfully uploaded file
+  id: da61d46f-3d62-465b-ada0-6070e64e7bdc
+  path: <scratch>/installer-test/out/Harmonic-Compressor-1.5.2-macos.pkg
+Waiting for processing to complete.
+Current status: In Progress...Current status: In Progress....Current status: In Progress.....Current status: In Progress......Current status: Accepted.......Processing complete
+  id: da61d46f-3d62-465b-ada0-6070e64e7bdc
+  status: Accepted
+
+== Stapling notarization ticket to installer package ==
+Processing: <scratch>/installer-test/out/Harmonic-Compressor-1.5.2-macos.pkg
+Processing: <scratch>/installer-test/out/Harmonic-Compressor-1.5.2-macos.pkg
+The staple and validate action worked!
+Processing: <scratch>/installer-test/out/Harmonic-Compressor-1.5.2-macos.pkg
+The validate action worked!
+== Gatekeeper assessment ==
+<scratch>/installer-test/out/Harmonic-Compressor-1.5.2-macos.pkg: accepted
+source=Notarized Developer ID
+
+== Done ==
+Notarized installer package: <scratch>/installer-test/out/Harmonic-Compressor-1.5.2-macos.pkg (installs list: <scratch>/installer-test/out/Harmonic-Compressor-1.5.2-macos.pkg.installs.json)

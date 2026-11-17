@@ -1,0 +1,36 @@
+PASS     loads Harmonic Compressor AUTest, 27 parameters
+PASS     finite output peak -6.1 dBFS
+PASS     not silent rms -18.9 dBFS
+PASS     deterministic render repeat differs by -240.0 dB
+SKIPPED  editor opens visual checks disabled
+  Mix                              audio=ok       visual=-
+  Knee                             audio=ok       visual=-
+  Transient Speed                  audio=ok       visual=-
+  Delta Monitor                    audio=ok       visual=-
+  Ratio                            audio=ok       visual=-
+  Sidechain HP Freq                audio=ok       visual=-
+  Transient Attack                 audio=ok       visual=-
+  Threshold                        audio=ok       visual=-
+  Sidechain Listen                 audio=ok       visual=-
+  Attack                           audio=ok       visual=-
+  Output Gain                      audio=ok       visual=-
+  Oversample                       audio=ok       visual=-
+  Release                          audio=ok       visual=-
+  Algorithm                        audio=ok       visual=-
+  Makeup Gain                      audio=ok       visual=-
+  Sidechain Enable                 audio=ok       visual=-
+  Auto Attack                      audio=ok       visual=-
+  Auto Gain                        audio=ok       visual=-
+  Input Gain                       audio=ok       visual=-
+  2nd Harmonic                     audio=ok       visual=-
+  3rd Harmonic                     audio=ok       visual=-
+  4th Harmonic                     audio=ok       visual=-
+  5th Harmonic                     audio=ok       visual=-
+  Auto Release                     audio=ok       visual=-
+  Transient Sustain                audio=ok       visual=-
+  Oversample Filter                audio=ok       visual=-
+  Transient Enable                 audio=ok       visual=-
+PASS     every parameter changes the sound 
+PASS     state survives save and reopen 
+PASS     editor reopens 5 close/open cycles
+report: <scratch>/og9-au/report.md

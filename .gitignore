@@ -27,6 +27,7 @@ qa/**/peaks/
 qa/**/stage-formats/
 qa/**/stage/
 qa/**/vststate.bin
+qa/**/home/   # OpenGrid9 runs link the user's home folder here
 
 # QA harness helpers are built, not evidence
 qa/**/winlist

@@ -17,6 +17,7 @@ TransferCurveDisplay::TransferCurveDisplay (HarmonicCompressorAudioProcessor& p,
     thresholdParam = processor.apvts.getRawParameterValue (ParamIDs::threshold);
     ratioParam     = processor.apvts.getRawParameterValue (ParamIDs::ratio);
     kneeParam      = processor.apvts.getRawParameterValue (ParamIDs::knee);
+    modeParam      = processor.apvts.getRawParameterValue (ParamIDs::algorithmMode);
 
     thresholdParamObj = processor.apvts.getParameter (ParamIDs::threshold);
     ratioParamObj     = processor.apvts.getParameter (ParamIDs::ratio);
@@ -76,7 +77,8 @@ float TransferCurveDisplay::computeOutputDb (float inputDb) const
 {
     const float threshold = thresholdParam->load (std::memory_order_relaxed);
     const float ratio     = ratioParam->load (std::memory_order_relaxed);
-    const float knee      = kneeParam->load (std::memory_order_relaxed);
+    const bool  red       = juce::roundToInt (modeParam->load (std::memory_order_relaxed)) == (int) CompressorMode::RedStyle;
+    const float knee      = red ? kneeParam->load (std::memory_order_relaxed) : 0.0f; // only Red has a soft knee
     const float slope     = compressorSlope (ratio);
     const float makeup    = makeupParam->load (std::memory_order_relaxed);
 
@@ -271,7 +273,7 @@ void TransferCurveDisplay::mouseDrag (const juce::MouseEvent& e)
     if (dragging == Handle::combined || dragging == Handle::threshold)
         set (thresholdParamObj, juce::jlimit (kParamMinDb, kParamMaxDb, dragStartThreshold + dx));
     if (dragging == Handle::combined)
-        set (ratioParamObj, juce::jlimit (1.0f, 20.0f, dragStartRatio + dy * 0.5f));
+        set (ratioParamObj, dragStartRatio + dy * 0.5f);
     if (dragging == Handle::makeup)
     {
         const auto range = makeupParamObj->getNormalisableRange();

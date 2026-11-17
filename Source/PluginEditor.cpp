@@ -299,7 +299,7 @@ HarmonicCompressorAudioProcessorEditor::HarmonicCompressorAudioProcessorEditor (
             [safe = juce::Component::SafePointer<HarmonicCompressorAudioProcessorEditor> (this)] (int result)
             {
                 if (safe != nullptr && result > 0 && result <= numAlgorithms)
-                    safe->algorithmAttachment->setValueAsCompleteGesture (float (result - 1));
+                    safe->audioProcessor.selectMode (result - 1);
             });
     };
     algorithmAttachment = std::make_unique<juce::ParameterAttachment> (
@@ -902,9 +902,11 @@ void HarmonicCompressorAudioProcessorEditor::applyModeLook (int mode)
     for (const char* id : { ParamIDs::attack, ParamIDs::release, ParamIDs::knee })
         if (auto* k = findControl (id))
         {
-            k->setEnabled (! circuitTiming);
-            k->setAlpha (circuitTiming ? 0.45f : 1.0f);
-            k->setTooltip (circuitTiming ? "Circuit-defined response" : "");
+            // Only Red has a soft knee; the other models have a fixed transfer shape.
+            const bool fixed = circuitTiming || (id == ParamIDs::knee && mode != (int) CompressorMode::RedStyle);
+            k->setEnabled (! fixed);
+            k->setAlpha (fixed ? 0.45f : 1.0f);
+            k->setTooltip (fixed ? "Circuit-defined response" : "");
         }
     autoAttackKey.setEnabled (! circuitTiming);
     autoReleaseKey.setEnabled (! circuitTiming);

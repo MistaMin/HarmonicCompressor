@@ -66,6 +66,11 @@ public:
     juce::AAXClientExtensions& getAAXClientExtensions() override { return aaxExtensions; }
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    // Message thread, for the editor's model selector: remembers the current model's settings and recalls
+    // the new one's. A host or automation change of the model parameter only changes the model, so renders
+    // never depend on when the message thread runs.
+    void selectMode (int newIndex);
+
     //==============================================================================
     juce::AudioProcessorValueTreeState apvts;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -90,8 +95,6 @@ public:
     std::atomic<float> vuOutputDbL { -60.0f }, vuOutputDbR { -60.0f };
     std::atomic<float> peakInputDbL  { -60.0f }, peakInputDbR  { -60.0f };
     std::atomic<float> peakOutputDbL { -60.0f }, peakOutputDbR { -60.0f };
-    std::atomic<float> vuGrDb     { 0.0f };
-    std::atomic<float> lastTransientGainDb { 0.0f };
     // Gain Auto Gain is applying (smoothed, dB); 0 when Auto Gain is off and settled.
     std::atomic<float> autoGainAppliedDb { 0.0f };
 
@@ -117,23 +120,20 @@ private:
     void updateReportedLatency();
 
     // --- Per-algorithm-mode parameter memory ---
-    // Every parameter except algorithmMode itself is remembered per mode, so
-    // switching between Opto/VCA/FET/Red/Hybrid and back restores whatever
-    // values were last used with that mode instead of resetting them.
-    struct ModeSnapshot
-    {
-        float thresholdDb, ratio, attackMs, releaseMs, kneeDb, makeupGainDb, mix;
-        float harmonic2, harmonic3, harmonic4, harmonic5;
-        float scHPFreq;
-        bool  scEnabled, scListen, autoRelease, autoAttack;
-    };
+    // These parameters are remembered per mode and saved with the session, so switching between models and
+    // back restores whatever values were last used with that model instead of resetting them.
+    static constexpr std::array<const char*, 16> snapshotIds {
+        ParamIDs::threshold, ParamIDs::ratio, ParamIDs::attack, ParamIDs::release, ParamIDs::knee,
+        ParamIDs::makeupGain, ParamIDs::mix, ParamIDs::harmonic2, ParamIDs::harmonic3, ParamIDs::harmonic4,
+        ParamIDs::harmonic5, ParamIDs::scHPFreq, ParamIDs::scEnabled, ParamIDs::scListen,
+        ParamIDs::autoRelease, ParamIDs::autoAttack };
+    static constexpr const char* modeSnapshotsType = "ModeSnapshots";
+    std::array<std::array<float, snapshotIds.size()>, (size_t) CompressorMode::Count> modeSnapshots {};
+    void saveSnapshot (int modeIndex);
+    void loadSnapshot (int modeIndex);
 
-    std::array<ModeSnapshot, (size_t) CompressorMode::Count> modeSnapshots;
-    int currentModeIndex = 0;
-    std::atomic<bool> restoringState { false };
-    // Bumped on every state restore. A mode switch queued before a restore must not apply its
-    // remembered snapshot afterwards, or it would overwrite the values the host just restored.
-    std::atomic<uint32_t> stateRestoreGeneration { 0 };
+    bool externalSidechainSeen = false; // audio thread: the sidechain bus has carried signal since prepare
+    bool referenceRunning = false;      // audio thread: Delta's reference filters are in use
 
     // --- VU meter ballistics state (audio thread only) ---
     // Two cascaded one-pole smoothers approximate the ~300 ms, slightly
@@ -152,7 +152,6 @@ private:
 
     VuBallistics vuInputBallisticsL  { -60.0f, -60.0f }, vuInputBallisticsR  { -60.0f, -60.0f };
     VuBallistics vuOutputBallisticsL { -60.0f, -60.0f }, vuOutputBallisticsR { -60.0f, -60.0f };
-    VuBallistics vuGrBallistics      { 0.0f, 0.0f };
 
     // Peak ballistics: instant attack, smooth exponential release -- the
     // classic PPM/peak-LED response.
@@ -171,16 +170,10 @@ private:
 
     void parameterChanged (const juce::String& parameterID, float newValue) override;
 
-    // Work that parameterChanged() hands to the message thread. An AsyncUpdater owned by the processor
-    // is cancelled when the processor is destroyed, so a queued update can never run on a freed object
-    // (MessageManager::callAsync with a captured `this` could), and triggering it does not allocate.
+    // Latency report after an oversampling change, on the message thread. An AsyncUpdater owned by the
+    // processor is cancelled when the processor is destroyed, so a queued update can never run on a freed
+    // object (MessageManager::callAsync with a captured `this` could), and triggering it does not allocate.
     void handleAsyncUpdate() override;
-    std::atomic<bool> latencyUpdatePending { false };
-    // Pending mode switch packed as (restore generation << 32) | (mode index + 1); 0 = none. One atomic
-    // so the index and the generation it was requested under are always read as a pair.
-    std::atomic<uint64_t> pendingModeSwitch { 0 };
-    void saveSnapshot (int modeIndex);
-    void loadSnapshot (int modeIndex);
 
     // Cached raw parameter pointers (RT-safe atomic loads, no string lookups
     // inside the audio callback).

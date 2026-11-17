@@ -88,23 +88,20 @@ struct AlgorithmDefaults
     float attackMs;
     float releaseMs;
     float kneeDb;
-    float thd2nd;   // typical 2nd harmonic level (0..1)
-    float thd3rd;   // typical 3rd harmonic level (0..1)
-    bool  isFeedback;
 
     static AlgorithmDefaults forMode (CompressorMode m) noexcept
     {
         switch (m)
         {
-            case CompressorMode::RedStyle:    return { 10.0f, 300.0f,  6.0f, 0.02f, 0.02f, false };
-            case CompressorMode::Hybrid:      return {  5.0f, 150.0f,  6.0f, 0.05f, 0.05f, false };
-            case CompressorMode::Bridge:      return {  2.0f, 400.0f,  0.0f, 0.0f,  0.0f,  true  };
-            case CompressorMode::BusVCA:      return {  3.0f, 100.0f,  0.0f, 0.0f,  0.0f,  true  };
-            case CompressorMode::FET76:       return {  0.2f, 200.0f,  0.0f, 0.0f,  0.0f,  true  };
-            case CompressorMode::OptoLeveler: return { 116.54f, 91.85f, 0.0f, 0.0f,  0.0f,  true  };
-            case CompressorMode::VCA160:      return { 34.5f, 34.5f,   0.0f, 0.0f,  0.0f,  false };
+            case CompressorMode::RedStyle:    return { 10.0f, 300.0f,  6.0f };
+            case CompressorMode::Hybrid:      return {  5.0f, 150.0f,  6.0f };
+            case CompressorMode::Bridge:      return {  2.0f, 400.0f,  0.0f };
+            case CompressorMode::BusVCA:      return {  3.0f, 100.0f,  0.0f };
+            case CompressorMode::FET76:       return {  0.2f, 200.0f,  0.0f };
+            case CompressorMode::OptoLeveler: return { 116.54f, 91.85f, 0.0f };
+            case CompressorMode::VCA160:      return { 34.5f, 34.5f,   0.0f };
             case CompressorMode::Count:
-            default:                          return { 10.0f, 100.0f,  6.0f, 0.0f,  0.0f,  false };
+            default:                          return { 10.0f, 100.0f,  6.0f };
         }
     }
 };
@@ -158,7 +155,6 @@ public:
     // Computes the linear gain-reduction multiplier for a single sidechain
     // sample. Implementations own their own envelope-follower state.
     virtual float processSidechain(float sidechainSample) = 0;
-    virtual float processAudio(float x, float gain, int) { return x * gain; }
 
     // Exposes the last computed gain reduction in dB, purely for the UI
     // meter/curve display. Safe to read from the message thread as a
@@ -173,7 +169,7 @@ protected:
 
 
 //==============================================================================
-// 4. Focusrite Red Style -- musical feed-forward VCA with a transient
+// 4. Red style -- musical feed-forward VCA with a transient
 //    preservation path (fast-tracking a short lookahead-free peak term to
 //    protect the initial attack from being clamped).
 //==============================================================================
@@ -203,7 +199,7 @@ public:
 
     float processSidechain(float x) override
     {
-        // Focusrite Red 3: feedforward, Class-A peak detection, soft knee
+        // Red: feedforward, Class-A peak detection, soft knee
         const float rectified = std::abs(x);
         transientTracker_ = transientCoeff_ * transientTracker_ + (1.0f - transientCoeff_) * rectified;
         const float punchRelief = juce::jlimit(0.0f, 3.0f, (rectified - transientTracker_) * 6.0f);
@@ -247,8 +243,8 @@ private:
 
 //==============================================================================
 // 5. Custom Hybrid -- clean digital feed-forward detector whose output is
-//    blended with a feedback path (detector fed from the *output* signal),
-//    giving a dynamic, program-dependent character controllable at runtime.
+//    blended 75/25 with a feedback path (detector fed from the *output*
+//    level), giving a smoother, program-dependent release.
 //==============================================================================
 class HybridAlgorithm final : public CompressorAlgorithm
 {
@@ -274,13 +270,9 @@ public:
         releaseCoeff_ = timeToCoeff(p.releaseMs);
     }
 
-    void setFeedbackAmount(float amount01) noexcept { feedbackAmount_.store(amount01, std::memory_order_relaxed); }
-
     float processSidechain(float x) override
     {
-        const float inputDb = juce::Decibels::gainToDecibels(std::abs(x) + 1.0e-12f);
-        const float overDb  = inputDb - params_.thresholdDb;
-        const float targetGrDb = overDb > 0.0f ? -overDb * compressorSlope(params_.ratio) : 0.0f;
+        const float targetGrDb = gainReductionDb(std::abs(x));
 
         float relCoeff = releaseCoeff_;
         float attCoeff = attackCoeff_;
@@ -298,26 +290,25 @@ public:
         const float coeff = rising ? attCoeff : relCoeff;
         feedforwardEnvDb_ = coeff * feedforwardEnvDb_ + (1.0f - coeff) * targetGrDb;
 
-        const float amount = feedbackAmount_.load(std::memory_order_relaxed);
-        const float blendedGrDb = feedforwardEnvDb_ * (1.0f - amount) + feedbackEnvDb_ * amount;
+        const float blendedGrDb = feedforwardEnvDb_ * (1.0f - feedbackAmount) + feedbackEnvDb_ * feedbackAmount;
+        const float gain = juce::Decibels::decibelsToGain(blendedGrDb);
+
+        // Feedback path: the detector level after this gain (the compressed output), on the release
+        // time constant; it reaches the gain from the next sample on, as in an analogue feedback loop.
+        feedbackEnvDb_ = releaseCoeff_ * feedbackEnvDb_ + (1.0f - releaseCoeff_) * gainReductionDb(std::abs(x) * gain);
 
         lastGrDb_.store(blendedGrDb, std::memory_order_relaxed);
-        return juce::Decibels::decibelsToGain(blendedGrDb);
-    }
-
-    // Called by the engine after the gain has been applied, feeding the
-    // already-compressed output sample back into a slower envelope used to
-    // stabilise the loop (real feedback-topology emulation without recursion
-    // inside a single sample pass).
-    void updateFeedbackEnvelope(float outputSample) noexcept
-    {
-        const float outDb = juce::Decibels::gainToDecibels(std::abs(outputSample) + 1.0e-12f);
-        const float overDb = outDb - params_.thresholdDb;
-        const float targetDb = overDb > 0.0f ? -overDb * compressorSlope(params_.ratio) : 0.0f;
-        feedbackEnvDb_ = releaseCoeff_ * feedbackEnvDb_ + (1.0f - releaseCoeff_) * targetDb;
+        return gain;
     }
 
 private:
+    // Reduction only: a ratio between 0 and 1 would otherwise turn the gain computer into an unbounded boost.
+    float gainReductionDb(float level) const noexcept
+    {
+        const float overDb = juce::Decibels::gainToDecibels(level + 1.0e-12f) - params_.thresholdDb;
+        return overDb > 0.0f ? juce::jmin(0.0f, -overDb * compressorSlope(params_.ratio)) : 0.0f;
+    }
+
     float timeToCoeff(float ms) const noexcept
     {
         return std::exp(-1.0f / (0.001f * juce::jmax(0.1f, ms) * (float)sampleRate_));
@@ -328,7 +319,7 @@ private:
     float feedbackEnvDb_ = 0.0f;
     float autoSlowEnv_ = 0.0f;
     float attackCoeff_ = 0.0f, releaseCoeff_ = 0.0f;
-    std::atomic<float> feedbackAmount_{0.25f};
+    static constexpr float feedbackAmount = 0.25f;
 };
 
 // Reduced reference-derived candidates, not complete circuit solvers.
@@ -485,6 +476,7 @@ public:
     void prepare(const juce::dsp::ProcessSpec& spec)
     {
         sampleRate_ = spec.sampleRate;
+        dcR_ = static_cast<float>(std::exp(-2.0 * juce::MathConstants<double>::pi * 3.5 / sampleRate_));
         (void) hcdsp::adaa::railTable(); // touch static Simpson/Hermite table during prepare
         reset();
     }
@@ -560,9 +552,8 @@ public:
                                                  1.0);
 
         // Stage 3: Gentle sub-audio DC-blocker (fc ~ 3.5 Hz) for asymmetric even harmonic terms
-        const float dcR = static_cast<float>(std::exp(-2.0 * juce::MathConstants<double>::pi * 3.5 / sampleRate_));
         const float inS = static_cast<float>(limited);
-        const float outS = inS - dcX1_[ch] + dcR * dcY1_[ch];
+        const float outS = inS - dcX1_[ch] + dcR_ * dcY1_[ch];
         dcX1_[ch] = inS;
         dcY1_[ch] = outS;
 
@@ -571,6 +562,7 @@ public:
 
 private:
     double sampleRate_ = 44100.0;
+    float dcR_ = 0.9995f;
     std::array<hcdsp::adaa::ZeroDelayResidual, 2> shaperAdaa_{};
     std::array<hcdsp::adaa::ZeroDelayResidual, 2> railAdaa_{};
     std::array<float, 2> dcX1_{ 0.0f, 0.0f }, dcY1_{ 0.0f, 0.0f };
@@ -586,7 +578,6 @@ public:
     void prepare(const juce::dsp::ProcessSpec& spec) noexcept
     {
         sampleRate_ = juce::jmax(8000.0, spec.sampleRate);
-        lastHz_ = -1.0f;
         lastSr_ = -1.0;
         reset();
         setFrequency(targetHz_);
@@ -627,22 +618,9 @@ public:
         return y;
     }
 
-    void process(juce::dsp::AudioBlock<float>& block) noexcept
-    {
-        const int numCh = juce::jmin(2, static_cast<int>(block.getNumChannels()));
-        const int numSamp = static_cast<int>(block.getNumSamples());
-        for (int ch = 0; ch < numCh; ++ch)
-        {
-            float* d = block.getChannelPointer(static_cast<size_t>(ch));
-            for (int i = 0; i < numSamp; ++i)
-                d[i] = processSample(ch, d[i]);
-        }
-    }
-
 private:
     void updateCoeffs() noexcept
     {
-        lastHz_ = targetHz_;
         lastSr_ = sampleRate_;
         const double w0 = 2.0 * juce::MathConstants<double>::pi * static_cast<double>(targetHz_) / sampleRate_;
         const double cosw = std::cos(w0);
@@ -658,7 +636,6 @@ private:
     double sampleRate_ = 48000.0;
     double lastSr_ = -1.0;
     float targetHz_ = 150.0f;
-    float lastHz_ = -1.0f;
     float b0_ = 1.0f, b1_ = 0.0f, b2_ = 0.0f, a1_ = 0.0f, a2_ = 0.0f;
     std::array<float, 2> z1_{ 0.0f, 0.0f }, z2_{ 0.0f, 0.0f };
 };
@@ -713,19 +690,11 @@ public:
 
     // Called once per block from processBlock() with values pulled from the
     // APVTS -- keeps parameter smoothing / lookups out of the sample loop.
-    void updateBlockParameters(CompressorMode mode, const CompressorParams& params,
-                                float scHpHz, bool scEnabled, bool scListen,
-                                float h2, float h3, float h4, float h5)
+    void updateBlockParameters(CompressorMode mode, const CompressorParams& params, float scHpHz)
     {
         activeModeIndex_.store((int)mode, std::memory_order_relaxed);
         algorithmPool_[(size_t)mode]->updateParameters(params);
         sidechain_.setFrequency(scHpHz);
-        scEnabled_ = scEnabled;
-        scListen_ = scListen;
-        h2Mix_.store(h2, std::memory_order_relaxed);
-        h3Mix_.store(h3, std::memory_order_relaxed);
-        h4Mix_.store(h4, std::memory_order_relaxed);
-        h5Mix_.store(h5, std::memory_order_relaxed);
     }
 
     CompressorAlgorithm* getActiveAlgorithm() const noexcept
@@ -733,15 +702,8 @@ public:
         return algorithmPool_[(size_t)activeModeIndex_.load(std::memory_order_relaxed)];
     }
 
-    float getH2() const noexcept { return h2Mix_.load(std::memory_order_relaxed); }
-    float getH3() const noexcept { return h3Mix_.load(std::memory_order_relaxed); }
-    float getH4() const noexcept { return h4Mix_.load(std::memory_order_relaxed); }
-    float getH5() const noexcept { return h5Mix_.load(std::memory_order_relaxed); }
-
     HarmonicsEngine&    getHarmonics()  noexcept { return harmonics_; }
     SidechainProcessor&  getSidechain() noexcept { return sidechain_; }
-    bool isSidechainEnabled() const noexcept { return scEnabled_; }
-    bool isSidechainListen() const noexcept { return scListen_; }
 
 private:
     RedStyleAlgorithm  red_;
@@ -758,9 +720,6 @@ private:
     SidechainProcessor sidechain_;
 
     std::atomic<int> activeModeIndex_{0};
-    std::atomic<float> h2Mix_{0.0f}, h3Mix_{0.0f}, h4Mix_{0.0f}, h5Mix_{0.0f};
-    bool scEnabled_ = false;
-    bool scListen_ = false;
 
     juce::dsp::ProcessSpec spec_;
 };

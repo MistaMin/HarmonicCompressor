@@ -1,0 +1,26 @@
+PASS [A5] selecting Hybrid loads its remembered threshold (-18): -18.0
+PASS [A5] selecting Red again restores -30: -30.0
+PASS [A5] host switch to Bridge keeps threshold -30: -30.0
+PASS [A5] after save and reload, Hybrid recalls -40: -40.0
+PASS [A5] old-format session loads (-30) and Hybrid keeps its default: -18.0
+PASS [A2] Hybrid ratio 0.5:1, threshold -40 dB: gain 0.00 dB
+PASS [A2] Hybrid ratio 0.1:1, threshold -40 dB: gain 0.00 dB
+PASS [A4] main input uncompressed once the sidechain is silent: 0.00 dB (4 input channels)
+PASS [F1] latency report follows 8x Lin Phase: 64
+PASS [F1] and 1x: 0
+PASS [F2] 1x: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [F2] 2x Min Phase: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [F2] 2x Lin Phase: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [F2] 4x Min Phase: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [F2] 4x Lin Phase: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [F2] 8x Min Phase: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [F2] 8x Lin Phase: Mix 50%/0% vs 100%, worst 0.000 / 0.000 dB  (per freq, dB: 0.1k:0.00/0.00 1.0k:0.00/0.00 5.0k:0.00/0.00 10.0k:0.00/0.00 15.0k:0.00/0.00 18.0k:0.00/0.00)
+PASS [A1] Red: 64- vs 512-sample blocks, max difference 0.00000000
+PASS [A1] Hybrid: 64- vs 512-sample blocks, max difference 0.00000000
+PASS [A1] Bridge: 64- vs 512-sample blocks, max difference 0.00000000
+PASS [A1] Bus VCA: 64- vs 512-sample blocks, max difference 0.00000000
+PASS [A1] 76: 64- vs 512-sample blocks, max difference 0.00000000
+PASS [A1] Opto Leveler: 64- vs 512-sample blocks, max difference 0.00000000
+PASS [A1] VCA 160: 64- vs 512-sample blocks, max difference 0.00000000
+PASS [F1] 50 processors destroyed with oversampling changes queued; message loop ran without a crash
+25 checks, 0 failures

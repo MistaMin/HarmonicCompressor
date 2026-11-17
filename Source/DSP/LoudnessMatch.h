@@ -97,7 +97,6 @@ public:
         chunkRef = chunkProc = 0.0;
         chunkFill = 0;
         targetGainDb = 0.0f;
-        lastRefLufs = lastProcLufs = -100.0f;
     }
 
     // Feeds one block of the reference and of the processed (uncompensated) signal. Both buffers must
@@ -127,8 +126,6 @@ public:
 
     // Gain (dB) that matches the processed loudness to the reference over the last 3 s of gated audio.
     float getTargetGainDb() const noexcept { return targetGainDb; }
-    float getReferenceLufs() const noexcept { return lastRefLufs; }
-    float getProcessedLufs() const noexcept { return lastProcLufs; }
 
     static double meanSquareToLufs (double meanSquare) noexcept
     {
@@ -182,9 +179,9 @@ private:
             procSum += procRing[(size_t) i];
         }
 
-        lastRefLufs  = (float) meanSquareToLufs (refSum  / ringCount);
-        lastProcLufs = (float) meanSquareToLufs (procSum / ringCount);
-        targetGainDb = std::clamp (lastRefLufs - lastProcLufs, -maxGainDb, maxGainDb);
+        const auto refLufs  = (float) meanSquareToLufs (refSum  / ringCount);
+        const auto procLufs = (float) meanSquareToLufs (procSum / ringCount);
+        targetGainDb = std::clamp (refLufs - procLufs, -maxGainDb, maxGainDb);
     }
 
     double sampleRate = 48000.0;
@@ -198,7 +195,6 @@ private:
     int chunkFill = 0;
 
     float targetGainDb = 0.0f;
-    float lastRefLufs = -100.0f, lastProcLufs = -100.0f;
 };
 
 } // namespace hcdsp

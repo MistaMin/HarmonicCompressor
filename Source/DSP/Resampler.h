@@ -16,7 +16,7 @@ enum class ResamplerFilter : int { MinPhaseIIR = 0, LinPhaseFIR = 1 };
 // and Linear Phase (equiripple FIR) half-band filters.
 //
 // Dry-path alignment: the dry signals (the dry for parallel Mix, and the untouched input used by Delta)
-// run through a second, identical up/down filter chain with no processing in between. They therefore get
+// each run through their own identical up/down filter chain with no processing in between. They therefore get
 // exactly the wet path's magnitude and phase response, not just its nominal latency. A delay line cannot
 // do this: the latency is fractional (e.g. 4.433 samples at 4x Min Phase), interpolation low-passes the
 // dry, and a minimum-phase filter is not a delay at all, so its phase cannot be matched by one.
@@ -30,8 +30,8 @@ public:
         channels = std::max (1, numChannels);
 
         wet.build (channels, baseBlockSize);
-        dry.build (2 * channels, baseBlockSize);              // dry channels, then reference channels
-        dryWork.setSize (2 * channels, baseBlockSize, false, true, false);
+        dry.build (channels, baseBlockSize);
+        reference.build (channels, baseBlockSize);
         reset();
     }
 
@@ -51,9 +51,6 @@ public:
         reset();
         return true;
     }
-
-    OversampleMode getMode() const noexcept { return mode; }
-    ResamplerFilter getFilter() const noexcept { return filter; }
 
     int getFactor() const noexcept
     {
@@ -76,7 +73,11 @@ public:
     {
         wet.reset();
         dry.reset();
+        reference.reset();
     }
+
+    // Before the reference chain is used again after blocks it skipped.
+    void resetReference() noexcept { reference.reset(); }
 
     juce::dsp::AudioBlock<float> upsample (juce::AudioBuffer<float>& buffer)
     {
@@ -99,39 +100,16 @@ public:
         return os != nullptr ? os->getLatencyInSamples() : 0.0f;
     }
 
-    float getLatencySamples() const noexcept
-    {
-        return getLatencySamplesFor (mode, filter);
-    }
-
-    // Runs `dryBuffer` and `referenceBuffer` (same channel count as the wet path) in place through the
-    // matched filter chain, so each lines up with the oversampled wet signal in magnitude and phase.
-    // Must be called every block, with the same number of samples as the wet path, to keep its state
-    // in step with the wet chain. At 1x it does nothing.
+    // Runs `dryBuffer`, and `referenceBuffer` when `withReference`, in place through their matched filter
+    // chains, so each lines up with the oversampled wet signal in magnitude and phase. The dry chain must
+    // run every block, with the same number of samples as the wet path, to stay in step with it; after
+    // skipping the reference, call resetReference() before using it again. At 1x it does nothing.
     void alignDryBuffers (juce::AudioBuffer<float>& dryBuffer, juce::AudioBuffer<float>& referenceBuffer,
-                          int numSamples) noexcept
+                          int numSamples, bool withReference) noexcept
     {
-        auto* os = dry.get (mode, filter);
-        if (os == nullptr || numSamples <= 0)
-            return;
-
-        const int numCh = std::min ({ dryBuffer.getNumChannels(), referenceBuffer.getNumChannels(), channels });
-        for (int ch = 0; ch < numCh; ++ch)
-        {
-            dryWork.copyFrom (ch, 0, dryBuffer, ch, 0, numSamples);
-            dryWork.copyFrom (channels + ch, 0, referenceBuffer, ch, 0, numSamples);
-        }
-
-        auto block = juce::dsp::AudioBlock<float> (dryWork).getSubsetChannelBlock (0, (size_t) (2 * channels))
-                                                           .getSubBlock (0, (size_t) numSamples);
-        os->processSamplesUp (block);
-        os->processSamplesDown (block);
-
-        for (int ch = 0; ch < numCh; ++ch)
-        {
-            dryBuffer.copyFrom (ch, 0, dryWork, ch, 0, numSamples);
-            referenceBuffer.copyFrom (ch, 0, dryWork, channels + ch, 0, numSamples);
-        }
+        align (dry, dryBuffer, numSamples);
+        if (withReference)
+            align (reference, referenceBuffer, numSamples);
     }
 
 private:
@@ -178,8 +156,19 @@ private:
     OversampleMode mode = OversampleMode::TwoX;
     ResamplerFilter filter = ResamplerFilter::MinPhaseIIR;
 
-    Chain wet, dry;
-    juce::AudioBuffer<float> dryWork;
+    void align (Chain& chain, juce::AudioBuffer<float>& buffer, int numSamples) noexcept
+    {
+        auto* os = chain.get (mode, filter);
+        if (os == nullptr || numSamples <= 0)
+            return;
+        auto block = juce::dsp::AudioBlock<float> (buffer)
+                         .getSubsetChannelBlock (0, (size_t) std::min (buffer.getNumChannels(), channels))
+                         .getSubBlock (0, (size_t) numSamples);
+        os->processSamplesUp (block);
+        os->processSamplesDown (block);
+    }
+
+    Chain wet, dry, reference;
 };
 
 } // namespace hcdsp

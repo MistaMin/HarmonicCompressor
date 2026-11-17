@@ -1,9 +1,9 @@
 #!/bin/bash
-# Builds a macOS installer .pkg for Harmonic Compressor (VST3, AU, CLAP, LV2, AAX, Standalone app).
+# Builds a macOS installer .pkg for Harmonic Compressor (VST3, AU, CLAP, LV2, AAX). No Standalone app ships.
 # Usage: ./Scripts/build_installer.sh [path-to-build-dir]
 #
 # Requires that the plugin has already been built in Release configuration
-# (VST3, AU, CLAP, LV2, AAX, Standalone targets) via CMake/Ninja.
+# (VST3, AU, CLAP, LV2, AAX targets) via CMake/Ninja.
 
 set -euo pipefail
 
@@ -25,7 +25,6 @@ AU_SRC="$ARTEFACTS/AU/$PRODUCT_NAME.component"
 CLAP_SRC="$ARTEFACTS/CLAP/$PRODUCT_NAME.clap"
 LV2_SRC="$ARTEFACTS/LV2/$PRODUCT_NAME.lv2"
 AAX_SRC="$ARTEFACTS/AAX/$PRODUCT_NAME.aaxplugin"
-APP_SRC="$ARTEFACTS/Standalone/$PRODUCT_NAME.app"
 MANUAL_PDF="$PROJECT_ROOT/output/pdf/HarmonicCompressor-User-Manual.pdf"
 LICENSE_BINARIES_SRC="$PROJECT_ROOT/LICENSE-BINARIES.txt"
 LICENSE_MIT_SRC="$PROJECT_ROOT/LICENSE"
@@ -33,13 +32,21 @@ LICENSE_MIT_SRC="$PROJECT_ROOT/LICENSE"
 echo "== Harmonic Compressor installer builder =="
 echo "Artefacts dir: $ARTEFACTS"
 
-rm -rf "$OUT_DIR"
+COMPONENT_PKG="$OUT_DIR/${PRODUCT_NAME// /}-component.pkg"
+UNSIGNED_PKG="$OUT_DIR/${PRODUCT_NAME// /}-$VERSION-macOS-unsigned.pkg"
+FINAL_PKG="$OUT_DIR/${PRODUCT_NAME// /-}-$VERSION-macos.pkg"   # the published name
+COMPONENT_PLIST="$OUT_DIR/component.plist"
+RESOURCES_DIR="$OUT_DIR/resources"
+DISTRIBUTION_XML="$OUT_DIR/distribution.xml"
+
+# Remove only what this script writes: OUT_DIR may be a folder that holds other files.
+rm -rf "$STAGING" "$RESOURCES_DIR"
+rm -f "$COMPONENT_PKG" "$UNSIGNED_PKG" "$FINAL_PKG" "$FINAL_PKG.installs.json" "$COMPONENT_PLIST" "$DISTRIBUTION_XML"
 mkdir -p "$STAGING/Library/Audio/Plug-Ins/VST3"
 mkdir -p "$STAGING/Library/Audio/Plug-Ins/Components"
 mkdir -p "$STAGING/Library/Audio/Plug-Ins/CLAP"
 mkdir -p "$STAGING/Library/Audio/Plug-Ins/LV2"
 mkdir -p "$STAGING/Library/Application Support/Avid/Audio/Plug-Ins"
-mkdir -p "$STAGING/Applications"
 
 DOCS_DEST="$STAGING/Library/Application Support/Harmonic Compressor"
 mkdir -p "$DOCS_DEST"
@@ -62,9 +69,11 @@ if [ -f "$MANUAL_PDF" ]; then
 fi
 
 FOUND_ANY=0
+INSTALLS=()   # format|install path, for the Plugin Manager sidecar
 
 if [ -d "$VST3_SRC" ]; then
     ditto "$VST3_SRC" "$STAGING/Library/Audio/Plug-Ins/VST3/$PRODUCT_NAME.vst3"
+    INSTALLS+=("vst3|Library/Audio/Plug-Ins/VST3/$PRODUCT_NAME.vst3")
     echo "  + VST3 included"
     FOUND_ANY=1
 else
@@ -73,6 +82,7 @@ fi
 
 if [ -d "$AU_SRC" ]; then
     ditto "$AU_SRC" "$STAGING/Library/Audio/Plug-Ins/Components/$PRODUCT_NAME.component"
+    INSTALLS+=("au|Library/Audio/Plug-Ins/Components/$PRODUCT_NAME.component")
     echo "  + AU included"
     FOUND_ANY=1
 else
@@ -81,6 +91,7 @@ fi
 
 if [ -d "$CLAP_SRC" ]; then
     ditto "$CLAP_SRC" "$STAGING/Library/Audio/Plug-Ins/CLAP/$PRODUCT_NAME.clap"
+    INSTALLS+=("clap|Library/Audio/Plug-Ins/CLAP/$PRODUCT_NAME.clap")
     echo "  + CLAP included"
     FOUND_ANY=1
 else
@@ -89,6 +100,7 @@ fi
 
 if [ -d "$LV2_SRC" ]; then
     ditto "$LV2_SRC" "$STAGING/Library/Audio/Plug-Ins/LV2/$PRODUCT_NAME.lv2"
+    INSTALLS+=("lv2|Library/Audio/Plug-Ins/LV2/$PRODUCT_NAME.lv2")
     echo "  + LV2 included"
     FOUND_ANY=1
 else
@@ -97,29 +109,17 @@ fi
 
 if [ -d "$AAX_SRC" ]; then
     ditto "$AAX_SRC" "$STAGING/Library/Application Support/Avid/Audio/Plug-Ins/$PRODUCT_NAME.aaxplugin"
+    INSTALLS+=("aax|Library/Application Support/Avid/Audio/Plug-Ins/$PRODUCT_NAME.aaxplugin")
     echo "  + AAX included (PACE Eden signed)"
     FOUND_ANY=1
 else
-    rmdir "$STAGING/Library/Application Support/Avid/Audio/Plug-Ins" 2>/dev/null || true
-fi
-
-if [ -d "$APP_SRC" ]; then
-    ditto "$APP_SRC" "$STAGING/Applications/$PRODUCT_NAME.app"
-    echo "  + Standalone app included"
-    FOUND_ANY=1
-else
-    rmdir "$STAGING/Applications" 2>/dev/null || true
+    rmdir -p "$STAGING/Library/Application Support/Avid/Audio/Plug-Ins" 2>/dev/null || true   # and the empty Avid folders
 fi
 
 if [ "$FOUND_ANY" -eq 0 ]; then
     echo "ERROR: No built artefacts found under $ARTEFACTS. Build the plugin first." >&2
     exit 1
 fi
-
-COMPONENT_PKG="$OUT_DIR/${PRODUCT_NAME// /}-component.pkg"
-UNSIGNED_PKG="$OUT_DIR/${PRODUCT_NAME// /}-$VERSION-macOS-unsigned.pkg"
-FINAL_PKG="$OUT_DIR/${PRODUCT_NAME// /}-$VERSION-macOS.pkg"
-COMPONENT_PLIST="$OUT_DIR/component.plist"
 
 pkgbuild --analyze --root "$STAGING" "$COMPONENT_PLIST"
 /usr/bin/python3 - "$COMPONENT_PLIST" <<'PYEOF'
@@ -145,9 +145,7 @@ pkgbuild \
     --install-location "/" \
     "$COMPONENT_PKG"
 
-RESOURCES_DIR="$OUT_DIR/resources"
 mkdir -p "$RESOURCES_DIR"
-DISTRIBUTION_XML="$OUT_DIR/distribution.xml"
 
 if [ -f "$LICENSE_BINARIES_SRC" ]; then
     cp "$LICENSE_BINARIES_SRC" "$RESOURCES_DIR/License.txt"
@@ -197,19 +195,27 @@ for retry in 1 2 3; do
 done
 xcrun stapler validate "$FINAL_PKG"
 
-echo "== Stapling notarization ticket to standalone app =="
-for retry in 1 2 3; do
-    if xcrun stapler staple "$APP_SRC"; then
-        break
-    fi
-    sleep 3
-done
-
 echo "== Gatekeeper assessment =="
 spctl --assess --type install -v "$FINAL_PKG"
+
+# What the package installs, for tools/write_opengrid_manifest.py. The architecture is read from the binary.
+FIRST_BINARY="$(find "$STAGING/Library" -type f -perm +111 -path '*/Contents/MacOS/*' | head -1)"
+case "$(lipo -archs "$FIRST_BINARY")" in
+    *arm64*x86_64*|*x86_64*arm64*) ARCH=universal ;;
+    *) ARCH="$(lipo -archs "$FIRST_BINARY")" ;;
+esac
+{
+    printf '{"os":"macos","arch":"%s","build_class":"modern","min_os":"11.0","installs":[' "$ARCH"
+    sep=""
+    for entry in "${INSTALLS[@]}"; do
+        printf '%s{"format":"%s","path":"%s"}' "$sep" "${entry%%|*}" "${entry#*|}"
+        sep=","
+    done
+    printf ']}\n'
+} > "$FINAL_PKG.installs.json"
 
 rm -rf "$STAGING" "$COMPONENT_PKG" "$COMPONENT_PLIST" "$DISTRIBUTION_XML" "$RESOURCES_DIR"
 
 echo ""
 echo "== Done =="
-echo "Notarized installer package: $FINAL_PKG"
+echo "Notarized installer package: $FINAL_PKG (installs list: $FINAL_PKG.installs.json)"

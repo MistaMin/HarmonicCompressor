@@ -1,6 +1,6 @@
 # Harmonic Compressor
 
-[![Version](https://img.shields.io/badge/version-1.5.2-blue.svg)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.5.3-blue.svg)](VERSION)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Format](https://img.shields.io/badge/formats-VST3%20%7C%20AU%20%7C%20AAX%20%7C%20CLAP%20%7C%20LV2-brightgreen.svg)]()
 [![Platform](https://img.shields.io/badge/platform-macOS%20(Universal%20arm64%2Fx86__64)-lightgrey.svg)]()
@@ -13,20 +13,20 @@ Harmonic Compressor is a mastering-grade analogue dynamics processor and harmoni
 |---|---|---|
 | ![All four themes](Docs/harmonic-compressor-themes-grid.png) | ![Floating modules](Docs/harmonic-compressor-modules.png) | ![Auto Gain and metering](Docs/harmonic-compressor-autoscale.png) |
 
-## Version 1.5.2
+## Version 1.5.3
 
-- **Auto Gain:** matches the output to the input's loudness (K-weighted, 3 s window, ±24 dB), so you hear the processing without a level change. The key shows the applied gain.
-- **Delta:** plays only what the plugin adds or removes.
-- **Fixed parallel Mix with oversampling:** the dry signal is no longer dulled or phase-shifted.
-- **Fixed** a possible crash when a host removed the plugin right after a model or oversampling change.
-- Existing sessions load unchanged; the two new switches start off.
+- **Red and Hybrid in stereo:** both models now detect stereo-linked like the others; release follows its setting and the sound no longer depends on the host's buffer size. Saved Red and Hybrid sessions sound different.
+- **Hybrid** now blends its feedback path (75 % feed-forward, 25 % feedback), and no longer boosts at ratios below 1:1.
+- **External sidechain** ducking no longer falls back to the main input when the key goes silent.
+- **Per-model memory** is saved with the session; Knee is enabled only in Red, the one model with a soft knee.
+- Lower CPU use with oversampling.
 
 ## Download
 
-- **macOS (11 or later, Apple silicon and Intel):** [Harmonic-Compressor-1.5.2-macos.pkg](https://github.com/MistaMin/HarmonicCompressor/releases/download/v1.5.2/Harmonic-Compressor-1.5.2-macos.pkg) ([SHA-256](https://github.com/MistaMin/HarmonicCompressor/releases/download/v1.5.2/Harmonic-Compressor-1.5.2-macos.pkg.sha256)). The installer puts VST3, AU, CLAP, LV2 and AAX in the standard plug-in folders and the manual and licences in `/Library/Application Support/Harmonic Compressor`. It is signed with a Developer ID and notarized by Apple; the AAX is PACE-signed for Pro Tools.
-- **User manual:** [HarmonicCompressor-1.5.2-User-Manual.pdf](https://github.com/MistaMin/HarmonicCompressor/releases/download/v1.5.2/HarmonicCompressor-1.5.2-User-Manual.pdf)
+- **macOS (11 or later, Apple silicon and Intel):** [Harmonic-Compressor-1.5.3-macos.pkg](https://github.com/MistaMin/HarmonicCompressor/releases/download/v1.5.3/Harmonic-Compressor-1.5.3-macos.pkg) ([SHA-256](https://github.com/MistaMin/HarmonicCompressor/releases/download/v1.5.3/Harmonic-Compressor-1.5.3-macos.pkg.sha256)). The installer puts VST3, AU, CLAP, LV2 and AAX in the standard plug-in folders and the manual and licences in `/Library/Application Support/Harmonic Compressor`. It is signed with a Developer ID and notarized by Apple; the AAX is PACE-signed for Pro Tools.
+- **User manual:** [HarmonicCompressor-1.5.3-User-Manual.pdf](https://github.com/MistaMin/HarmonicCompressor/releases/download/v1.5.3/HarmonicCompressor-1.5.3-User-Manual.pdf)
 - All releases: [GitHub Releases](https://github.com/MistaMin/HarmonicCompressor/releases). Also available through the OpenGrid Plugin Manager.
-- Not available yet: Windows and Linux builds, and a Standalone app. Tested hosts for 1.5.2: REAPER (VST3) and OpenGrid9; Pro Tools, Logic and Studio One were not tested with this version.
+- Not available yet: Windows and Linux builds, and a Standalone app. Tested hosts for 1.5.3: REAPER (CLAP, LV2) and OpenGrid9 (AU); Pro Tools, Logic and Studio One were not tested with this version.
 
 ## Highlights & Features
 
@@ -63,20 +63,25 @@ Harmonic Compressor is a mastering-grade analogue dynamics processor and harmoni
 # Clone the repository
 git clone https://github.com/MistaMin/HarmonicCompressor.git
 cd HarmonicCompressor
-git submodule update --init --recursive
+
+# Dependencies (not included; there are no submodules): JUCE inside the repo, GoodLookinUI next to it
+git clone --branch 8.0.15 --depth 1 https://github.com/juce-framework/JUCE.git JUCE
+git clone https://github.com/MistaMin/GoodLookinUI.git ../GoodLookinUI
 
 # Configure with CMake & Ninja
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
-  -DAAX_SDK_PATH=/path/to/aax-sdk-2-8-1
+  "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" \
+  -DGOODLOOKINUI_ROOT="$PWD/../GoodLookinUI" \
+  -DAAX_SDK_PATH=/path/to/aax-sdk-2-8-1     # optional: AAX only
 
 # Compile all formats
 ninja -C build HarmonicCompressor_VST3 HarmonicCompressor_AU HarmonicCompressor_CLAP HarmonicCompressor_LV2 HarmonicCompressor_AAX
 ```
 
-JUCE and GoodLookinUI must be available locally before configuring. The dependency
-revisions used for the 1.5.2 release build are recorded in
-[`qa/2026-11-14-release-1.5.2/build-env.txt`](qa/2026-11-14-release-1.5.2/build-env.txt).
-Pass `-DGOODLOOKINUI_ROOT=/path/to/GoodLookinUI` if it is not in the default sibling location.
+The exact dependency revisions used for the 1.5.3 release build are recorded in
+[`qa/2026-11-17-release-1.5.3/build-env.txt`](qa/2026-11-17-release-1.5.3/build-env.txt).
+Without `-DGOODLOOKINUI_ROOT`, CMake looks for GoodLookinUI in `../HybridEQ/third_party/GoodLookinUI`.
+clap-juce-extensions is downloaded at configure time unless `../clap-juce-extensions` exists.
 
 See the [release notes](RELEASE_NOTES.md) for every version.
 

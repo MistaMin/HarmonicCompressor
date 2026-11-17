@@ -1,5 +1,6 @@
 @echo off
-REM Local Windows build helper for HarmonicCompressor (uncommitted, mirrors HybridEQ/build_win.bat).
+REM Windows build helper for HarmonicCompressor (mirrors HybridEQ/build_win.bat).
+REM Set AAX_SDK_PATH to build the AAX as well.
 REM Loads the MSVC x64 environment, then configures (if needed) and builds.
 REM
 REM   build_win.bat                 -> configure + build all targets
@@ -15,7 +16,8 @@ if errorlevel 1 (
 
 if not exist "build\CMakeCache.txt" (
     echo [HarmonicCompressor] Configuring...
-    cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DAAX_SDK_PATH=C:/Users/marco/Developer/aax-sdk-2-8-1
+    if defined AAX_SDK_PATH (set AAX_ARG=-DAAX_SDK_PATH=%AAX_SDK_PATH%) else (set AAX_ARG=)
+    cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release %AAX_ARG%
     if errorlevel 1 exit /b 1
 )
 

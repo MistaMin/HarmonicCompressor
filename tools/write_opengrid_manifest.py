@@ -3,10 +3,11 @@
 
 Usage:
   write_opengrid_manifest.py --plugin NAME --version X.Y.Z --released YYYY-MM-DD \
-      --highlights FILE --out opengrid-manifest.json --archive ZIP [--archive ZIP ...]
+      --highlights FILE --out opengrid-manifest.json --archive PKG [--archive PKG ...]
 
-Each ZIP must have its ZIP.installs.json sidecar, written by make_bundle_zip.sh or .ps1. The sidecar
-gives the OS, CPU, minimum OS and the install paths. The SHA-256 and size come from the ZIP itself.
+Each archive (the macOS .pkg) must have its <archive>.installs.json sidecar, written by
+Scripts/build_installer.sh. The sidecar gives the OS, CPU, minimum OS and the install paths. The SHA-256
+and size come from the archive itself.
 Highlights: one per line in FILE, at most five. Lines starting with '#' are ignored.
 """
 import argparse
@@ -31,7 +32,7 @@ def read_highlights(path: Path) -> list[str]:
 def archive_entry(zip_path: Path) -> dict:
     sidecar = Path(str(zip_path) + ".installs.json")
     if not sidecar.exists():
-        sys.exit(f"{zip_path.name}: no installs sidecar ({sidecar.name}); build it with make_bundle_zip")
+        sys.exit(f"{zip_path.name}: no installs sidecar ({sidecar.name}); build the package with Scripts/build_installer.sh")
     meta = json.loads(sidecar.read_text(encoding="utf-8"))
     data = zip_path.read_bytes()
     if not meta.get("installs"):

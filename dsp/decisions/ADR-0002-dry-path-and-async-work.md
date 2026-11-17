@@ -38,6 +38,9 @@ measurement, about 0.004 ms):
 4x Lin Phase now exceeds the 6 % budget of `dsp/reports/STATUS.md` C7 (measured at the default Min Phase,
 which stays within it). Available reduction, not taken: filter the Delta reference channels only while
 Auto Gain is on (resetting that chain when it stops), about half the added cost when Auto Gain is off.
+Taken on 2026-11-17: the reference has its own chain, run only while Delta and Auto Gain are on; together
+with the stereo-linked detector, 4x Lin is 0.2805 ms (5.26 %) in this benchmark
+(`qa/2026-11-17-audit-fixes/bench-after.txt`).
 
 **Alternatives rejected.** A better fractional delay (Lagrange, Thiran all-pass) improves the magnitude
 but still cannot reproduce the Min Phase filter's phase, so Mix would still comb.
@@ -58,3 +61,10 @@ work on the message thread. The destructor cancels a pending update.
 **Behaviour change.** Several mode changes before delivery coalesce to the last. The end state is the same
 as applying each in turn (an intermediate mode would only re-save the snapshot it had just loaded); tested.
 The restore race fix of 1.5.1 is kept: a switch requested before a state restore is dropped.
+
+**Superseded in part (2026-11-17, `qa/2026-11-17-audit-fixes/`).** Mode switches no longer go through this
+queue. The per-model memory is recalled only by the editor's model selector (`selectMode`, message thread);
+a host or automation change of the model parameter changes only the model. Recalling it asynchronously made
+offline renders depend on message-thread timing and wrote 16 parameters back to the host during automation
+playback. The memory is now saved with the session. The queue, its restore generation and the restoring flag
+were removed; the AsyncUpdater remains for the latency report.

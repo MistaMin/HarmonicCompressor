@@ -15,13 +15,6 @@
 namespace hcdsp::adaa
 {
 
-// ln(cosh(x)), the antiderivative of tanh(x), without overflow.
-inline double logCosh (double x) noexcept
-{
-    const double a = std::abs (x);
-    return a + std::log1p (std::exp (-2.0 * a)) - 0.6931471805599453;
-}
-
 // Smooth rail limiter f(v) = v / (1 + |v/rail|^8)^(1/8) and its Simpson-integrated
 // cubic-Hermite antiderivative table (accurate to ~1e-11, identical to HybridEQ).
 class RailTable
@@ -97,65 +90,6 @@ inline double railLimitF (double v, double rail = 1.0) noexcept
 {
     return rail * rail * railTable().integral (std::abs (v) / rail);
 }
-
-enum class Mode { Off, Hold, On };
-
-// Full HybridEQ all-pass/mean residual ADAA stage.
-struct Residual
-{
-    static constexpr double kKnee = 0.3;
-
-    double x1 = 0.0, F1 = 0.0, r1 = 0.0, apx = 0.0, apy = 0.0;
-    bool primed = false;
-
-    void reset() noexcept { primed = false; x1 = F1 = r1 = apx = apy = 0.0; }
-
-    double step (double x, double f, double F, double slope, Mode mode = Mode::On) noexcept
-    {
-        if (mode == Mode::Off)
-        {
-            primed = false;
-            return f;
-        }
-        const double linIn = slope * x;
-        if (! primed)
-            apx = apy = linIn;
-        const double lin = (1.0 / 3.0) * (linIn - apy) + apx;
-        apx = linIn;
-        apy = lin;
-
-        const double r = f - linIn;
-        const double Fr = F - 0.5 * slope * x * x;
-        double result = lin + r;
-        if (mode == Mode::On && primed)
-        {
-            const double dx = x - x1;
-            if (std::abs (dx) > 1.0e-5)
-            {
-                double meanR = (Fr - F1) / dx;
-                const double lo = std::min (r, r1);
-                const double hi = std::max (r, r1);
-                const double tol = (hi - lo) + 1.0e-6 * (1.0 + std::abs (r));
-                if (! (meanR >= lo - tol && meanR <= hi + tol))
-                    meanR = 0.5 * (r + r1);
-                const double c = std::abs (x) > 1.0e-9 ? 1.0 - f / linIn : 0.0;
-                const double c2 = c * c, c4 = c2 * c2, c8 = c4 * c4;
-                const double k2 = kKnee * kKnee, k4 = k2 * k2;
-                const double w = c8 / (c8 + k4 * k4);
-                result = lin + meanR + w * (0.5 * slope * (x + x1) - lin);
-            }
-            else
-            {
-                result = lin + 0.5 * (r + r1);
-            }
-        }
-        x1 = x;
-        F1 = Fr;
-        r1 = r;
-        primed = true;
-        return result;
-    }
-};
 
 // Zero-delay linear-identity residual ADAA (HybridEQ CurveADAA form):
 // Keeps the linear term `slope * x` unaveraged so 0% harmonics is bit-exact unity with zero

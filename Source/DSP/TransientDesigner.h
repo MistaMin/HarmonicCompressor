@@ -27,7 +27,6 @@ public:
         medEnv = 0.0f;
         slowEnv = 0.0f;
         smoothGainDb = 0.0f;
-        lastAppliedGainDb = 0.0f;
     }
 
     void processBlock (juce::AudioBuffer<float>& buffer, int numSamples,
@@ -51,8 +50,6 @@ public:
 
         float* ch0 = buffer.getWritePointer (0);
         float* ch1 = numCh > 1 ? buffer.getWritePointer (1) : nullptr;
-
-        float peakGainMag = 0.0f;
 
         for (int s = 0; s < numSamples; ++s)
         {
@@ -85,8 +82,6 @@ public:
             }
 
             smoothGainDb = gainSmooth * smoothGainDb + (1.0f - gainSmooth) * targetDb;
-            if (std::abs (smoothGainDb) > std::abs (peakGainMag))
-                peakGainMag = smoothGainDb;
 
             if (enabled || std::abs (smoothGainDb) > 1.0e-4f)
             {
@@ -98,11 +93,7 @@ public:
                     buffer.getWritePointer (c)[s] *= g;
             }
         }
-
-        lastAppliedGainDb = peakGainMag;
     }
-
-    float getLastAppliedGainDb() const noexcept { return lastAppliedGainDb; }
 
 private:
     float timeToCoeff (float ms) const noexcept
@@ -121,7 +112,6 @@ private:
     float medEnv = 0.0f;
     float slowEnv = 0.0f;
     float smoothGainDb = 0.0f;
-    float lastAppliedGainDb = 0.0f;
 };
 
 } // namespace hcdsp

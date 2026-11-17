@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "Build architecture for macOS")
 set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS deployment target")
 
-project(HarmonicCompressor VERSION 1.5.2)
+project(HarmonicCompressor VERSION 1.5.3)
 
 if(MSVC)
     add_compile_definitions(_USE_MATH_DEFINES)
