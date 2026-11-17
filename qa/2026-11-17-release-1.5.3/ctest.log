@@ -1,0 +1,13 @@
+Test project <repo>/build-release
+    Start 1: SliderClickTest
+1/4 Test #1: SliderClickTest ..................   Passed    0.50 sec
+    Start 2: EditorSliderTest
+2/4 Test #2: EditorSliderTest .................   Passed    0.38 sec
+    Start 3: AutoGainDeltaTest
+3/4 Test #3: AutoGainDeltaTest ................   Passed   12.32 sec
+    Start 4: ProcessorFixesTest
+4/4 Test #4: ProcessorFixesTest ...............   Passed    7.05 sec
+
+100% tests passed out of 4
+
+Total Test time (real) =  20.27 sec

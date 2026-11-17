@@ -1,0 +1,51 @@
+== Harmonic Compressor installer builder ==
+Artefacts dir: <repo>/dist/release-1.5.3/pkg-input/HarmonicCompressor_artefacts/Release
+  + LICENSE-BINARIES.txt included
+  + User Manual PDF included
+  + VST3 included
+  + AU included
+  + CLAP included
+  + LV2 included
+  + AAX included (PACE Eden signed)
+pkgbuild: Inferring bundle components from contents of <repo>/dist/release-1.5.3/pkg/staging
+pkgbuild: Writing new component property list to <repo>/dist/release-1.5.3/pkg/component.plist
+pkgbuild: Reading components from <repo>/dist/release-1.5.3/pkg/component.plist
+pkgbuild: Adding component at Library/Application Support/Avid/Audio/Plug-Ins/Harmonic Compressor.aaxplugin
+pkgbuild: Adding component at Library/Application Support/Avid/Audio/Plug-Ins/Harmonic Compressor.aaxplugin/Contents/__Pace_Eden.bundle
+pkgbuild: Adding component at Library/Audio/Plug-Ins/CLAP/Harmonic Compressor.clap
+pkgbuild: Adding component at Library/Audio/Plug-Ins/VST3/Harmonic Compressor.vst3
+pkgbuild: Adding component at Library/Audio/Plug-Ins/Components/Harmonic Compressor.component
+pkgbuild: Wrote package to <repo>/dist/release-1.5.3/pkg/HarmonicCompressor-component.pkg
+productbuild: Wrote synthesized distribution to <repo>/dist/release-1.5.3/pkg/distribution.xml
+== Synthesizing product distribution package ==
+productbuild: Wrote product to <repo>/dist/release-1.5.3/pkg/HarmonicCompressor-1.5.3-macOS-unsigned.pkg
+== Signing installer package with Developer ID Installer ==
+productsign: using timestamp authority for signature
+productsign: signing product with identity "Developer ID Installer: Marcos Deida (ZQYU67JUBH)" from keychain ~/Library/Keychains/login.keychain-db
+productsign: adding certificate "Developer ID Certification Authority"
+productsign: adding certificate "Apple Root CA"
+productsign: Wrote signed product archive to <repo>/dist/release-1.5.3/pkg/Harmonic-Compressor-1.5.3-macos.pkg
+== Submitting installer package to Apple Notary Service ==
+Conducting pre-submission checks for Harmonic-Compressor-1.5.3-macos.pkg and initiating connection to the Apple notary service...
+Submission ID received
+  id: 476bb303-9b9f-4e1c-836d-faa744fc586e
+Successfully uploaded file
+  id: 476bb303-9b9f-4e1c-836d-faa744fc586e
+  path: <repo>/dist/release-1.5.3/pkg/Harmonic-Compressor-1.5.3-macos.pkg
+Waiting for processing to complete.
+Current status: In Progress...Current status: In Progress....Current status: In Progress.....Current status: Accepted......Processing complete
+  id: 476bb303-9b9f-4e1c-836d-faa744fc586e
+  status: Accepted
+
+== Stapling notarization ticket to installer package ==
+Processing: <repo>/dist/release-1.5.3/pkg/Harmonic-Compressor-1.5.3-macos.pkg
+Processing: <repo>/dist/release-1.5.3/pkg/Harmonic-Compressor-1.5.3-macos.pkg
+The staple and validate action worked!
+Processing: <repo>/dist/release-1.5.3/pkg/Harmonic-Compressor-1.5.3-macos.pkg
+The validate action worked!
+== Gatekeeper assessment ==
+<repo>/dist/release-1.5.3/pkg/Harmonic-Compressor-1.5.3-macos.pkg: accepted
+source=Notarized Developer ID
+
+== Done ==
+Notarized installer package: <repo>/dist/release-1.5.3/pkg/Harmonic-Compressor-1.5.3-macos.pkg (installs list: <repo>/dist/release-1.5.3/pkg/Harmonic-Compressor-1.5.3-macos.pkg.installs.json)

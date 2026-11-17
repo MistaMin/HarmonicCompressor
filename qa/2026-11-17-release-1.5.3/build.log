@@ -1,0 +1,641 @@
+ninja: Entering directory `build-release'
+[0/2] Re-checking globbed directories...
+[1/97] Copying OS X Content 'HarmonicCompressor_artefacts/Release/AU/Harmonic Compressor.component/Contents/Resources/AppIcon.icns'
+[2/97] Copying OS X Content 'HarmonicCompressor_artefacts/Release/VST3/Harmonic Compressor.vst3/Contents/Resources/AppIcon.icns'
+[3/97] Copying OS X Content 'HarmonicCompressor_artefacts/Release/AAX/Harmonic Compressor.aaxplugin/Contents/Resources/AppIcon.icns'
+[4/97] Building CXX object CMakeFiles/juce_lv2_helper.dir/JUCE/modules/juce_audio_plugin_client/LV2/juce_LV2ManifestHelper.cpp.o
+[5/97] Linking CXX executable juce_lv2_helper
+[6/97] Building CXX object _deps/clap-juce-extensions-build/CMakeFiles/clap_juce_extensions.dir/src/extensions/clap-juce-extensions.cpp.o
+[7/97] Linking CXX static library _deps/clap-juce-extensions-build/libclap_juce_extensions.a
+[8/97] Generating HarmonicCompressor_artefacts/JuceLibraryCode/JuceHeader.h
+[9/97] Building VST3 manifest helper for HarmonicCompressor
+-- The CXX compiler identification is AppleClang 16.0.0.16000026
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: <repo>/build-release/vst3_helpers/HarmonicCompressor
+[1/2] Building CXX object CMakeFiles/vst3_helper.dir<repo>/JUCE/modules/juce_audio_plugin_client/VST3/juce_VST3ManifestHelper.cpp.o
+[2/2] Linking CXX executable vst3_helper
+[10/97] Building C object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o
+[11/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/Source/TransferCurveDisplay.cpp.o
+In file included from <repo>/Source/TransferCurveDisplay.cpp:1:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:4:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:208:70: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  208 |         auto number=[&](int n){std::size_t end=0;float v=std::stof(f[n],&end);
+      |                                                                    ~ ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:209:23: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  209 |             if(end!=f[n].size())throw std::runtime_error("Invalid number");return v;};
+      |                     ~ ^
+In file included from <repo>/Source/TransferCurveDisplay.cpp:1:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+In file included from /Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:198:20: warning: declaration shadows a local variable [-Wshadow]
+  198 |         juce::Path grain;
+      |                    ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:184:97: note: previous declaration is here
+  184 | inline void woodKnob(const Ctx& k, Colour side1, Colour side2, Colour top1, Colour top2, Colour grain) {
+      |                                                                                                 ^
+In file included from <repo>/Source/TransferCurveDisplay.cpp:1:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:45:93: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   45 |             for(float x=x0;x<=x1;x+=6.0f){const float yy=y+std::sin(x*0.045f+y*0.31f)*2.2f;x==x0?p.startNewSubPath(x,yy):p.lineTo(x,yy);}
+      |                                                                                            ~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:31: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                            ~~~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:53: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                                                  ~~~^ ~~
+In file included from <repo>/Source/TransferCurveDisplay.cpp:1:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:172:85: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  172 |         const bool lit = levelDb >= db - 48.0f / float(segments) * 0.5f || float(i) == peakIdx;
+      |                                                                            ~~~~~~~~ ^  ~~~~~~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:177:62: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  177 |         g.setColour(lit && (levelDb >= db - 1.5f || float(i) == peakIdx) ? c : lit ? c.darker(0.2f) : c.withAlpha(0.14f));
+      |                                                     ~~~~~~~~ ^  ~~~~~~~
+8 warnings generated.
+In file included from <repo>/Source/TransferCurveDisplay.cpp:1:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:4:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:208:70: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  208 |         auto number=[&](int n){std::size_t end=0;float v=std::stof(f[n],&end);
+      |                                                                    ~ ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:209:23: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  209 |             if(end!=f[n].size())throw std::runtime_error("Invalid number");return v;};
+      |                     ~ ^
+In file included from <repo>/Source/TransferCurveDisplay.cpp:1:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+In file included from /Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:198:20: warning: declaration shadows a local variable [-Wshadow]
+  198 |         juce::Path grain;
+      |                    ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:184:97: note: previous declaration is here
+  184 | inline void woodKnob(const Ctx& k, Colour side1, Colour side2, Colour top1, Colour top2, Colour grain) {
+      |                                                                                                 ^
+In file included from <repo>/Source/TransferCurveDisplay.cpp:1:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:45:93: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   45 |             for(float x=x0;x<=x1;x+=6.0f){const float yy=y+std::sin(x*0.045f+y*0.31f)*2.2f;x==x0?p.startNewSubPath(x,yy):p.lineTo(x,yy);}
+      |                                                                                            ~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:31: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                            ~~~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:53: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                                                  ~~~^ ~~
+In file included from <repo>/Source/TransferCurveDisplay.cpp:1:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:172:85: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  172 |         const bool lit = levelDb >= db - 48.0f / float(segments) * 0.5f || float(i) == peakIdx;
+      |                                                                            ~~~~~~~~ ^  ~~~~~~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:177:62: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  177 |         g.setColour(lit && (levelDb >= db - 1.5f || float(i) == peakIdx) ? c : lit ? c.darker(0.2f) : c.withAlpha(0.14f));
+      |                                                     ~~~~~~~~ ^  ~~~~~~~
+8 warnings generated.
+[12/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/Source/PluginProcessor.cpp.o
+In file included from <repo>/Source/PluginProcessor.cpp:2:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:4:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:208:70: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  208 |         auto number=[&](int n){std::size_t end=0;float v=std::stof(f[n],&end);
+      |                                                                    ~ ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:209:23: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  209 |             if(end!=f[n].size())throw std::runtime_error("Invalid number");return v;};
+      |                     ~ ^
+In file included from <repo>/Source/PluginProcessor.cpp:2:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+In file included from /Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:198:20: warning: declaration shadows a local variable [-Wshadow]
+  198 |         juce::Path grain;
+      |                    ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:184:97: note: previous declaration is here
+  184 | inline void woodKnob(const Ctx& k, Colour side1, Colour side2, Colour top1, Colour top2, Colour grain) {
+      |                                                                                                 ^
+In file included from <repo>/Source/PluginProcessor.cpp:2:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:45:93: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   45 |             for(float x=x0;x<=x1;x+=6.0f){const float yy=y+std::sin(x*0.045f+y*0.31f)*2.2f;x==x0?p.startNewSubPath(x,yy):p.lineTo(x,yy);}
+      |                                                                                            ~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:31: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                            ~~~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:53: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                                                  ~~~^ ~~
+In file included from <repo>/Source/PluginProcessor.cpp:2:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:172:85: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  172 |         const bool lit = levelDb >= db - 48.0f / float(segments) * 0.5f || float(i) == peakIdx;
+      |                                                                            ~~~~~~~~ ^  ~~~~~~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:177:62: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  177 |         g.setColour(lit && (levelDb >= db - 1.5f || float(i) == peakIdx) ? c : lit ? c.darker(0.2f) : c.withAlpha(0.14f));
+      |                                                     ~~~~~~~~ ^  ~~~~~~~
+8 warnings generated.
+In file included from <repo>/Source/PluginProcessor.cpp:2:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:4:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:208:70: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  208 |         auto number=[&](int n){std::size_t end=0;float v=std::stof(f[n],&end);
+      |                                                                    ~ ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:209:23: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  209 |             if(end!=f[n].size())throw std::runtime_error("Invalid number");return v;};
+      |                     ~ ^
+In file included from <repo>/Source/PluginProcessor.cpp:2:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+In file included from /Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:198:20: warning: declaration shadows a local variable [-Wshadow]
+  198 |         juce::Path grain;
+      |                    ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:184:97: note: previous declaration is here
+  184 | inline void woodKnob(const Ctx& k, Colour side1, Colour side2, Colour top1, Colour top2, Colour grain) {
+      |                                                                                                 ^
+In file included from <repo>/Source/PluginProcessor.cpp:2:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:45:93: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   45 |             for(float x=x0;x<=x1;x+=6.0f){const float yy=y+std::sin(x*0.045f+y*0.31f)*2.2f;x==x0?p.startNewSubPath(x,yy):p.lineTo(x,yy);}
+      |                                                                                            ~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:31: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                            ~~~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:53: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                                                  ~~~^ ~~
+In file included from <repo>/Source/PluginProcessor.cpp:2:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:172:85: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  172 |         const bool lit = levelDb >= db - 48.0f / float(segments) * 0.5f || float(i) == peakIdx;
+      |                                                                            ~~~~~~~~ ^  ~~~~~~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:177:62: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  177 |         g.setColour(lit && (levelDb >= db - 1.5f || float(i) == peakIdx) ? c : lit ? c.darker(0.2f) : c.withAlpha(0.14f));
+      |                                                     ~~~~~~~~ ^  ~~~~~~~
+8 warnings generated.
+[13/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o
+[14/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o
+[15/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o
+[16/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o
+[17/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o
+[18/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_data_structures/juce_data_structures.mm.o
+[19/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o
+[20/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_events/juce_events.mm.o
+[21/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o
+[22/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/Source/PluginEditor.cpp.o
+In file included from <repo>/Source/PluginEditor.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:4:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:208:70: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  208 |         auto number=[&](int n){std::size_t end=0;float v=std::stof(f[n],&end);
+      |                                                                    ~ ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:209:23: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  209 |             if(end!=f[n].size())throw std::runtime_error("Invalid number");return v;};
+      |                     ~ ^
+In file included from <repo>/Source/PluginEditor.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+In file included from /Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:198:20: warning: declaration shadows a local variable [-Wshadow]
+  198 |         juce::Path grain;
+      |                    ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:184:97: note: previous declaration is here
+  184 | inline void woodKnob(const Ctx& k, Colour side1, Colour side2, Colour top1, Colour top2, Colour grain) {
+      |                                                                                                 ^
+In file included from <repo>/Source/PluginEditor.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:45:93: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   45 |             for(float x=x0;x<=x1;x+=6.0f){const float yy=y+std::sin(x*0.045f+y*0.31f)*2.2f;x==x0?p.startNewSubPath(x,yy):p.lineTo(x,yy);}
+      |                                                                                            ~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:31: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                            ~~~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:53: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                                                  ~~~^ ~~
+In file included from <repo>/Source/PluginEditor.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:172:85: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  172 |         const bool lit = levelDb >= db - 48.0f / float(segments) * 0.5f || float(i) == peakIdx;
+      |                                                                            ~~~~~~~~ ^  ~~~~~~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:177:62: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  177 |         g.setColour(lit && (levelDb >= db - 1.5f || float(i) == peakIdx) ? c : lit ? c.darker(0.2f) : c.withAlpha(0.14f));
+      |                                                     ~~~~~~~~ ^  ~~~~~~~
+8 warnings generated.
+In file included from <repo>/Source/PluginEditor.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:4:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:208:70: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  208 |         auto number=[&](int n){std::size_t end=0;float v=std::stof(f[n],&end);
+      |                                                                    ~ ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:209:23: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  209 |             if(end!=f[n].size())throw std::runtime_error("Invalid number");return v;};
+      |                     ~ ^
+In file included from <repo>/Source/PluginEditor.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+In file included from /Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:198:20: warning: declaration shadows a local variable [-Wshadow]
+  198 |         juce::Path grain;
+      |                    ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:184:97: note: previous declaration is here
+  184 | inline void woodKnob(const Ctx& k, Colour side1, Colour side2, Colour top1, Colour top2, Colour grain) {
+      |                                                                                                 ^
+In file included from <repo>/Source/PluginEditor.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:45:93: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   45 |             for(float x=x0;x<=x1;x+=6.0f){const float yy=y+std::sin(x*0.045f+y*0.31f)*2.2f;x==x0?p.startNewSubPath(x,yy):p.lineTo(x,yy);}
+      |                                                                                            ~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:31: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                            ~~~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:53: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                                                  ~~~^ ~~
+In file included from <repo>/Source/PluginEditor.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:172:85: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  172 |         const bool lit = levelDb >= db - 48.0f / float(segments) * 0.5f || float(i) == peakIdx;
+      |                                                                            ~~~~~~~~ ^  ~~~~~~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:177:62: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  177 |         g.setColour(lit && (levelDb >= db - 1.5f || float(i) == peakIdx) ? c : lit ? c.darker(0.2f) : c.withAlpha(0.14f));
+      |                                                     ~~~~~~~~ ^  ~~~~~~~
+8 warnings generated.
+[23/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o
+[24/97] Building CXX object CMakeFiles/HarmonicCompressor_LV2.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
+[25/97] Building CXX object CMakeFiles/HarmonicCompressor_LV2.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+[26/97] Building CXX object CMakeFiles/HarmonicCompressor_LV2.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
+[27/97] Building CXX object CMakeFiles/HarmonicCompressor_LV2.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
+[28/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o
+[29/97] Building CXX object CMakeFiles/HarmonicCompressor_LV2.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.mm.o
+[30/97] Building CXX object CMakeFiles/HarmonicCompressor_LV2.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_1.mm.o
+[31/97] Building CXX object CMakeFiles/HarmonicCompressor_LV2.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_2.mm.o
+[32/97] Building CXX object CMakeFiles/HarmonicCompressor_LV2.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AUv3.mm.o
+[33/97] Building CXX object CMakeFiles/HarmonicCompressor_LV2.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.mm.o
+[34/97] Building CXX object CMakeFiles/HarmonicCompressor_LV2.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.mm.o
+[35/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o
+[36/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o
+[37/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o
+[38/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o
+[39/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_dsp/juce_dsp.mm.o
+[40/97] Building CXX object CMakeFiles/HarmonicCompressor_LV2.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.mm.o
+[41/97] Building CXX object CMakeFiles/SliderClickTest.dir/qa/2026-11-06-slider-click/slider_click_test.cpp.o
+In file included from <repo>/qa/2026-11-06-slider-click/slider_click_test.cpp:5:
+In file included from <repo>/Source/UI/Knob.h:2:
+In file included from <repo>/Source/UI/Toolkit.h:4:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:208:70: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  208 |         auto number=[&](int n){std::size_t end=0;float v=std::stof(f[n],&end);
+      |                                                                    ~ ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:209:23: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  209 |             if(end!=f[n].size())throw std::runtime_error("Invalid number");return v;};
+      |                     ~ ^
+In file included from <repo>/qa/2026-11-06-slider-click/slider_click_test.cpp:5:
+In file included from <repo>/Source/UI/Knob.h:2:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+In file included from /Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:198:20: warning: declaration shadows a local variable [-Wshadow]
+  198 |         juce::Path grain;
+      |                    ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:184:97: note: previous declaration is here
+  184 | inline void woodKnob(const Ctx& k, Colour side1, Colour side2, Colour top1, Colour top2, Colour grain) {
+      |                                                                                                 ^
+In file included from <repo>/qa/2026-11-06-slider-click/slider_click_test.cpp:5:
+In file included from <repo>/Source/UI/Knob.h:2:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:45:93: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   45 |             for(float x=x0;x<=x1;x+=6.0f){const float yy=y+std::sin(x*0.045f+y*0.31f)*2.2f;x==x0?p.startNewSubPath(x,yy):p.lineTo(x,yy);}
+      |                                                                                            ~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:31: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                            ~~~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:53: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                                                  ~~~^ ~~
+In file included from <repo>/qa/2026-11-06-slider-click/slider_click_test.cpp:5:
+In file included from <repo>/Source/UI/Knob.h:2:
+In file included from <repo>/Source/UI/Toolkit.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:172:85: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  172 |         const bool lit = levelDb >= db - 48.0f / float(segments) * 0.5f || float(i) == peakIdx;
+      |                                                                            ~~~~~~~~ ^  ~~~~~~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:177:62: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  177 |         g.setColour(lit && (levelDb >= db - 1.5f || float(i) == peakIdx) ? c : lit ? c.darker(0.2f) : c.withAlpha(0.14f));
+      |                                                     ~~~~~~~~ ^  ~~~~~~~
+8 warnings generated.
+In file included from <repo>/qa/2026-11-06-slider-click/slider_click_test.cpp:5:
+In file included from <repo>/Source/UI/Knob.h:2:
+In file included from <repo>/Source/UI/Toolkit.h:4:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:208:70: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  208 |         auto number=[&](int n){std::size_t end=0;float v=std::stof(f[n],&end);
+      |                                                                    ~ ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:209:23: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  209 |             if(end!=f[n].size())throw std::runtime_error("Invalid number");return v;};
+      |                     ~ ^
+In file included from <repo>/qa/2026-11-06-slider-click/slider_click_test.cpp:5:
+In file included from <repo>/Source/UI/Knob.h:2:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+In file included from /Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:198:20: warning: declaration shadows a local variable [-Wshadow]
+  198 |         juce::Path grain;
+      |                    ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:184:97: note: previous declaration is here
+  184 | inline void woodKnob(const Ctx& k, Colour side1, Colour side2, Colour top1, Colour top2, Colour grain) {
+      |                                                                                                 ^
+In file included from <repo>/qa/2026-11-06-slider-click/slider_click_test.cpp:5:
+In file included from <repo>/Source/UI/Knob.h:2:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:45:93: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   45 |             for(float x=x0;x<=x1;x+=6.0f){const float yy=y+std::sin(x*0.045f+y*0.31f)*2.2f;x==x0?p.startNewSubPath(x,yy):p.lineTo(x,yy);}
+      |                                                                                            ~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:31: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                            ~~~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:53: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                                                  ~~~^ ~~
+In file included from <repo>/qa/2026-11-06-slider-click/slider_click_test.cpp:5:
+In file included from <repo>/Source/UI/Knob.h:2:
+In file included from <repo>/Source/UI/Toolkit.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:172:85: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  172 |         const bool lit = levelDb >= db - 48.0f / float(segments) * 0.5f || float(i) == peakIdx;
+      |                                                                            ~~~~~~~~ ^  ~~~~~~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:177:62: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  177 |         g.setColour(lit && (levelDb >= db - 1.5f || float(i) == peakIdx) ? c : lit ? c.darker(0.2f) : c.withAlpha(0.14f));
+      |                                                     ~~~~~~~~ ^  ~~~~~~~
+8 warnings generated.
+[42/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_core/juce_core.mm.o
+[43/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o
+[44/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o
+[45/97] Building CXX object CMakeFiles/HarmonicCompressor_CLAP.dir/Volumes/Developer/OpenGrid/clap-juce-extensions/src/wrapper/clap-juce-mac.mm.o
+[46/97] Building CXX object CMakeFiles/EditorSliderTest.dir/qa/2026-11-06-slider-click/editor_slider_test.cpp.o
+In file included from <repo>/qa/2026-11-06-slider-click/editor_slider_test.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:4:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:208:70: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  208 |         auto number=[&](int n){std::size_t end=0;float v=std::stof(f[n],&end);
+      |                                                                    ~ ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:209:23: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  209 |             if(end!=f[n].size())throw std::runtime_error("Invalid number");return v;};
+      |                     ~ ^
+In file included from <repo>/qa/2026-11-06-slider-click/editor_slider_test.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+In file included from /Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:198:20: warning: declaration shadows a local variable [-Wshadow]
+  198 |         juce::Path grain;
+      |                    ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:184:97: note: previous declaration is here
+  184 | inline void woodKnob(const Ctx& k, Colour side1, Colour side2, Colour top1, Colour top2, Colour grain) {
+      |                                                                                                 ^
+In file included from <repo>/qa/2026-11-06-slider-click/editor_slider_test.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:45:93: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   45 |             for(float x=x0;x<=x1;x+=6.0f){const float yy=y+std::sin(x*0.045f+y*0.31f)*2.2f;x==x0?p.startNewSubPath(x,yy):p.lineTo(x,yy);}
+      |                                                                                            ~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:31: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                            ~~~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:53: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                                                  ~~~^ ~~
+In file included from <repo>/qa/2026-11-06-slider-click/editor_slider_test.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:172:85: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  172 |         const bool lit = levelDb >= db - 48.0f / float(segments) * 0.5f || float(i) == peakIdx;
+      |                                                                            ~~~~~~~~ ^  ~~~~~~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:177:62: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  177 |         g.setColour(lit && (levelDb >= db - 1.5f || float(i) == peakIdx) ? c : lit ? c.darker(0.2f) : c.withAlpha(0.14f));
+      |                                                     ~~~~~~~~ ^  ~~~~~~~
+8 warnings generated.
+In file included from <repo>/qa/2026-11-06-slider-click/editor_slider_test.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:4:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:208:70: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  208 |         auto number=[&](int n){std::size_t end=0;float v=std::stof(f[n],&end);
+      |                                                                    ~ ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:209:23: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  209 |             if(end!=f[n].size())throw std::runtime_error("Invalid number");return v;};
+      |                     ~ ^
+In file included from <repo>/qa/2026-11-06-slider-click/editor_slider_test.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+In file included from /Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:198:20: warning: declaration shadows a local variable [-Wshadow]
+  198 |         juce::Path grain;
+      |                    ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:184:97: note: previous declaration is here
+  184 | inline void woodKnob(const Ctx& k, Colour side1, Colour side2, Colour top1, Colour top2, Colour grain) {
+      |                                                                                                 ^
+In file included from <repo>/qa/2026-11-06-slider-click/editor_slider_test.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:45:93: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   45 |             for(float x=x0;x<=x1;x+=6.0f){const float yy=y+std::sin(x*0.045f+y*0.31f)*2.2f;x==x0?p.startNewSubPath(x,yy):p.lineTo(x,yy);}
+      |                                                                                            ~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:31: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                            ~~~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:53: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                                                  ~~~^ ~~
+In file included from <repo>/qa/2026-11-06-slider-click/editor_slider_test.cpp:1:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:172:85: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  172 |         const bool lit = levelDb >= db - 48.0f / float(segments) * 0.5f || float(i) == peakIdx;
+      |                                                                            ~~~~~~~~ ^  ~~~~~~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:177:62: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  177 |         g.setColour(lit && (levelDb >= db - 1.5f || float(i) == peakIdx) ? c : lit ? c.darker(0.2f) : c.withAlpha(0.14f));
+      |                                                     ~~~~~~~~ ^  ~~~~~~~
+8 warnings generated.
+[47/97] Building CXX object CMakeFiles/ProcessorFixesTest.dir/qa/2026-11-14-processor-fixes/processor_fixes_test.cpp.o
+[48/97] Building CXX object CMakeFiles/AutoGainDeltaTest.dir/qa/2026-11-14-autogain-delta/autogain_delta_test.cpp.o
+In file included from <repo>/qa/2026-11-14-autogain-delta/autogain_delta_test.cpp:7:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:4:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:208:70: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  208 |         auto number=[&](int n){std::size_t end=0;float v=std::stof(f[n],&end);
+      |                                                                    ~ ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:209:23: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  209 |             if(end!=f[n].size())throw std::runtime_error("Invalid number");return v;};
+      |                     ~ ^
+In file included from <repo>/qa/2026-11-14-autogain-delta/autogain_delta_test.cpp:7:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+In file included from /Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:198:20: warning: declaration shadows a local variable [-Wshadow]
+  198 |         juce::Path grain;
+      |                    ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:184:97: note: previous declaration is here
+  184 | inline void woodKnob(const Ctx& k, Colour side1, Colour side2, Colour top1, Colour top2, Colour grain) {
+      |                                                                                                 ^
+In file included from <repo>/qa/2026-11-14-autogain-delta/autogain_delta_test.cpp:7:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:45:93: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   45 |             for(float x=x0;x<=x1;x+=6.0f){const float yy=y+std::sin(x*0.045f+y*0.31f)*2.2f;x==x0?p.startNewSubPath(x,yy):p.lineTo(x,yy);}
+      |                                                                                            ~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:31: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                            ~~~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:53: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                                                  ~~~^ ~~
+In file included from <repo>/qa/2026-11-14-autogain-delta/autogain_delta_test.cpp:7:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:172:85: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  172 |         const bool lit = levelDb >= db - 48.0f / float(segments) * 0.5f || float(i) == peakIdx;
+      |                                                                            ~~~~~~~~ ^  ~~~~~~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:177:62: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  177 |         g.setColour(lit && (levelDb >= db - 1.5f || float(i) == peakIdx) ? c : lit ? c.darker(0.2f) : c.withAlpha(0.14f));
+      |                                                     ~~~~~~~~ ^  ~~~~~~~
+8 warnings generated.
+In file included from <repo>/qa/2026-11-14-autogain-delta/autogain_delta_test.cpp:7:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:4:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:208:70: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  208 |         auto number=[&](int n){std::size_t end=0;float v=std::stof(f[n],&end);
+      |                                                                    ~ ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/include/goodlookinui/Design.h:209:23: warning: implicit conversion changes signedness: 'int' to 'size_type' (aka 'unsigned long') [-Wsign-conversion]
+  209 |             if(end!=f[n].size())throw std::runtime_error("Invalid number");return v;};
+      |                     ~ ^
+In file included from <repo>/qa/2026-11-14-autogain-delta/autogain_delta_test.cpp:7:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+In file included from /Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:198:20: warning: declaration shadows a local variable [-Wshadow]
+  198 |         juce::Path grain;
+      |                    ^
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/KnobsFlat.h:184:97: note: previous declaration is here
+  184 | inline void woodKnob(const Ctx& k, Colour side1, Colour side2, Colour top1, Colour top2, Colour grain) {
+      |                                                                                                 ^
+In file included from <repo>/qa/2026-11-14-autogain-delta/autogain_delta_test.cpp:7:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:5:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:45:93: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   45 |             for(float x=x0;x<=x1;x+=6.0f){const float yy=y+std::sin(x*0.045f+y*0.31f)*2.2f;x==x0?p.startNewSubPath(x,yy):p.lineTo(x,yy);}
+      |                                                                                            ~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:31: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                            ~~~^ ~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/GoodLookinUI.h:80:53: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+   80 |             const float sx=c.x==x0?1.0f:-1.0f,sy=c.y==y0?1.0f:-1.0f;
+      |                                                  ~~~^ ~~
+In file included from <repo>/qa/2026-11-14-autogain-delta/autogain_delta_test.cpp:7:
+In file included from <repo>/Source/PluginEditor.h:10:
+In file included from <repo>/Source/TransferCurveDisplay.h:4:
+In file included from <repo>/Source/UI/Toolkit.h:6:
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:172:85: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  172 |         const bool lit = levelDb >= db - 48.0f / float(segments) * 0.5f || float(i) == peakIdx;
+      |                                                                            ~~~~~~~~ ^  ~~~~~~~
+/Volumes/Developer/OpenGrid/HybridEQ/third_party/GoodLookinUI/adapters/juce/Meters.h:177:62: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+  177 |         g.setColour(lit && (levelDb >= db - 1.5f || float(i) == peakIdx) ? c : lit ? c.darker(0.2f) : c.withAlpha(0.14f));
+      |                                                     ~~~~~~~~ ^  ~~~~~~~
+8 warnings generated.
+[49/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o
+[50/97] Building CXX object CMakeFiles/HarmonicCompressor.dir/JUCE/modules/juce_graphics/juce_graphics.mm.o
+[51/97] Linking CXX static library "HarmonicCompressor_artefacts/Release/libHarmonic Compressor_SharedCode.a"
+[52/97] Generating HarmonicCompressor_artefacts/JuceLibraryCode/HarmonicCompressor_AU/PkgInfo
+[53/97] Generating HarmonicCompressor_artefacts/JuceLibraryCode/HarmonicCompressor_VST3/PkgInfo
+[54/97] Generating HarmonicCompressor_artefacts/JuceLibraryCode/HarmonicCompressor_AAX/PkgInfo
+[55/97] Building CXX object CMakeFiles/HarmonicCompressor_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
+[56/97] Building CXX object CMakeFiles/HarmonicCompressor_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+[57/97] Building CXX object CMakeFiles/HarmonicCompressor_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
+[58/97] Building CXX object CMakeFiles/HarmonicCompressor_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
+[59/97] Building CXX object CMakeFiles/HarmonicCompressor_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.mm.o
+[60/97] Building CXX object CMakeFiles/HarmonicCompressor_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.mm.o
+[61/97] Building CXX object CMakeFiles/HarmonicCompressor_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AUv3.mm.o
+[62/97] Building CXX object CMakeFiles/HarmonicCompressor_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
+[63/97] Building CXX object CMakeFiles/HarmonicCompressor_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.mm.o
+[64/97] Building CXX object CMakeFiles/HarmonicCompressor_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.mm.o
+[65/97] Building CXX object CMakeFiles/HarmonicCompressor_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+[66/97] Building CXX object CMakeFiles/HarmonicCompressor_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
+[67/97] Building CXX object CMakeFiles/HarmonicCompressor_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
+[68/97] Building CXX object CMakeFiles/HarmonicCompressor_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.mm.o
+[69/97] Building CXX object CMakeFiles/HarmonicCompressor_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_1.mm.o
+[70/97] Building CXX object CMakeFiles/HarmonicCompressor_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_2.mm.o
+[71/97] Building CXX object CMakeFiles/HarmonicCompressor_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.mm.o
+[72/97] Building CXX object CMakeFiles/HarmonicCompressor_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AUv3.mm.o
+[73/97] Building CXX object CMakeFiles/HarmonicCompressor_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.mm.o
+[74/97] Building CXX object CMakeFiles/HarmonicCompressor_AAX.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+[75/97] Building CXX object CMakeFiles/HarmonicCompressor_AAX.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
+[76/97] Building CXX object CMakeFiles/HarmonicCompressor_AAX.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
+[77/97] Building CXX object CMakeFiles/HarmonicCompressor_AAX.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_1.mm.o
+[78/97] Building CXX object CMakeFiles/HarmonicCompressor_AAX.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_2.mm.o
+[79/97] Building CXX object CMakeFiles/HarmonicCompressor_AAX.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AUv3.mm.o
+[80/97] Building CXX object CMakeFiles/HarmonicCompressor_AAX.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.mm.o
+[81/97] Building CXX object CMakeFiles/HarmonicCompressor_AAX.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.mm.o
+[82/97] Building CXX object CMakeFiles/HarmonicCompressor_AAX.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.mm.o
+[83/97] Building CXX object CMakeFiles/HarmonicCompressor_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_2.mm.o
+[84/97] Building CXX object CMakeFiles/HarmonicCompressor_AAX.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
+[85/97] Building CXX object CMakeFiles/HarmonicCompressor_AAX.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.mm.o
+[86/97] Building CXX object CMakeFiles/HarmonicCompressor_AU.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AU_1.mm.o
+[87/97] Building CXX object CMakeFiles/HarmonicCompressor_VST3.dir/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.mm.o
+[88/97] Linking CXX executable SliderClickTest_artefacts/Release/SliderClickTest
+[89/97] Linking CXX executable EditorSliderTest
+[90/97] Linking CXX executable ProcessorFixesTest
+[91/97] Linking CXX executable AutoGainDeltaTest
+[92/97] Linking CXX CFBundle shared module "HarmonicCompressor_artefacts/Release/CLAP/Harmonic Compressor.clap/Contents/MacOS/Harmonic Compressor"
+[93/97] Linking CXX shared module "HarmonicCompressor_artefacts/Release/LV2/Harmonic Compressor.lv2/libHarmonic Compressor.so"
+<repo>/build-release/HarmonicCompressor_artefacts/Release/LV2/Harmonic Compressor.lv2/libHarmonic Compressor.so: code object is not signed at all
+-- Replacing invalid signature with ad-hoc signature
+<repo>/build-release/HarmonicCompressor_artefacts/Release/LV2/Harmonic Compressor.lv2/libHarmonic Compressor.so: replacing existing signature
+[94/97] Linking CXX CFBundle shared module "HarmonicCompressor_artefacts/Release/AAX/Harmonic Compressor.aaxplugin/Contents/MacOS/Harmonic Compressor"
+[95/97] Linking CXX CFBundle shared module "HarmonicCompressor_artefacts/Release/AU/Harmonic Compressor.component/Contents/MacOS/Harmonic Compressor"
+[96/97] Linking CXX CFBundle shared module "HarmonicCompressor_artefacts/Release/VST3/Harmonic Compressor.vst3/Contents/MacOS/Harmonic Compressor"
+<repo>/build-release/HarmonicCompressor_artefacts/Release/VST3/Harmonic Compressor.vst3: code object is not signed at all
+-- Replacing invalid signature with ad-hoc signature
+<repo>/build-release/HarmonicCompressor_artefacts/Release/VST3/Harmonic Compressor.vst3: replacing existing signature
+removing moduleinfo.json
+creating <repo>/build-release/HarmonicCompressor_artefacts/Release/VST3/Harmonic Compressor.vst3/Contents/Resources/moduleinfo.json
