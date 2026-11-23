@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Put the 1.5.3 editor renders (DocScreenshotRender) into the user-manual pictures.
-soft-white and modules are full 2x editor renders and replace the pictures. In the theme grid and the
-host-window picture the whole editor is replaced in place; its position and scale are found by matching
-the IN GAIN panel, which did not change between versions.
+soft-white and modules are full 2x editor renders and replace the pictures. In the theme grid the whole
+editor is replaced in place; its position and scale are found by matching the IN GAIN panel, which did
+not change between versions. The REAPER picture is a real host-window capture (see the release ledger, R4).
 Usage: compose_doc_screenshots.py <render dir> <Docs dir> <out dir>"""
 import sys
 from pathlib import Path
@@ -57,10 +57,3 @@ for theme, (x0, y0) in enumerate([(25, 60), (1415, 60), (25, 1047), (1415, 1047)
     replace(grid, editor, ox, oy, s)
 grid.save(out / "harmonic-compressor-themes-grid.png", optimize=True)
 
-# Host window (1120x813): the editor at 1x below the host's title and toolbar.
-host = Image.open(docs / "harmonic-compressor-reaper.png").convert("RGB")
-ref = Image.open(renders / "editor-grid-0.png")  # Matrix theme at 2x, same IN GAIN panel
-e, ox, oy, s = locate(host, ref, [1.0], 0, 53, 8)
-print(f"reaper: origin {ox:.1f},{oy:.1f} error {e:.1f}")
-host.paste(Image.open(renders / "editor-reaper.png").convert("RGB"), (round(ox), round(oy)))
-host.save(out / "harmonic-compressor-reaper.png", optimize=True)

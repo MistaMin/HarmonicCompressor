@@ -78,7 +78,6 @@ int main (int argc, char** argv)
         { "grid-2",     2, -22.0f, 5.0f, 0.0f, 1.00f, 1, 0, false, true,  2.0f },
         { "grid-3",     3, -22.0f, 5.0f, 0.0f, 1.00f, 1, 0, false, true,  2.0f },
         { "modules",    1, -20.0f, 6.0f, 4.0f, 0.85f, 2, 1, true,  true,  2.0f },
-        { "reaper",     0, -18.0f, 4.0f, 0.0f, 1.00f, 1, 0, false, false, 1.0f },
     };
 
     for (const auto& s : shots)

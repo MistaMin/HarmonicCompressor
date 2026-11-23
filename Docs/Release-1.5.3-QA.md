@@ -22,7 +22,8 @@ Status: macOS 1.5.3 built and verified on 2026-11-17; installer rebuilt with the
 
 ## Not done
 
-- REAPER with the AU: on this machine REAPER loads the AU installed in `/Library` (an older version).
+- REAPER with the AU: on this machine REAPER loads the AU installed in `/Library` (an older version);
+  replacing it needs the admin password, and the dialog was cancelled on 2026-11-23.
 - Pro Tools interactive session, Logic, Studio One.
 - Windows and Linux builds (native machines required).
 - Plugin Manager site upload (`upload_release_binaries.sh`, run by the owner in their own Terminal).
