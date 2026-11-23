@@ -98,5 +98,5 @@ A color user manual with model descriptions, signal flow and all 27 host paramet
 
 - **Plugin Code:** Open-source under the [MIT License](LICENSE), copyright Marcos Quirino Deida.
 - **Official binaries:** freeware under [LICENSE-BINARIES.txt](LICENSE-BINARIES.txt); third-party notices in [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
-- **Framework:** Depends on [JUCE](https://juce.com) (dual-licensed under AGPLv3 / Commercial Starter/Pro).
+- **Framework:** Depends on [JUCE](https://juce.com) (licensed separately by Raw Material Software; see [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)).
 - **Trademarks:** AAX and Pro Tools are trademarks of Avid Technology, Inc.

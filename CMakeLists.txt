@@ -237,3 +237,15 @@ set_target_properties(DocKnobBarRender PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED TRUE
     EXCLUDE_FROM_ALL TRUE)
+
+# Renders the user-manual pictures that show the Optical model (release 1.5.3 doc refresh).
+add_executable(DocScreenshotRender EXCLUDE_FROM_ALL)
+target_sources(DocScreenshotRender PRIVATE qa/2026-11-23-docs-1.5.3/doc_screenshots.cpp)
+target_include_directories(DocScreenshotRender PRIVATE Source
+    $<TARGET_PROPERTY:HarmonicCompressor,INCLUDE_DIRECTORIES>)
+target_link_libraries(DocScreenshotRender PRIVATE HarmonicCompressor
+    juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
+set_target_properties(DocScreenshotRender PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED TRUE
+    EXCLUDE_FROM_ALL TRUE)

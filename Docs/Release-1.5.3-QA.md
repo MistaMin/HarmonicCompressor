@@ -24,6 +24,5 @@ Status: macOS 1.5.3 built, signed, notarized and verified on 2026-11-17 as a sin
 
 - REAPER with the AU: on this machine REAPER loads the AU installed in `/Library` (an older version).
 - Pro Tools interactive session, Logic, Studio One.
-- Manual screenshots still show the Optical curve with a slightly rounded knee; 1.5.3 draws it hard.
 - Windows and Linux builds (native machines required).
 - Publishing: push, tag, GitHub release, Plugin Manager staging and upload.

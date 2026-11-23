@@ -15,5 +15,5 @@ The AAX SDK implementation is not distributed in this repository. AAX and Pro To
 are trademarks of Avid Technology, Inc. PACE signing does not grant a license to
 redistribute the SDK.
 
-Pinned JUCE and GoodLookinUI revisions are recorded in the release build workflow.
+The JUCE, GoodLookinUI and clap-juce-extensions revisions of each release build are recorded in its QA folder (`qa/<date>-release-<version>/build-env.txt`).
 The CLAP extension revision is recorded in CMakeLists.txt.
