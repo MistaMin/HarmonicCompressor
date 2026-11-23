@@ -1,7 +1,7 @@
 # Harmonic Compressor 1.5.3 release status
 
 Status: macOS 1.5.3 built and verified on 2026-11-17; installer rebuilt with the new manual and licence and notarized on 2026-11-23, as a single `.pkg`
-(no ZIP). Not yet published. Release text: `Docs/RELEASE_1.5.3.md`. Ledger and evidence:
+(no ZIP), published on GitHub as tag `v1.5.3`. Release text: `Docs/RELEASE_1.5.3.md`. Ledger and evidence:
 `qa/2026-11-17-release-1.5.3/` (fix QA in `qa/2026-11-17-audit-fixes/`).
 
 ## Verified
@@ -25,4 +25,15 @@ Status: macOS 1.5.3 built and verified on 2026-11-17; installer rebuilt with the
 - REAPER with the AU: on this machine REAPER loads the AU installed in `/Library` (an older version).
 - Pro Tools interactive session, Logic, Studio One.
 - Windows and Linux builds (native machines required).
-- Publishing: push, tag, GitHub release, Plugin Manager staging and upload.
+- Plugin Manager site upload (`upload_release_binaries.sh`, run by the owner in their own Terminal).
+
+## Published (2026-11-23)
+
+- GitHub release `v1.5.3` (tag on 2756d2e), marked Latest. Assets: the `.pkg`, the manual PDF, their
+  `.sha256` files and `opengrid-manifest.json`. Downloaded back: both checksums OK, manifest identical.
+- README download links and pictures on master return 200.
+- Commits bf1ec03, 7a8a1bf, 0314faa, 2756d2e show author login `MistaMin` on GitHub; no assistant
+  attribution lines.
+- Repository description, homepage and topics match the shipped formats (unchanged).
+- Staged in `Release Binaries/MistaMin/HarmonicCompressor/1.5.3/` with `RELEASE-READY`; the upload
+  script's dry run lists it as approved.

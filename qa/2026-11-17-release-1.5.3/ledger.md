@@ -29,9 +29,10 @@ revisions: `build-env.txt`. Artifacts outside git (`dist/release-1.5.3/`).
 | R15 | auval, pluginval AU | on the same source (pre-version-bump build): `qa/2026-11-17-audit-fixes/auval.log`, `pluginval-au.log` SUCCESS. `validators/pluginval-au.log` (payload path) SUCCESS, but which installed copy the AU registry loaded was not confirmed | verified on the same source |
 | R16 | Host suites | same source: REAPER CLAP 9/9, LV2 8/9 (host state limit), OpenGrid9 AU under test code Hcmt PASS with editor checks skipped (`qa/2026-11-17-audit-fixes/`) | verified on the same source; REAPER AU unverified |
 | R17 | Manifest (schema 2) from the final stapled `.pkg` | `opengrid-manifest.json`: 24,569,321 bytes, SHA-256 71c24cf3e0a10f4c04a20298af0ca3faa3a19f740de8fb9407c94fb97cf925cd, universal, 11.0, modern, 5 installs | verified |
-| R18 | Commits as MistaMin, no assistant attribution lines | `git log --format='%an %ae%n%B'` | verified locally; GitHub check after push |
+| R18 | Commits as MistaMin, no assistant attribution lines | `git log --format='%an %ae%n%B'` | verified: GitHub author login MistaMin on all four commits |
 | R19 | No third-party product names in source | two comments in `CompressorCore.h` renamed | verified |
 | R19b | Copyright holder and licence files (Section 7.3) | `grep` over first-party files: only Marcos Quirino Deida. `LICENSE-BINARIES.txt` corrected 2026-11-23: holder line added; formats (no Standalone); JUCE 8 has no splash screen, so the splash and licence-tier text was removed (user decision); MIT file name as installed | verified |
 | R20 | Windows and Linux builds | need user-owned native machines | out of scope (user decision 2026-11-08) |
 | R21 | Pro Tools interactive session, Logic, Studio One; listening to the Red/Hybrid change | not run | unverified |
-| R22 | Push, tag `v1.5.3`, GitHub release, `RELEASE-READY`, Plugin Manager upload | waits for the owner's approval | todo |
+| R22 | Push, tag `v1.5.3`, GitHub release, `RELEASE-READY` | published 2026-11-23 (`Docs/Release-1.5.3-QA.md`); assets downloaded back and checked; dry run lists 1.5.3 as approved | verified |
+| R23 | Plugin Manager site upload | the owner runs `upload_release_binaries.sh` in their own Terminal | todo (owner) |
