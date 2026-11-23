@@ -51,6 +51,6 @@ The release is also available through the OpenGrid Plugin Manager.
 
 ## Files
 
-- `Harmonic-Compressor-1.5.3-macos.pkg` (24,641,983 bytes) and `.sha256`
+- `Harmonic-Compressor-1.5.3-macos.pkg` (24,569,321 bytes) and `.sha256`
 - `HarmonicCompressor-1.5.3-User-Manual.pdf` and `.sha256`
 - `opengrid-manifest.json` (Plugin Manager manifest)
