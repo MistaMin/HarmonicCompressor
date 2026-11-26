@@ -1,0 +1,61 @@
+{
+  "original": {
+    "path": "/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-26-rust-port/null/../../../build-release/HarmonicCompressor_artefacts/Release/VST3/Harmonic Compressor.vst3",
+    "format": "vst3",
+    "name": "Harmonic Compressor",
+    "latency_samples": 3,
+    "input_channels": 2,
+    "output_channels": 2
+  },
+  "port": {
+    "path": "/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-26-rust-port/null/../../../plugin/target/release/libharmonic_compressor.dylib",
+    "format": "clap",
+    "name": "Harmonic Compressor",
+    "latency_samples": 3,
+    "input_channels": 2,
+    "output_channels": 2
+  },
+  "rate": 48000,
+  "block": 512,
+  "frames": 144000,
+  "tolerance": 0.00001,
+  "latency_differs": false,
+  "channels": [
+    {
+      "channel": 0,
+      "max_abs_diff": 2.1010637283325195e-6,
+      "max_at": 85459,
+      "rms_diff_db": -125.89594396582274,
+      "first_differing": {
+        "index": 0,
+        "original": 0.0031005198,
+        "port": 0.0031005195
+      },
+      "first_over_tolerance": null,
+      "samples_over_tolerance": 0
+    },
+    {
+      "channel": 1,
+      "max_abs_diff": 2.045184373855591e-6,
+      "max_at": 86987,
+      "rms_diff_db": -125.87175474425457,
+      "first_differing": {
+        "index": 15,
+        "original": 0.38385418,
+        "port": 0.3838542
+      },
+      "first_over_tolerance": null,
+      "samples_over_tolerance": 0
+    }
+  ],
+  "parameter_map": [
+    "1057129025 (Oversample) -> 1057129025 (Oversample)",
+    "602006635 (Threshold) -> 2749490283 (Threshold)",
+    "1727365029 (2nd Harmonic) -> 3874848677 (2nd Harmonic)",
+    "1727365030 (3rd Harmonic) -> 3874848678 (3rd Harmonic)",
+    "1727365031 (4th Harmonic) -> 3874848679 (4th Harmonic)",
+    "1727365032 (5th Harmonic) -> 3874848680 (5th Harmonic)"
+  ],
+  "notes": [],
+  "pass": true
+}

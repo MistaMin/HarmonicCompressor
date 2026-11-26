@@ -1,0 +1,60 @@
+{
+  "original": {
+    "path": "/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-26-rust-port/null/../../../build-release/HarmonicCompressor_artefacts/Release/VST3/Harmonic Compressor.vst3",
+    "format": "vst3",
+    "name": "Harmonic Compressor",
+    "latency_samples": 3,
+    "input_channels": 2,
+    "output_channels": 2
+  },
+  "port": {
+    "path": "/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-26-rust-port/null/../../../plugin/target/release/libharmonic_compressor.dylib",
+    "format": "clap",
+    "name": "Harmonic Compressor",
+    "latency_samples": 3,
+    "input_channels": 2,
+    "output_channels": 2
+  },
+  "rate": 48000,
+  "block": 512,
+  "frames": 144000,
+  "tolerance": 0.00001,
+  "latency_differs": false,
+  "channels": [
+    {
+      "channel": 0,
+      "max_abs_diff": 2.7567148208618164e-7,
+      "max_at": 44639,
+      "rms_diff_db": -146.75336445935534,
+      "first_differing": {
+        "index": 13,
+        "original": -0.11084235,
+        "port": -0.11084233
+      },
+      "first_over_tolerance": null,
+      "samples_over_tolerance": 0
+    },
+    {
+      "channel": 1,
+      "max_abs_diff": 2.7194619178771973e-7,
+      "max_at": 44485,
+      "rms_diff_db": -146.76043329284403,
+      "first_differing": {
+        "index": 13,
+        "original": 0.0993484,
+        "port": 0.099348396
+      },
+      "first_over_tolerance": null,
+      "samples_over_tolerance": 0
+    }
+  ],
+  "parameter_map": [
+    "1057129025 (Oversample) -> 1057129025 (Oversample)",
+    "602006635 (Threshold) -> 2749490283 (Threshold)",
+    "2104521047 (Transient Enable) -> 4252004695 (Transient Enable)",
+    "513666418 (Transient Attack) -> 2661150066 (Transient Attack)",
+    "1862223929 (Transient Sustain) -> 4009707577 (Transient Sustain)"
+  ],
+  "notes": [],
+  "pass": true
+}

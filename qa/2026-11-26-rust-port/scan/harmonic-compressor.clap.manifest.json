@@ -1,0 +1,1282 @@
+{
+  "schema_version": 1,
+  "tool": "openplugin-port 1.0.0-beta",
+  "source": {
+    "format": "clap",
+    "path": "/Volumes/Developer/OpenGrid/HarmonicCompressor/build-release/HarmonicCompressor_artefacts/Release/CLAP/Harmonic Compressor.clap",
+    "index": 0,
+    "count": 1,
+    "bundle_id": "com.opengrid.harmoniccompressor"
+  },
+  "plugin": {
+    "name": "Harmonic Compressor",
+    "vendor": "OpenGrid",
+    "version": "1.5.3",
+    "url": "",
+    "email": "",
+    "description": "Harmonic Compressor",
+    "categories": [
+      "audio-effect",
+      "compressor",
+      "dynamics"
+    ],
+    "is_instrument": false,
+    "ids": {
+      "clap": {
+        "id": "com.opengrid.harmoniccompressor"
+      },
+      "vst3": null,
+      "au": null,
+      "aax": null
+    },
+    "buses": [
+      {
+        "direction": "input",
+        "kind": "main",
+        "name": "Input",
+        "channels": 2,
+        "arrangement": "stereo",
+        "layout": "stereo"
+      },
+      {
+        "direction": "input",
+        "kind": "aux",
+        "name": "Sidechain",
+        "channels": 2,
+        "arrangement": "stereo",
+        "layout": "stereo"
+      },
+      {
+        "direction": "output",
+        "kind": "main",
+        "name": "Output",
+        "channels": 2,
+        "arrangement": "stereo",
+        "layout": "stereo"
+      }
+    ],
+    "channel_layouts": [],
+    "latency_samples": 3,
+    "tail_samples": 0,
+    "tail_seconds": null,
+    "params": [
+      {
+        "id": 3291976370,
+        "name": "Algorithm",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "default_normalized": 0.0,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "Red"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "Bridge"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "Bus VCA"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "76"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "VCA 160"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 2749490283,
+        "name": "Threshold",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.699999988079071,
+        "default_normalized": 0.699999988079071,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "-60.0"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "-45.0"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "-30.0"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "-15.0"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "0.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 108285963,
+        "name": "Ratio",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.24253562092781067,
+        "default_normalized": 0.24253562092781067,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "-2.0"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "4.4"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "23.5"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "55.4"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "100.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 2887708232,
+        "name": "Attack",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.3594161570072174,
+        "default_normalized": 0.3594161570072174,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "0.1"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "3.1"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "29.9"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "115.1"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "300.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 1090594823,
+        "name": "Release",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.35513871908187866,
+        "default_normalized": 0.35513871908187866,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "5"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "34"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "302"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "1153"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "3000"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 3296579,
+        "name": "Knee",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.25,
+        "default_normalized": 0.25,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "0.0"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "6.0"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "12.0"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "18.0"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "24.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 1226400808,
+        "name": "Makeup Gain",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.3333333432674408,
+        "default_normalized": 0.3333333432674408,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "-12.0"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "-3.0"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "6.0"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "15.0"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "24.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 108124,
+        "name": "Mix",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 1.0,
+        "default_normalized": 1.0,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "0.00"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "0.25"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "0.50"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "0.75"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "1.00"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 3874848677,
+        "name": "2nd Harmonic",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "default_normalized": 0.0,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "0.0"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "25.0"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "50.0"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "75.0"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "100.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 3874848678,
+        "name": "3rd Harmonic",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "default_normalized": 0.0,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "0.0"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "25.0"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "50.0"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "75.0"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "100.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 3874848679,
+        "name": "4th Harmonic",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "default_normalized": 0.0,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "0.0"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "25.0"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "50.0"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "75.0"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "100.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 3874848680,
+        "name": "5th Harmonic",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "default_normalized": 0.0,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "0.0"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "25.0"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "50.0"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "75.0"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "100.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 3390724817,
+        "name": "Sidechain Enable",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "default_normalized": 0.0,
+        "step_count": 1,
+        "flags": [
+          "automatable",
+          "stepped"
+        ],
+        "flags_raw": 33,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "On"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "On"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "On"
+          }
+        ],
+        "step_texts": [
+          "Off",
+          "On"
+        ]
+      },
+      {
+        "id": 2799569975,
+        "name": "Sidechain Listen",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "default_normalized": 0.0,
+        "step_count": 1,
+        "flags": [
+          "automatable",
+          "stepped"
+        ],
+        "flags_raw": 33,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "On"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "On"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "On"
+          }
+        ],
+        "step_texts": [
+          "Off",
+          "On"
+        ]
+      },
+      {
+        "id": 2660622832,
+        "name": "Sidechain HP Freq",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.6757882237434387,
+        "default_normalized": 0.6757882237434387,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "20"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "25"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "68"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "204"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "500"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 3994480472,
+        "name": "Auto Release",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "default_normalized": 0.0,
+        "step_count": 1,
+        "flags": [
+          "automatable",
+          "stepped"
+        ],
+        "flags_raw": 33,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "On"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "On"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "On"
+          }
+        ],
+        "step_texts": [
+          "Off",
+          "On"
+        ]
+      },
+      {
+        "id": 3397023959,
+        "name": "Auto Attack",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "default_normalized": 0.0,
+        "step_count": 1,
+        "flags": [
+          "automatable",
+          "stepped"
+        ],
+        "flags_raw": 33,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "On"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "On"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "On"
+          }
+        ],
+        "step_texts": [
+          "Off",
+          "On"
+        ]
+      },
+      {
+        "id": 1706566249,
+        "name": "Input Gain",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.5,
+        "default_normalized": 0.5,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "-24.0"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "-12.0"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "0.0"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "12.0"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "24.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 3020714016,
+        "name": "Output Gain",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.5,
+        "default_normalized": 0.5,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "-24.0"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "-12.0"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "0.0"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "12.0"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "24.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 1057129025,
+        "name": "Oversample",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.3333333432674408,
+        "default_normalized": 0.3333333432674408,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "1x"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "2x"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "4x"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "4x"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "8x"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 2083021974,
+        "name": "Oversample Filter",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "default_normalized": 0.0,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "Min Phase"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "Min Phase"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "Min Phase"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "Lin Phase"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "Lin Phase"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 4252004695,
+        "name": "Transient Enable",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "default_normalized": 0.0,
+        "step_count": 1,
+        "flags": [
+          "automatable",
+          "stepped"
+        ],
+        "flags_raw": 33,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "On"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "On"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "On"
+          }
+        ],
+        "step_texts": [
+          "Off",
+          "On"
+        ]
+      },
+      {
+        "id": 2661150066,
+        "name": "Transient Attack",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.5,
+        "default_normalized": 0.5,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "-100.0"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "-50.0"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "0.0"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "50.0"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "100.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 4009707577,
+        "name": "Transient Sustain",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.5,
+        "default_normalized": 0.5,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "-100.0"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "-50.0"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "0.0"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "50.0"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "100.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 2180543453,
+        "name": "Transient Speed",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.5167105793952942,
+        "default_normalized": 0.5167105793952942,
+        "step_count": 0,
+        "flags": [
+          "automatable"
+        ],
+        "flags_raw": 32,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "0.5"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "2.0"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "9.3"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "24.6"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "50.0"
+          }
+        ],
+        "step_texts": []
+      },
+      {
+        "id": 1438330318,
+        "name": "Auto Gain",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "default_normalized": 0.0,
+        "step_count": 1,
+        "flags": [
+          "automatable",
+          "stepped"
+        ],
+        "flags_raw": 33,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "On"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "On"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "On"
+          }
+        ],
+        "step_texts": [
+          "Off",
+          "On"
+        ]
+      },
+      {
+        "id": 95468472,
+        "name": "Delta Monitor",
+        "short_name": null,
+        "group": null,
+        "units": "",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "default_normalized": 0.0,
+        "step_count": 1,
+        "flags": [
+          "automatable",
+          "stepped"
+        ],
+        "flags_raw": 33,
+        "samples": [
+          {
+            "normalized": 0.0,
+            "plain": 0.0,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.25,
+            "plain": 0.25,
+            "text": "Off"
+          },
+          {
+            "normalized": 0.5,
+            "plain": 0.5,
+            "text": "On"
+          },
+          {
+            "normalized": 0.75,
+            "plain": 0.75,
+            "text": "On"
+          },
+          {
+            "normalized": 1.0,
+            "plain": 1.0,
+            "text": "On"
+          }
+        ],
+        "step_texts": [
+          "Off",
+          "On"
+        ]
+      }
+    ],
+    "warnings": []
+  }
+}

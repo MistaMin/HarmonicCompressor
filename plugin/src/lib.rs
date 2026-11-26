@@ -1,0 +1,481 @@
+//! Harmonic Compressor on OpenPluginSDK, with the identity of 1.5.3 so its sessions open in this
+//! version. The rules for this code are in AGENTS.md.
+//!
+//! Signal path, as 1.5.3's `processBlock`: input gain -> oversampled detector (internal or external
+//! sidechain, its high-pass, the active model, stereo-linked) -> gain and makeup -> ADAA harmonics ->
+//! back to the session rate -> dry/wet mix against the dry signal run through the same resampler
+//! filters -> transient designer -> Auto Gain (K-weighted loudness of the untouched input) -> Delta
+//! (output minus the aligned dry, or minus the aligned untouched input with Auto Gain on) -> output gain.
+
+pub mod dsp;
+pub mod multirate;
+pub mod params;
+pub mod state;
+
+use dsp::{CompParams, Engine, Loudness, Smoothed, Transient, db_to_gain, gain_to_db};
+use multirate::Multirate;
+use openplugin::core::foreign_state::ForeignStateKind;
+use openplugin::core::{AaxIds, AuIds, Vst3Ids};
+use openplugin::prelude::*;
+use params::{COUNT, PARAMS, idx};
+use state::Snapshots;
+
+pub static INFO: PluginInfo =
+    PluginInfo::new("com.opengrid.harmoniccompressor", "Harmonic Compressor", "OpenGrid", "1.6.0", Category::Dynamics, &PARAMS)
+        .with_url("https://github.com/MistaMin/HarmonicCompressor");
+
+/// 1.5.3's buses: main mono or stereo, and a sidechain of the same width that a host may leave off.
+/// The first layout is the one a host starts with, so it carries the sidechain.
+static LAYOUTS: [IoConfig; 4] = [
+    IoConfig { input: SpeakerLayout::Stereo, output: SpeakerLayout::Stereo, sidechain: Some(SpeakerLayout::Stereo) },
+    IoConfig { input: SpeakerLayout::Stereo, output: SpeakerLayout::Stereo, sidechain: None },
+    IoConfig { input: SpeakerLayout::Mono, output: SpeakerLayout::Mono, sidechain: Some(SpeakerLayout::Mono) },
+    IoConfig { input: SpeakerLayout::Mono, output: SpeakerLayout::Mono, sidechain: None },
+];
+
+const FACTORS: [usize; 4] = [1, 2, 4, 8];
+
+/// A sample as the engine may see it: NaN, infinity and anything below -600 dBFS become silence.
+#[inline]
+fn clean(x: f32) -> f32 {
+    if x.is_finite() && x.abs() >= 1e-30 { x } else { 0.0 }
+}
+
+/// After the input stops: the harmonics' 3.5 Hz DC blocker decays below -120 dB in about 0.63 s.
+const TAIL_SECONDS: f32 = 0.7;
+
+pub struct HarmonicCompressor {
+    p: [f32; COUNT],
+    /// Each model's remembered settings (1.5.3's per-model memory), saved with the session.
+    snapshots: Snapshots,
+    engine: Engine,
+    /// The wet path, and two chains with the same filters for the dry and the untouched input.
+    wet: Multirate,
+    dry_chain: Multirate,
+    reference_chain: Multirate,
+    transient: Transient,
+    loudness: Loudness,
+    auto_gain: Smoothed,
+    delta: Smoothed,
+    delta_reference: Smoothed,
+    input_gain: Smoothed,
+    output_gain: Smoothed,
+    /// Per channel, `max_block` long: the dry after input gain, the untouched input, and its copy
+    /// for the loudness reference.
+    dry: [Vec<f32>; 2],
+    reference: [Vec<f32>; 2],
+    loudness_input: [Vec<f32>; 2],
+    sample_rate: f32,
+    max_block: usize,
+    external_sidechain_seen: bool,
+    reference_running: bool,
+    meters: MeterFrame,
+}
+
+impl Default for HarmonicCompressor {
+    fn default() -> Self {
+        let mut plugin = Self {
+            p: params::defaults(),
+            snapshots: state::default_snapshots(),
+            engine: Engine::default(),
+            wet: Multirate::new(48000.0, 1),
+            dry_chain: Multirate::new(48000.0, 1),
+            reference_chain: Multirate::new(48000.0, 1),
+            transient: Transient::default(),
+            loudness: Loudness::default(),
+            auto_gain: Smoothed::new(1.0, true),
+            delta: Smoothed::new(0.0, false),
+            delta_reference: Smoothed::new(0.0, false),
+            input_gain: Smoothed::new(1.0, true),
+            output_gain: Smoothed::new(1.0, true),
+            dry: Default::default(),
+            reference: Default::default(),
+            loudness_input: Default::default(),
+            sample_rate: 48000.0,
+            max_block: 0,
+            external_sidechain_seen: false,
+            reference_running: false,
+            meters: MeterFrame::SILENT,
+        };
+        // ST-9: a host may process before it prepares.
+        plugin.prepare(48000.0, 512, 2);
+        plugin
+    }
+}
+
+impl HarmonicCompressor {
+    fn on(&self, i: usize) -> bool {
+        self.p[i] > 0.5
+    }
+
+    fn factor(&self) -> usize {
+        FACTORS[(self.p[idx::OVERSAMPLE_MODE].round() as usize).min(3)]
+    }
+
+    fn linear(&self) -> bool {
+        self.p[idx::OVERSAMPLE_FILTER].round() >= 1.0
+    }
+
+    /// Replaces every value at once (a state load).
+    fn apply(&mut self, s: state::State) -> bool {
+        self.p = s.values;
+        self.snapshots = s.snapshots;
+        true
+    }
+
+    /// One block of at most `max_block` frames.
+    fn block(&mut self, io: &mut [&mut [f32]], sidechain: Option<&[&[f32]]>, n: usize) {
+        let channels = io.len();
+        let p = self.p;
+        let on = |i: usize| p[i] > 0.5;
+        let params = CompParams {
+            threshold_db: p[idx::THRESHOLD],
+            ratio: p[idx::RATIO],
+            attack_ms: p[idx::ATTACK],
+            release_ms: p[idx::RELEASE],
+            knee_db: p[idx::KNEE],
+            auto_release: on(idx::AUTO_RELEASE),
+            auto_attack: on(idx::AUTO_ATTACK),
+        };
+        let mode = (p[idx::MODE].round() as usize).min(dsp::MODE_COUNT - 1);
+        let (sc_enabled, sc_listen) = (on(idx::SC_ENABLED), on(idx::SC_LISTEN));
+        let (auto_on, delta_on) = (on(idx::AUTO_GAIN), on(idx::DELTA));
+        let harmonics = [p[idx::H2] / 100.0, p[idx::H3] / 100.0, p[idx::H4] / 100.0, p[idx::H5] / 100.0];
+
+        // ST-2, ST-3: NaN, infinity and denormals at the input never reach a filter or envelope.
+        for ch in io.iter_mut() {
+            for x in ch[..n].iter_mut() {
+                *x = clean(*x);
+            }
+        }
+
+        // the untouched input: Auto Gain's loudness reference and Delta's dry with Auto Gain on
+        for ((r, l), ch) in self.reference.iter_mut().zip(self.loudness_input.iter_mut()).zip(io.iter()) {
+            r[..n].copy_from_slice(&ch[..n]);
+            l[..n].copy_from_slice(&ch[..n]);
+        }
+
+        let in_db = p[idx::INPUT_GAIN];
+        self.input_gain.set_target(db_to_gain(in_db));
+        if self.input_gain.is_smoothing() || in_db.abs() > 1.0e-4 {
+            for s in 0..n {
+                let g = self.input_gain.next_value();
+                for ch in io.iter_mut() {
+                    ch[s] *= g;
+                }
+            }
+        }
+
+        let (factor, linear) = (self.factor(), self.linear());
+        self.wet.set(factor, linear);
+        self.dry_chain.set(factor, linear);
+        self.reference_chain.set(factor, linear);
+        self.engine.ensure_sample_rate(f64::from(self.sample_rate) * factor as f64);
+        self.engine.update(mode, &params, p[idx::SC_HP_FREQ]);
+
+        // A silent sidechain bus can mean nothing is routed: the main input is detected until the
+        // sidechain first carries signal, and from then on a silent sidechain means no compression.
+        // shortcut: unrouting a used sidechain keeps it selected until the host re-prepares, as in 1.5.3.
+        if let Some(sc) = sidechain
+            && !self.external_sidechain_seen
+            && sc.iter().any(|c| c[..n].iter().any(|x| x.abs() > 1.0e-7))
+        {
+            self.external_sidechain_seen = true;
+        }
+        let external = sidechain.filter(|_| self.external_sidechain_seen);
+
+        let makeup = db_to_gain(p[idx::MAKEUP]);
+        let mix = p[idx::MIX];
+
+        // Delta's untouched-input reference is heard only with Delta and Auto Gain on, so its filters
+        // run only then; Delta's 20 ms fade-in covers their warm-up.
+        let reference_needed =
+            ((delta_on && !sc_listen) || self.delta.current() > 0.0) && (auto_on || self.delta_reference.current() > 0.0);
+        if reference_needed && !self.reference_running {
+            self.reference_chain.reset();
+        }
+        self.reference_running = reference_needed;
+
+        let [d0, d1] = &mut self.dry;
+        let [r0, r1] = &mut self.reference;
+        for (dry, ch) in [&mut *d0, &mut *d1].into_iter().zip(io.iter()) {
+            dry[..n].copy_from_slice(&ch[..n]);
+        }
+        let mut dry: [&mut [f32]; 2] = [&mut d0[..n], &mut d1[..n]];
+        let mut reference: [&mut [f32]; 2] = [&mut r0[..n], &mut r1[..n]];
+        self.dry_chain.process(&mut dry[..channels], n, |_| {});
+        if reference_needed {
+            self.reference_chain.process(&mut reference[..channels], n, |_| {});
+        }
+
+        let mut input_peak = [0.0f32; 2];
+        for (peak, ch) in input_peak.iter_mut().zip(io.iter()) {
+            *peak = ch[..n].iter().fold(0.0, |m, x| m.max(x.abs()));
+        }
+
+        // oversampled: detector, gain, makeup and harmonics; stereo-linked in every model
+        let engine = &mut self.engine;
+        let mut min_gain = 1.0f32;
+        self.wet.process(io, n, |os| {
+            let os_n = os.first().map_or(0, |c| c.len());
+            for s in 0..os_n {
+                let mut detector = 0.0f32;
+                let mut sc_ch = [0.0f32; 2];
+                for ch in 0..os.len() {
+                    let raw = match external {
+                        // the session-rate sidechain, interpolated at the oversampled position
+                        Some(sc) => {
+                            let key = sc[ch.min(sc.len() - 1)];
+                            let pos = s as f32 / factor as f32;
+                            let i0 = (pos as usize).min(n - 1);
+                            let i1 = (i0 + 1).min(n - 1);
+                            clean(key[i0] + (pos - i0 as f32) * (key[i1] - key[i0]))
+                        }
+                        None => os[ch][s],
+                    };
+                    let v = if sc_enabled { engine.sidechain.process(ch, raw) } else { raw };
+                    if ch < 2 {
+                        sc_ch[ch] = v;
+                    }
+                    detector = detector.max(v.abs());
+                }
+                let gr = engine.gain(detector);
+                min_gain = min_gain.min(gr);
+                for (ch, data) in os.iter_mut().enumerate() {
+                    data[s] = if sc_listen { sc_ch[ch.min(1)] } else { engine.harmonics.process(data[s] * gr * makeup, harmonics, ch) };
+                }
+            }
+        });
+
+        // latency-aligned dry/wet
+        if !sc_listen && mix < 1.0 {
+            for (ch, dry) in io.iter_mut().zip(dry.iter()) {
+                for (x, d) in ch[..n].iter_mut().zip(dry.iter()) {
+                    *x = mix * *x + (1.0 - mix) * *d;
+                }
+            }
+        }
+
+        if !sc_listen {
+            self.transient.process(io, n, on(idx::TRANSIENT_ENABLED), p[idx::TRANSIENT_ATTACK], p[idx::TRANSIENT_SUSTAIN], p[idx::TRANSIENT_SPEED]);
+            // measured always, so engaging Auto Gain lands on a settled value; Listen freezes it
+            let [l0, l1] = &mut self.loudness_input;
+            let input: [&mut [f32]; 2] = [&mut l0[..n], &mut l1[..n]];
+            self.loudness.process(&input[..channels], io, n);
+        }
+
+        let auto_db = if auto_on && !sc_listen { self.loudness.target_db() } else { 0.0 };
+        self.auto_gain.set_target(db_to_gain(auto_db));
+        if self.auto_gain.is_smoothing() || (self.auto_gain.current() - 1.0).abs() > 1.0e-6 {
+            for s in 0..n {
+                let g = self.auto_gain.next_value();
+                for ch in io.iter_mut() {
+                    ch[s] *= g;
+                }
+            }
+        }
+
+        // Delta: output minus the dry it is compared with, both switches crossfaded
+        self.delta.set_target(if delta_on && !sc_listen { 1.0 } else { 0.0 });
+        self.delta_reference.set_target(if auto_on { 1.0 } else { 0.0 });
+        if self.delta.is_smoothing() || self.delta.current() > 0.0 {
+            for s in 0..n {
+                let amount = self.delta.next_value();
+                let use_input = self.delta_reference.next_value();
+                for (ch, x) in io.iter_mut().enumerate() {
+                    let d = dry[ch][s];
+                    x[s] -= amount * (d + use_input * (reference[ch][s] - d));
+                }
+            }
+        } else {
+            self.delta_reference.skip(n);
+        }
+
+        let out_db = p[idx::OUTPUT_GAIN];
+        self.output_gain.set_target(db_to_gain(out_db));
+        if self.output_gain.is_smoothing() || out_db.abs() > 1.0e-4 {
+            for s in 0..n {
+                let g = self.output_gain.next_value();
+                for ch in io.iter_mut() {
+                    ch[s] *= g;
+                }
+            }
+        }
+
+        // filter state decays below f32 range on silence; nothing under -600 dBFS reaches the host
+        for ch in io.iter_mut() {
+            for x in ch[..n].iter_mut() {
+                if x.abs() < 1e-30 {
+                    *x = 0.0;
+                }
+            }
+        }
+
+        let mut m = MeterFrame::SILENT;
+        for ch in 0..2 {
+            let src = ch.min(channels - 1);
+            m.input_db[ch] = gain_to_db(input_peak[src], -100.0);
+            m.output_db[ch] = gain_to_db(io[src][..n].iter().fold(0.0f32, |a, x| a.max(x.abs())), -100.0);
+        }
+        m.reduction_db = -gain_to_db(min_gain, -120.0);
+        self.meters = m;
+    }
+}
+
+impl Plugin for HarmonicCompressor {
+    fn info(&self) -> &'static PluginInfo {
+        &INFO
+    }
+
+    // Main thread: may allocate. RT-6: everything that depends on the rate is recomputed here.
+    fn prepare(&mut self, sample_rate: f32, max_block: usize, _channels: usize) {
+        let sr = f64::from(sample_rate);
+        let max_block = max_block.max(1);
+        self.sample_rate = sample_rate;
+        self.max_block = max_block;
+        self.external_sidechain_seen = false;
+        let (factor, linear) = (self.factor(), self.linear());
+        for chain in [&mut self.wet, &mut self.dry_chain, &mut self.reference_chain] {
+            *chain = Multirate::new(sr, max_block);
+            chain.set(factor, linear);
+        }
+        self.engine.prepare(sr * factor as f64);
+        self.transient.prepare(sr);
+        self.loudness.prepare(sr);
+        self.auto_gain.reset(sr, 0.100);
+        self.delta.reset(sr, 0.020);
+        self.delta_reference.reset(sr, 0.050);
+        self.input_gain.reset(sr, 0.010);
+        self.output_gain.reset(sr, 0.010);
+        for buffers in [&mut self.dry, &mut self.reference, &mut self.loudness_input] {
+            *buffers = [vec![0.0; max_block], vec![0.0; max_block]];
+        }
+        self.reset();
+    }
+
+    fn reset(&mut self) {
+        self.wet.reset();
+        self.dry_chain.reset();
+        self.reference_chain.reset();
+        self.reference_running = false;
+        self.transient.reset();
+        self.loudness.reset();
+        self.auto_gain.set_current_and_target(1.0);
+        self.delta.set_current_and_target(if self.on(idx::DELTA) { 1.0 } else { 0.0 });
+        self.delta_reference.set_current_and_target(if self.on(idx::AUTO_GAIN) { 1.0 } else { 0.0 });
+        self.engine.reset();
+        self.input_gain.set_current_and_target(db_to_gain(self.p[idx::INPUT_GAIN]));
+        self.output_gain.set_current_and_target(db_to_gain(self.p[idx::OUTPUT_GAIN]));
+        self.meters = MeterFrame::SILENT;
+    }
+
+    fn set_param(&mut self, id: &str, value: f32) -> bool {
+        params::index_of(id).is_some_and(|i| self.set_param_index(i, value))
+    }
+
+    fn set_param_index(&mut self, index: usize, value: f32) -> bool {
+        if index >= COUNT {
+            return false;
+        }
+        self.p[index] = params::legal(index, value); // ST-4: clamps, rejects NaN, snaps as 1.5.3
+        true
+    }
+
+    fn param(&self, id: &str) -> Option<f32> {
+        params::index_of(id).map(|i| self.p[i])
+    }
+
+    fn meters(&self) -> MeterFrame {
+        self.meters
+    }
+
+    fn latency(&self) -> usize {
+        self.wet.latency_for(self.factor(), self.linear())
+    }
+
+    fn max_latency(&self) -> Option<usize> {
+        FACTORS.iter().flat_map(|&f| [self.wet.latency_for(f, false), self.wet.latency_for(f, true)]).max()
+    }
+
+    fn tail(&self) -> Tail {
+        Tail::from_samples((TAIL_SECONDS * self.sample_rate).ceil() as usize)
+    }
+
+    fn supported_layouts(&self) -> &'static [IoConfig] {
+        &LAYOUTS
+    }
+
+    fn process(&mut self, io: &mut [&mut [f32]], frames: usize) {
+        self.process_buses(io, None, frames);
+    }
+
+    fn process_buses(&mut self, io: &mut [&mut [f32]], sidechain: Option<&[&[f32]]>, frames: usize) {
+        let channels = io.len().min(2);
+        let frames = io.iter().take(channels).map(|c| c.len()).min().unwrap_or(0).min(frames);
+        if channels == 0 || frames == 0 || self.max_block == 0 {
+            return;
+        }
+        let sc_frames = sidechain.and_then(|sc| sc.iter().take(2).map(|c| c.len()).min()).unwrap_or(0);
+        let (a, b) = io.split_at_mut(1);
+        let mut start = 0;
+        // ST-9: a host may send more frames than prepare announced; work in pieces of max_block.
+        while start < frames {
+            let end = (start + self.max_block).min(frames);
+            let mut pair: [&mut [f32]; 2] = [&mut a[0][start..end], if channels == 2 { &mut b[0][start..end] } else { &mut [] }];
+            let key: [&[f32]; 2] = match sidechain {
+                Some(sc) if sc_frames >= end => [&sc[0][start..end], &sc[sc.len().min(2) - 1][start..end]],
+                _ => [&[], &[]],
+            };
+            let key_channels = sidechain.map_or(0, |sc| sc.len().min(2));
+            let sc = (sc_frames >= end && key_channels > 0).then_some(&key[..key_channels]);
+            self.block(&mut pair[..channels], sc, end - start);
+            start = end;
+        }
+    }
+
+    fn note_ports(&self) -> NotePorts {
+        NotePorts { input: false, output: false }
+    }
+
+    fn save_state(&mut self) -> Option<Vec<u8>> {
+        Some(state::encode(&self.p, &self.snapshots))
+    }
+
+    fn load_state(&mut self, data: &[u8]) -> bool {
+        state::decode(data).is_some_and(|s| self.apply(s))
+    }
+
+    fn foreign_state_kinds(&self) -> &'static [ForeignStateKind] {
+        &[ForeignStateKind::Vst3Component, ForeignStateKind::AuClassInfo, ForeignStateKind::AaxChunk]
+    }
+
+    fn load_foreign_state(&mut self, kind: ForeignStateKind, data: &[u8]) -> bool {
+        let state = match kind {
+            ForeignStateKind::AuClassInfo => state::decode_au_class_info(data),
+            _ => state::decode_juce(data),
+        };
+        state.is_some_and(|s| self.apply(s))
+    }
+
+    // ---- identity of 1.5.3 ----
+    fn vst3_ids(&self) -> Option<Vst3Ids> {
+        Vst3Ids::from_hex("56535448636D706861726D6F6E696320", "56534548636D706861726D6F6E696320")
+    }
+
+    fn au_ids(&self) -> Option<AuIds> {
+        Some(AuIds { subtype: *b"Hcmp", manufacturer: *b"OpGr" })
+    }
+
+    fn aax_ids(&self) -> Option<AaxIds> {
+        // 1.5.3's AAX plug-in types: 'jcaa' plus the mono (1) or stereo (2) layout in and out.
+        Some(AaxIds { manufacturer: *b"OpGr", product: *b"Hcmp", mono: *b"jcbb", stereo: *b"jccc" })
+    }
+
+    fn lv2_uri(&self) -> Option<&'static str> {
+        Some("urn:opengrid:harmoniccompressor")
+    }
+}
+
+openplugin::targets::export_clap!(HarmonicCompressor);
+openplugin::targets::export_lv2!(HarmonicCompressor);
+openplugin::targets::export_shell!(HarmonicCompressor);

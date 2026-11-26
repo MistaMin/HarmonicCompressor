@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "tool": "openplugin-port 1.0.0-beta",
+  "source": {
+    "format": "aax",
+    "path": "/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-26-rust-port/scan/../../../build-release/HarmonicCompressor_artefacts/Release/AAX/Harmonic Compressor.aaxplugin",
+    "index": 0,
+    "count": 1,
+    "bundle_id": "com.opengrid.harmoniccompressor"
+  },
+  "plugin": {
+    "name": "Harmonic Compressor",
+    "vendor": "",
+    "version": "1.5.3",
+    "url": "",
+    "email": "",
+    "description": "",
+    "categories": [],
+    "is_instrument": false,
+    "ids": {
+      "clap": null,
+      "vst3": null,
+      "au": null,
+      "aax": {
+        "manufacturer": "OpGr",
+        "product": "Hcmp",
+        "plugin_ids": [
+          "jccc",
+          "jcbb"
+        ],
+        "found_in": "page-table"
+      }
+    },
+    "buses": [],
+    "channel_layouts": [],
+    "latency_samples": null,
+    "tail_samples": null,
+    "tail_seconds": null,
+    "params": [],
+    "warnings": [
+      "the page table names 27 parameter ids: algorithmMode, threshold, ratio, attack, release, knee, makeupGain, mix, harmonic2, harmonic3, harmonic4, harmonic5, scEnabled, scHPFreq, scListen, autoRelease, autoAttack, inputGain, outputGain, oversampleMode, oversampleFilter, transientEnabled, transientAttack, transientSustain, transientSpeed, autoGain, delta",
+      "AAX is not hosted: no parameter ranges, buses or latency"
+    ]
+  }
+}

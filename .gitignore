@@ -32,3 +32,6 @@ qa/**/home/   # OpenGrid9 runs link the user's home folder here
 # QA harness helpers are built, not evidence
 qa/**/winlist
 qa/**/hide_pid
+
+# Written by Scripts/sdk_env.sh (machine path of OpenPluginSDK)
+.cargo/

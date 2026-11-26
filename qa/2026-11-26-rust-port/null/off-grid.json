@@ -1,0 +1,66 @@
+{
+  "original": {
+    "path": "/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-26-rust-port/null/../../../build-release/HarmonicCompressor_artefacts/Release/VST3/Harmonic Compressor.vst3",
+    "format": "vst3",
+    "name": "Harmonic Compressor",
+    "latency_samples": 3,
+    "input_channels": 2,
+    "output_channels": 2
+  },
+  "port": {
+    "path": "/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-26-rust-port/null/../../../plugin/target/release/libharmonic_compressor.dylib",
+    "format": "clap",
+    "name": "Harmonic Compressor",
+    "latency_samples": 3,
+    "input_channels": 2,
+    "output_channels": 2
+  },
+  "rate": 48000,
+  "block": 512,
+  "frames": 144000,
+  "tolerance": 0.00001,
+  "latency_differs": false,
+  "channels": [
+    {
+      "channel": 0,
+      "max_abs_diff": 2.1904706954956055e-6,
+      "max_at": 66840,
+      "rms_diff_db": -126.21683777783113,
+      "first_differing": {
+        "index": 0,
+        "original": -0.13187413,
+        "port": -0.13187411
+      },
+      "first_over_tolerance": null,
+      "samples_over_tolerance": 0
+    },
+    {
+      "channel": 1,
+      "max_abs_diff": 2.16066837310791e-6,
+      "max_at": 66868,
+      "rms_diff_db": -126.20459013936514,
+      "first_differing": {
+        "index": 0,
+        "original": -0.054215375,
+        "port": -0.05421538
+      },
+      "first_over_tolerance": null,
+      "samples_over_tolerance": 0
+    }
+  ],
+  "parameter_map": [
+    "1057129025 (Oversample) -> 1057129025 (Oversample)",
+    "602006635 (Threshold) -> 2749490283 (Threshold)",
+    "108285963 (Ratio) -> 108285963 (Ratio)",
+    "740224584 (Attack) -> 2887708232 (Attack)",
+    "1090594823 (Release) -> 1090594823 (Release)",
+    "3296579 (Knee) -> 3296579 (Knee)",
+    "108124 (Mix) -> 108124 (Mix)",
+    "1727365029 (2nd Harmonic) -> 3874848677 (2nd Harmonic)",
+    "513139184 (Sidechain HP Freq) -> 2660622832 (Sidechain HP Freq)",
+    "1243241169 (Sidechain Enable) -> 3390724817 (Sidechain Enable)",
+    "1706566249 (Input Gain) -> 1706566249 (Input Gain)"
+  ],
+  "notes": [],
+  "pass": true
+}

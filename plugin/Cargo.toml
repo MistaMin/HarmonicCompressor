@@ -1,0 +1,31 @@
+[package]
+name = "harmonic-compressor"
+version = "1.6.0"
+edition = "2024"
+license = "MIT"
+rust-version = "1.85"
+description = "Harmonic Compressor: seven compressor models with ADAA harmonics, on OpenPluginSDK."
+publish = false
+
+[lib]
+name = "harmonic_compressor"
+# PR-1: cdylib for CLAP and LV2, staticlib for the native VST3, AU and AAX shells, rlib for tests and the bench.
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+# OpenPluginSDK is located at build time: Scripts/sdk_env.sh writes the untracked
+# .cargo/config.toml that patches this dependency to a local checkout.
+[dependencies]
+openplugin = "1.0.0-beta"
+
+[dev-dependencies]
+# The conformance kit and the bench harness; nothing of it ships in the plugin.
+openplugin = { version = "1.0.0-beta", features = ["testing"] }
+serde_json = "1"
+
+# PF-6
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+
+[workspace]

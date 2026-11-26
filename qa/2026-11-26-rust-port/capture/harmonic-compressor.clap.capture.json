@@ -1,0 +1,385 @@
+{
+  "schema_version": 1,
+  "tool": "openplugin-port 1.0.0-beta",
+  "source": {
+    "format": "clap",
+    "path": "/Volumes/Developer/OpenGrid/HarmonicCompressor/qa/2026-11-26-rust-port/../../build-release/HarmonicCompressor_artefacts/Release/CLAP/Harmonic Compressor.clap",
+    "index": 0,
+    "count": 1,
+    "bundle_id": "com.opengrid.harmoniccompressor"
+  },
+  "plugin": {
+    "name": "Harmonic Compressor",
+    "vendor": "OpenGrid",
+    "version": "1.5.3",
+    "ids": {
+      "clap": {
+        "id": "com.opengrid.harmoniccompressor"
+      },
+      "vst3": null,
+      "au": null,
+      "aax": null
+    }
+  },
+  "states": [
+    {
+      "name": "default",
+      "kind": "default",
+      "location": null,
+      "blobs": [
+        {
+          "role": "clap-state",
+          "file": "harmonic-compressor.clap.blobs/000-default.clap-state.bin",
+          "bytes": 3104,
+          "fnv1a64": "f4a856e90024c5a2"
+        }
+      ],
+      "params": [
+        {
+          "id": 3291976370,
+          "name": "Algorithm",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 2749490283,
+          "name": "Threshold",
+          "plain": 0.699999988079071,
+          "normalized": null
+        },
+        {
+          "id": 108285963,
+          "name": "Ratio",
+          "plain": 0.24253562092781067,
+          "normalized": null
+        },
+        {
+          "id": 2887708232,
+          "name": "Attack",
+          "plain": 0.3594161570072174,
+          "normalized": null
+        },
+        {
+          "id": 1090594823,
+          "name": "Release",
+          "plain": 0.35513871908187866,
+          "normalized": null
+        },
+        {
+          "id": 3296579,
+          "name": "Knee",
+          "plain": 0.25,
+          "normalized": null
+        },
+        {
+          "id": 1226400808,
+          "name": "Makeup Gain",
+          "plain": 0.3333333432674408,
+          "normalized": null
+        },
+        {
+          "id": 108124,
+          "name": "Mix",
+          "plain": 1.0,
+          "normalized": null
+        },
+        {
+          "id": 3874848677,
+          "name": "2nd Harmonic",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 3874848678,
+          "name": "3rd Harmonic",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 3874848679,
+          "name": "4th Harmonic",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 3874848680,
+          "name": "5th Harmonic",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 3390724817,
+          "name": "Sidechain Enable",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 2799569975,
+          "name": "Sidechain Listen",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 2660622832,
+          "name": "Sidechain HP Freq",
+          "plain": 0.6757882237434387,
+          "normalized": null
+        },
+        {
+          "id": 3994480472,
+          "name": "Auto Release",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 3397023959,
+          "name": "Auto Attack",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 1706566249,
+          "name": "Input Gain",
+          "plain": 0.5,
+          "normalized": null
+        },
+        {
+          "id": 3020714016,
+          "name": "Output Gain",
+          "plain": 0.5,
+          "normalized": null
+        },
+        {
+          "id": 1057129025,
+          "name": "Oversample",
+          "plain": 0.3333333432674408,
+          "normalized": null
+        },
+        {
+          "id": 2083021974,
+          "name": "Oversample Filter",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 4252004695,
+          "name": "Transient Enable",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 2661150066,
+          "name": "Transient Attack",
+          "plain": 0.5,
+          "normalized": null
+        },
+        {
+          "id": 4009707577,
+          "name": "Transient Sustain",
+          "plain": 0.5,
+          "normalized": null
+        },
+        {
+          "id": 2180543453,
+          "name": "Transient Speed",
+          "plain": 0.5167105793952942,
+          "normalized": null
+        },
+        {
+          "id": 1438330318,
+          "name": "Auto Gain",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 95468472,
+          "name": "Delta Monitor",
+          "plain": 0.0,
+          "normalized": null
+        }
+      ],
+      "notes": []
+    },
+    {
+      "name": "set",
+      "kind": "set",
+      "location": null,
+      "blobs": [
+        {
+          "role": "clap-state",
+          "file": "harmonic-compressor.clap.blobs/001-set.clap-state.bin",
+          "bytes": 3104,
+          "fnv1a64": "c4942281cf0fcbe2"
+        }
+      ],
+      "params": [
+        {
+          "id": 3291976370,
+          "name": "Algorithm",
+          "plain": 0.5,
+          "normalized": null
+        },
+        {
+          "id": 2749490283,
+          "name": "Threshold",
+          "plain": 0.25,
+          "normalized": null
+        },
+        {
+          "id": 108285963,
+          "name": "Ratio",
+          "plain": 0.24253562092781067,
+          "normalized": null
+        },
+        {
+          "id": 2887708232,
+          "name": "Attack",
+          "plain": 0.3594161570072174,
+          "normalized": null
+        },
+        {
+          "id": 1090594823,
+          "name": "Release",
+          "plain": 0.35513871908187866,
+          "normalized": null
+        },
+        {
+          "id": 3296579,
+          "name": "Knee",
+          "plain": 0.25,
+          "normalized": null
+        },
+        {
+          "id": 1226400808,
+          "name": "Makeup Gain",
+          "plain": 0.3333333432674408,
+          "normalized": null
+        },
+        {
+          "id": 108124,
+          "name": "Mix",
+          "plain": 1.0,
+          "normalized": null
+        },
+        {
+          "id": 3874848677,
+          "name": "2nd Harmonic",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 3874848678,
+          "name": "3rd Harmonic",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 3874848679,
+          "name": "4th Harmonic",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 3874848680,
+          "name": "5th Harmonic",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 3390724817,
+          "name": "Sidechain Enable",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 2799569975,
+          "name": "Sidechain Listen",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 2660622832,
+          "name": "Sidechain HP Freq",
+          "plain": 0.6757882237434387,
+          "normalized": null
+        },
+        {
+          "id": 3994480472,
+          "name": "Auto Release",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 3397023959,
+          "name": "Auto Attack",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 1706566249,
+          "name": "Input Gain",
+          "plain": 0.5,
+          "normalized": null
+        },
+        {
+          "id": 3020714016,
+          "name": "Output Gain",
+          "plain": 0.5,
+          "normalized": null
+        },
+        {
+          "id": 1057129025,
+          "name": "Oversample",
+          "plain": 0.3333333432674408,
+          "normalized": null
+        },
+        {
+          "id": 2083021974,
+          "name": "Oversample Filter",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 4252004695,
+          "name": "Transient Enable",
+          "plain": 0.0,
+          "normalized": null
+        },
+        {
+          "id": 2661150066,
+          "name": "Transient Attack",
+          "plain": 0.5,
+          "normalized": null
+        },
+        {
+          "id": 4009707577,
+          "name": "Transient Sustain",
+          "plain": 0.5,
+          "normalized": null
+        },
+        {
+          "id": 2180543453,
+          "name": "Transient Speed",
+          "plain": 0.5167105793952942,
+          "normalized": null
+        },
+        {
+          "id": 1438330318,
+          "name": "Auto Gain",
+          "plain": 1.0,
+          "normalized": null
+        },
+        {
+          "id": 95468472,
+          "name": "Delta Monitor",
+          "plain": 0.0,
+          "normalized": null
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "notes": [
+    "the bundle has no preset-discovery factory"
+  ]
+}
