@@ -1,1 +1,4 @@
 /target
+# Agent rules from the SDK template: kept locally, not published
+/AGENTS.md
+/CLAUDE.md
