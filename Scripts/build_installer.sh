@@ -1,18 +1,17 @@
 #!/bin/bash
 # Builds a macOS installer .pkg for Harmonic Compressor (VST3, AU, CLAP, LV2, AAX). No Standalone app ships.
-# Usage: ./Scripts/build_installer.sh [path-to-build-dir]
+# Usage: ./Scripts/build_installer.sh [folder with the built bundles]
 #
-# Requires that the plugin has already been built in Release configuration
-# (VST3, AU, CLAP, LV2, AAX targets) via CMake/Ninja.
+# The folder is the --out of OpenPluginSDK's scripts/build_plugin.sh (default plugin/target/dist-<version>):
+# the signed bundles side by side, the AAX already PACE-signed.
 
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BUILD_DIR="${1:-$PROJECT_ROOT/build-release}"
-ARTEFACTS="$BUILD_DIR/HarmonicCompressor_artefacts/Release"
-
 PRODUCT_NAME="Harmonic Compressor"
 VERSION="$(tr -d '\r\n' < "$PROJECT_ROOT/VERSION")"
+ARTEFACTS="${1:-$PROJECT_ROOT/plugin/target/dist-$VERSION}"
+grep -q "^version = \"$VERSION\"" "$PROJECT_ROOT/plugin/Cargo.toml" || { echo "ERROR: VERSION ($VERSION) is not the crate's version" >&2; exit 1; }
 IDENTIFIER="com.opengrid.harmoniccompressor"
 OUT_DIR="${HC_INSTALLER_OUT_DIR:-$PROJECT_ROOT/Installer}"
 STAGING="$OUT_DIR/staging"
@@ -20,11 +19,11 @@ STAGING="$OUT_DIR/staging"
 INSTALLER_ID="Developer ID Installer: Marcos Deida (ZQYU67JUBH)"
 NOTARY_PROFILE="AC_NOTARY"
 
-VST3_SRC="$ARTEFACTS/VST3/$PRODUCT_NAME.vst3"
-AU_SRC="$ARTEFACTS/AU/$PRODUCT_NAME.component"
-CLAP_SRC="$ARTEFACTS/CLAP/$PRODUCT_NAME.clap"
-LV2_SRC="$ARTEFACTS/LV2/$PRODUCT_NAME.lv2"
-AAX_SRC="$ARTEFACTS/AAX/$PRODUCT_NAME.aaxplugin"
+VST3_SRC="$ARTEFACTS/$PRODUCT_NAME.vst3"
+AU_SRC="$ARTEFACTS/$PRODUCT_NAME.component"
+CLAP_SRC="$ARTEFACTS/$PRODUCT_NAME.clap"
+LV2_SRC="$ARTEFACTS/${PRODUCT_NAME// /}.lv2"   # installed under 1.5.x's folder name, "Harmonic Compressor.lv2"
+AAX_SRC="$ARTEFACTS/$PRODUCT_NAME.aaxplugin"
 MANUAL_PDF="$PROJECT_ROOT/output/pdf/HarmonicCompressor-User-Manual.pdf"
 LICENSE_BINARIES_SRC="$PROJECT_ROOT/LICENSE-BINARIES.txt"
 LICENSE_MIT_SRC="$PROJECT_ROOT/LICENSE"
@@ -40,7 +39,8 @@ RESOURCES_DIR="$OUT_DIR/resources"
 DISTRIBUTION_XML="$OUT_DIR/distribution.xml"
 
 # Remove only what this script writes: OUT_DIR may be a folder that holds other files.
-rm -rf "$STAGING" "$RESOURCES_DIR"
+SCRIPTS_DIR="$OUT_DIR/scripts"
+rm -rf "$STAGING" "$RESOURCES_DIR" "$SCRIPTS_DIR"
 rm -f "$COMPONENT_PKG" "$UNSIGNED_PKG" "$FINAL_PKG" "$FINAL_PKG.installs.json" "$COMPONENT_PLIST" "$DISTRIBUTION_XML"
 mkdir -p "$STAGING/Library/Audio/Plug-Ins/VST3"
 mkdir -p "$STAGING/Library/Audio/Plug-Ins/Components"
@@ -52,6 +52,8 @@ DOCS_DEST="$STAGING/Library/Application Support/Harmonic Compressor"
 mkdir -p "$DOCS_DEST"
 if [ -d "$PROJECT_ROOT/Licenses" ]; then
     ditto "$PROJECT_ROOT/Licenses" "$DOCS_DEST/Licenses"
+    # licences of the 1.5.x source's components, which are not in these binaries
+    rm -f "$DOCS_DEST/Licenses/third-party/JUCE-LICENSE.md" "$DOCS_DEST/Licenses/third-party/GoodLookinUI-LICENSE.txt" "$DOCS_DEST/Licenses/third-party/clap-juce-extensions-LICENSE.md"
 fi
 if [ -f "$PROJECT_ROOT/THIRD_PARTY_LICENSES.md" ]; then
     cp "$PROJECT_ROOT/THIRD_PARTY_LICENSES.md" "$DOCS_DEST/THIRD_PARTY_LICENSES.md"
@@ -137,8 +139,14 @@ with open(path, "wb") as f:
     plistlib.dump(data, f)
 PYEOF
 
+# An LV2 folder is not a bundle to the installer, so an upgrade would merge into it: remove 1.5.x's first.
+mkdir -p "$SCRIPTS_DIR"
+printf '#!/bin/sh\nrm -rf "/Library/Audio/Plug-Ins/LV2/%s.lv2"\nexit 0\n' "$PRODUCT_NAME" > "$SCRIPTS_DIR/preinstall"
+chmod 755 "$SCRIPTS_DIR/preinstall"
+
 pkgbuild \
     --root "$STAGING" \
+    --scripts "$SCRIPTS_DIR" \
     --component-plist "$COMPONENT_PLIST" \
     --identifier "$IDENTIFIER" \
     --version "$VERSION" \
@@ -214,7 +222,7 @@ esac
     printf ']}\n'
 } > "$FINAL_PKG.installs.json"
 
-rm -rf "$STAGING" "$COMPONENT_PKG" "$COMPONENT_PLIST" "$DISTRIBUTION_XML" "$RESOURCES_DIR"
+rm -rf "$STAGING" "$COMPONENT_PKG" "$COMPONENT_PLIST" "$DISTRIBUTION_XML" "$RESOURCES_DIR" "$SCRIPTS_DIR"
 
 echo ""
 echo "== Done =="

@@ -1,8 +1,10 @@
 # Port to OpenPluginSDK 1.0.0-beta (2026-11-26)
 
 `plugin/` is Harmonic Compressor on OpenPluginSDK, in Rust: the DSP was ported on `19fac89`, and since
-2026-11-27 everything is built and checked on the SDK branch `editor-pointer-left` (`f2e8d15`: `main`
-`07f97e1` plus one commit, the view tells an editor the pointer left; not merged yet).
+2026-11-27 everything is built and checked on the SDK branch `editor-pointer-left` (`2969ebb`: `main`
+`07f97e1` plus two commits, not merged yet: the view tells an editor the pointer left, and an Audio
+Unit effect starts with its sidechain element). The release QA of 1.6.0 is in
+`qa/2026-11-27-release-1.6.0/`.
 It exports CLAP, LV2 and the SDK's VST3, Audio Unit and AAX shells; all five were built universal
 and checked here (`ledger.md`, "Release preparation"). It replaces the JUCE processor and editor of 1.5.3 (`Source/`), which are
 untouched. The editor is macOS only, as the SDK's editor hosting is.
@@ -90,9 +92,9 @@ cargo run --release --example frame_time                   # CPU per frame
 - **Screen readers** now get every control's name and value (1.5.3's controls had no names).
 - **Mouse wheel** direction follows the system's natural-scrolling setting (JUCE undid it); the
   SDK does not say which way the device was turned.
-- **Audio Unit sidechain**: the SDK's AU shell starts with one input element and adds the sidechain
-  only when a host asks for a second; 1.5.3 offered two. Logic may not show the sidechain menu.
-  Needs a test in Logic, and probably an SDK change.
+- **Audio Unit sidechain**: fixed in the SDK (`2969ebb`): an effect starts with two input elements,
+  the second named "Sidechain", as 1.5.3 offered. Before, the shell added it only when a host asked.
+  Checked with auval and in REAPER (`qa/2026-11-27-release-1.6.0/sidechain/`); not in Logic.
 - **VST3 bypass parameter** has the SDK shell's id, not JUCE's (1652125811): automation of the host
   bypass saved with a 1.5.3 VST3 session does not replay. The SDK has no pin for it.
 - **VST3 choice parameters** report plain index ranges (0..6, 0..3) to hosts that ask for plain

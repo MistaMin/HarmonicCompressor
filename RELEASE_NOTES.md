@@ -1,3 +1,26 @@
+# Harmonic Compressor 1.6.0
+
+- Rebuilt in Rust on OpenPluginSDK. The plugin keeps its name and identifiers: sessions, presets and automation saved with 1.5.x load in VST3, AU, CLAP and AAX. At 1x oversampling the sound is the same as 1.5.3 (the difference is below -115 dB in 41 test cases).
+- New meters: PPM in dBFS (IEC 60268-10 Type I, the default), RMS over 300 ms in dBFS, or VU (IEC 60268-17, 0 VU = -18 dBFS). The selector is on the input meter and the choice is saved with the session. They replace the sample-peak bars and their "dBu / dBFS" readouts.
+- Meter readouts, the gain-reduction readout and the gain on the AUTO GAIN key are whole numbers.
+- Threshold, Ratio, Knee, Makeup, Input and Output Gain, the four harmonics and the transient Attack and Sustain move in whole steps (1.5.3: tenths). A session keeps its 1.5.3 values until the control is moved. Attack and Speed below 1 ms read in microseconds. Hosts get Mix in percent and the times with their unit.
+- External sidechain in every format. The Audio Unit has its second input ("Sidechain") from the start, so hosts that only look for it offer it.
+- Oversampling uses new anti-alias filters (a Kaiser FIR for Lin Phase, a minimum-phase FIR for Min Phase), so 2x, 4x and 8x sound slightly different from 1.5.3. Reported latency: 0 at 1x; 3, 4 and 5 samples at 2x, 4x and 8x Min Phase; 65, 71 and 73 samples in Lin Phase.
+- The editor uses no CPU while nothing moves (1.5.3 redrew its meters 30 times a second). With the editor closed the meters cost nothing.
+- Screen readers get every control's name and value. The smallest text is 8 pt.
+- Menus open inside the plugin window. The pointer keeps its arrow over the module headers and curve handles. The mouse wheel follows the system's scroll direction.
+- The plugin reports a 0.7 s tail (the harmonics' DC blocker) instead of none. A reset now also clears Red's automatic timing memory.
+
+Changes that can affect a session from 1.5.x:
+
+- Automation of the VST3 host bypass recorded with 1.5.x does not replay (the bypass parameter has a new identifier).
+- An LV2 host session saved with 1.5.x is not expected to restore its settings (the LV2 version now has control ports; not tested).
+- The AAX has no AudioSuite version, and its control-surface page table is generated from the parameter list.
+
+macOS: universal Apple silicon/Intel build (arm64 and x86_64), macOS 11 or later. Plugin Manager package: VST3, AU, CLAP, LV2 and PACE-signed AAX. This plugin ships no Standalone app. Windows and Linux builds are listed only after their native builds and tests pass on their own machines.
+
+Approved binary downloads are published on the GitHub release page and through the OpenGrid Plugin Manager.
+
 # Harmonic Compressor 1.5.3
 
 - Fixed Red and Hybrid in stereo: both channels shared one detector, so release ran about twice as fast as set, the gain stepped at every host buffer, and the result depended on the buffer size. All seven models now detect stereo-linked (the louder channel sets one gain for both). Saved Red and Hybrid sessions sound different (slower, smoother release).

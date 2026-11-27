@@ -1,0 +1,8 @@
+REAPER 7.80, a separate hidden instance, test-identity build of the 1.6.0 source on SDK 2969ebb (2026-11-27).
+reaper_sidechain.py: 1 kHz at -20 dBFS on channels 1/2, 200 Hz bursts at -6 dBFS on channels 3/4, Threshold -60 dB.
+A before the first burst, B during it, C between the bursts, D during the second (RMS of the output, dBFS).
+
+PASS  AU: Harmonic Compressor Test (OpenGrid): A -51.5, B -61.4, C -23.1, D -61.4 dBFS; key at the output -128.9 dBFS
+PASS  VST3: Harmonic Compressor Test (OpenGrid): A -51.5, B -61.4, C -23.1, D -61.4 dBFS; key at the output -128.9 dBFS
+PASS  CLAP: Harmonic Compressor Test (OpenGrid): A -51.5, B -61.4, C -23.1, D -61.4 dBFS; key at the output -128.9 dBFS
+PASS  LV2: Harmonic Compressor Test (OpenGrid) (4->2ch): A -51.5, B -61.4, C -23.1, D -61.4 dBFS; key at the output -128.9 dBFS

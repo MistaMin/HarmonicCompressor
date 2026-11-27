@@ -24,20 +24,23 @@ Harmonic Compressor is built from two parts with two different licenses:
    text. In short: you are free to use, copy, modify, and redistribute the
    source code, with attribution and without warranty.
 
-2. Harmonic Compressor is built on the JUCE framework (juce.com), which is
-   owned and separately licensed by Raw Material Software Limited. JUCE is
-   NOT covered by the MIT License above. Its licence terms are in
-   Licenses/third-party/JUCE-LICENSE.md in this same folder.
+2. Since version 1.6.0 Harmonic Compressor is built on OpenPluginSDK (MIT or
+   Apache-2.0) and on the format SDKs of Steinberg (VST 3, MIT), Apple
+   (AudioUnitSDK, Apache-2.0) and Avid (AAX, under Avid's developer
+   agreement), with a number of Rust crates. They are NOT covered by the
+   MIT License above. Their licence terms are listed in
+   THIRD_PARTY_LICENSES.md and given in Licenses/third-party in this same
+   folder.
 
 This binary (the compiled plug-ins you installed) is distributed to you
 as freeware under these terms: free to use, free to redistribute as-is,
-but not to be sold, and provided with no warranty, consistent with both
-the MIT license on the Harmonic Compressor code and JUCE's licence.
+but not to be sold, and provided with no warranty, consistent with the
+MIT license on the Harmonic Compressor code and the licences of the
+components above.
 
 If you want to build Harmonic Compressor yourself from source, see the
 project's README.md for full build instructions and the complete
-licensing breakdown, including what license terms apply to binaries YOU
-compile (which depend on which JUCE license you personally hold).
+licensing breakdown.
 
 ------------------------------------------------------------------------
 Where to get the source / report issues

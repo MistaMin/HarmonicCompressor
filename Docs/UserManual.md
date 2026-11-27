@@ -1,4 +1,4 @@
-# Harmonic Compressor (version 1.5.3)
+# Harmonic Compressor (version 1.6.0)
 
 Harmonic Compressor is a mastering-grade, multi-topology analogue dynamics processor and harmonic saturation engine. Built with physical-circuit component modeling and first-order Antiderivative Anti-Aliasing (ADAA), it combines seven distinct analogue compression topologies, an integrated transient designer, a multi-order harmonic saturation stage, and an interactive real-time transfer curve display.
 
@@ -56,13 +56,13 @@ Harmonic Compressor integrates a stereo-linked differential-envelope transient p
 - **Attack (-100% to +100%):** Emphasizes or softens transient onsets after compression and mixing.
 - **Sustain (-100% to +100%):** Extends or tightens decay and room tails. Speed (0.5-50 ms) adjusts the detector response.
 - **Sidechain High-Pass Filter (20-500 Hz, with bypass):** Prevents heavy bass and kick transients from excessively triggering pumping artifacts on stereo busses.
-- **External sidechain:** When the host routes a signal to the sidechain input, that signal drives detection. Until it first carries signal, the main input is detected. After that, silence on the sidechain means no compression, so ducking releases between hits.
+- **External sidechain:** When the host routes a signal to the sidechain input, that signal drives detection. Until it first carries signal, the main input is detected. After that, silence on the sidechain means no compression, so ducking releases between hits. Every format has the sidechain input: a second input bus in VST3 and CLAP, a second input element named "Sidechain" in the Audio Unit, two sidechain ports in LV2, and the key input in AAX (Pro Tools sends a mono key). Route to it the way your host routes a sidechain or key input; in REAPER it is channels 3/4 of the track.
 
 ## Auto Gain & Delta
 
 The **AUTO GAIN** and **DELTA** keys sit at the right end of the knob bar. Both are global: they do not change when you switch compressor model.
 
-**Auto Gain** keeps the output as loud as the plugin's input, so you judge compression and saturation by their sound, not by a level change. It measures loudness the way the ear weighs it: K-weighted short-term loudness (ITU-R BS.1770, the 3-second window of EBU R128), which counts low bass less and the presence region more than a plain RMS meter. The key shows the gain it is applying, for example `AUTO +4.2 dB`.
+**Auto Gain** keeps the output as loud as the plugin's input, so you judge compression and saturation by their sound, not by a level change. It measures loudness the way the ear weighs it: K-weighted short-term loudness (ITU-R BS.1770, the 3-second window of EBU R128), which counts low bass less and the presence region more than a plain RMS meter. The key shows the gain it is applying, for example `AUTO +4 dB`.
 
 - The reference is the untouched input, before Input Gain. With Auto Gain on, Input Gain works as a drive control: push it to compress or saturate harder at the same output loudness.
 - Makeup still changes the sound with Auto Gain on, because it sets how hard the signal drives the harmonics stage.
@@ -80,14 +80,19 @@ The **AUTO GAIN** and **DELTA** keys sit at the right end of the knob bar. Both 
 
 ![Dynamic Auto-Scaling Real-Time Metering](harmonic-compressor-autoscale.png)
 
-## Dynamic Auto-Scaling Metering & Real-Time Transfer Curve
+## Metering & Real-Time Transfer Curve
 
-The central visualization display combines an interactive compression transfer curve and auto-scaling peak/VU/GR meters:
+The central display combines an interactive compression transfer curve with a six-second history of the input, output and gain reduction. The level meters sit beside it.
 
-- **Real-Time Transfer Curve:** Graphically renders the active threshold, ratio slope, and knee curvature. Live input and output audio levels are traced across the transfer line in real time.
-- **Auto-Scale GR Metering:** When working with subtle bus compression (-1 dB to -3 dB) or extreme limiting (-20 dB), the meter display dynamically scales to provide high-resolution visual feedback.
-- **Side-by-Side In/Out Peak & RMS Bars:** Precision PPM-style level meters with integrated clip indicators let you match gain staging and evaluate perceptual loudness effortlessly.
+- **Real-Time Transfer Curve:** Shows the active threshold, ratio slope and knee. Live input and output levels are traced across the transfer line. Drag the handles to set Threshold, Ratio and Makeup.
+- **Auto-Scale Gain Reduction:** With subtle bus compression (1 to 3 dB) or heavy limiting (20 dB), the gain-reduction scale adapts so the movement stays readable.
+- **Input and Output Meters:** Stereo bars with a numeric readout under each. The selector at the top of the input meter sets the scale for both meters:
+  - **PPM dBFS** (default): a peak programme meter with the ballistics of IEC 60268-10 Type I, read in dBFS.
+  - **RMS dBFS:** the RMS level over 300 ms, in dBFS.
+  - **VU:** a VU meter with the ballistics of IEC 60268-17; 0 VU is -18 dBFS.
+- **Readouts:** The meter readouts, the gain-reduction readout (for example `3 dB GR`) and the gain on the AUTO GAIN key are whole numbers, so they stay readable while the level moves.
 
+The meter scale is saved with the session. The marks beside the bars read dBu / dBFS, with 0 dBu at -18 dBFS.
 
 ## Interface Customization & Themes
 
@@ -102,7 +107,13 @@ Harmonic Compressor features four distinct UI themes crafted for long studio ses
 
 ### Floating Modular Windows
 
-The Compression, Harmonics, Sidechain and Transient modules can be expanded, collapsed and moved inside the plugin window. Drag a module header to reposition it; click the header to expand or collapse it. Linear sliders map clicks to the position in the visible groove. Drag left to reduce a value, including after reaching the maximum.
+The Compression, Harmonics, Sidechain and Transient modules can be expanded, collapsed and moved inside the plugin window. Drag a module header to reposition it; click the header to expand or collapse it. Linear sliders map clicks to the position in the visible groove. Drag left to reduce a value, including after reaching the maximum. Double-click a control, or Option-click it, to return it to its default. The mouse wheel moves the control under the pointer.
+
+### Values and Steps
+
+Threshold, Ratio, Knee, Makeup, Input and Output Gain, the four harmonics and the transient Attack and Sustain move in whole steps (1 dB, 1:1, 1 %). Attack, Release and Speed keep their fine steps; Attack and Speed below 1 ms read in microseconds (`500 µs`), and Release from one second reads in seconds (`1.50 s`). A session saved with an earlier version keeps its finer values until you move the control.
+
+Menus open inside the plugin window. Screen readers (VoiceOver) get every control's name and value. The smallest text is 8 pt at the default window size; drag the lower right corner to resize the window.
 
 ![Floating Modular Control Windows](harmonic-compressor-modules.png)
 
@@ -112,7 +123,8 @@ Use a host that supports the selected plugin format. Compatibility and validatio
 
 ![Harmonic Compressor in Cockos REAPER](harmonic-compressor-reaper.png)
 
-- **True Zero Latency:** In standard 1x mode, processing latency is exactly 0 samples (0 ms), making it suitable for live tracking and low-latency monitoring.
+- **Latency:** At 1x, processing latency is exactly 0 samples, suitable for live tracking and low-latency monitoring. With oversampling the plugin reports its latency to the host, which compensates for it: 3, 4 and 5 samples at 2x, 4x and 8x Min Phase; 65, 71 and 73 samples at 2x, 4x and 8x Lin Phase.
+- **Sessions from earlier versions:** Sessions, presets and automation saved with 1.5.x load in 1.6.0 in VST3, AU, CLAP and AAX. Two exceptions: an LV2 host session saved with 1.5.x may not restore its settings (the LV2 version now uses control ports), and automation of the VST3 host bypass recorded with 1.5.x does not replay.
 - **CPU Use:** Depends on model, sample rate, oversampling factor, host and processor. Measure at your session settings.
 - **Parameter Automation:** Every knob, toggle switch, and mode selector is exposed to the host for automation; timing depends on the format, host and parameter smoothing.
 
@@ -123,7 +135,7 @@ Use a host that supports the selected plugin format. Compatibility and validatio
 - **Supported Formats:**
   - **VST3:** 64-bit compatible host (DAW).
   - **Audio Units (AU):** 64-bit AUv2 host.
-  - **AAX Native:** Pro Tools 2022+ (PACE Eden Signed).
+  - **AAX Native:** Pro Tools 2022+ (PACE Eden Signed), as a real-time insert. There is no AudioSuite version.
   - **CLAP:** CLAP 1.2+ host.
   - **LV2:** LV2 compatible host.
 - **RAM:** 4 GB minimum (8 GB recommended).
@@ -136,13 +148,13 @@ Use a host that supports the selected plugin format. Compatibility and validatio
 | Parameter ID | Parameter Name | Range | Default | Unit | Description |
 |---|---|---|---|---|---|
 | `algorithmMode` | Algorithm | Red, Hybrid, Bridge, Bus VCA, 76, Opto Leveler, VCA 160 | Red | choice | Compression topology |
-| `threshold` | Threshold | -60 to 0 | -18 | dB | Compression threshold |
-| `ratio` | Ratio | -2 to 100 | 4 | :1 | Shared ratio control; top of range displays infinity |
-| `attack` | Attack | 0.1 to 300 | 10 | ms | Model attack control |
+| `threshold` | Threshold | -60 to 0 | -18 | dB | Compression threshold, in 1 dB steps |
+| `ratio` | Ratio | -2 to 100 | 4 | :1 | Shared ratio control in whole ratios; top of range displays infinity |
+| `attack` | Attack | 0.1 to 300 | 10 | ms | Model attack control; below 1 ms it reads in µs |
 | `release` | Release | 5 to 3000 | 100 | ms | Model release control |
 | `knee` | Knee | 0 to 24 | 6 | dB | Soft-knee width (Red only; the other models have a fixed knee) |
 | `makeupGain` | Makeup Gain | -12 to +24 | 0 | dB | Processed-signal makeup |
-| `mix` | Mix | 0 to 1 | 1 | fraction | Displayed as 0-100% wet |
+| `mix` | Mix | 0 to 1 | 1 | fraction | Displayed as 0-100% wet, in the plugin and in the host |
 | `harmonic2` | 2nd Harmonic | 0 to 100 | 0 | % | Even-order coloration |
 | `harmonic3` | 3rd Harmonic | 0 to 100 | 0 | % | Odd-order coloration |
 | `harmonic4` | 4th Harmonic | 0 to 100 | 0 | % | Even-order coloration |
@@ -163,4 +175,4 @@ Use a host that supports the selected plugin format. Compatibility and validatio
 | `autoGain` | Auto Gain | Off / On | Off | bool | Match output loudness to the untouched input |
 | `delta` | Delta Monitor | Off / On | Off | bool | Play output minus dry signal |
 
-The colour theme, curve visibility and module positions are saved interface settings. They are not additional host parameters. The Harmonics preset selector sets the four harmonic controls; the Sidechain selector combines its enable and listen switches.
+The colour theme, meter scale, curve visibility, window size and module positions are saved interface settings. They are not additional host parameters. The Harmonics preset selector sets the four harmonic controls; the Sidechain selector combines its enable and listen switches.

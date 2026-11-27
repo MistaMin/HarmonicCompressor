@@ -1,0 +1,12 @@
+# The manual's pictures for 1.6.0, rendered by plugin/examples/gui_render.rs with audio running
+# (the settings of 1.5.3's pictures, qa/2026-11-23-docs-1.5.3/doc_screenshots.cpp, on whole steps):
+#   cd plugin && cargo run --release --example gui_render -- ../qa/2026-11-27-release-1.6.0/docs/scenarios.txt <out>
+# converted to PNG, then qa/2026-11-23-docs-1.5.3/compose_doc_screenshots.py <out> Docs <new Docs> puts soft-white,
+# modules and the theme grid into the pictures; editor-autoscale is the autoscale picture as it is.
+editor-soft-white ui.colourMode=1 algorithmMode=5 threshold=-22 ratio=5 oversampleMode=1 audio=8
+editor-grid-0     ui.colourMode=0 algorithmMode=5 threshold=-22 ratio=5 oversampleMode=1 audio=8
+editor-grid-1     ui.colourMode=1 algorithmMode=5 threshold=-22 ratio=5 oversampleMode=1 audio=8
+editor-grid-2     ui.colourMode=2 algorithmMode=5 threshold=-22 ratio=5 oversampleMode=1 audio=8
+editor-grid-3     ui.colourMode=3 algorithmMode=5 threshold=-22 ratio=5 oversampleMode=1 audio=8
+editor-modules    ui.colourMode=1 algorithmMode=5 threshold=-20 ratio=6 makeupGain=4 mix=0.85 oversampleMode=2 oversampleFilter=1 inputGain=2 outputGain=-1 harmonic2=35 harmonic4=15 scEnabled=1 scHPFreq=150 transientEnabled=1 transientAttack=35 transientSustain=-15 transientSpeed=10 open=comp,harm,sc,trans ui.modCompX=16 ui.modCompY=13 ui.modHarmX=436 ui.modHarmY=13 ui.modScX=16 ui.modScY=521 ui.modTransX=419 ui.modTransY=518 audio=8
+editor-autoscale  ui.colourMode=1 threshold=-26 ratio=5 autoGain=1 ui.meterMode=2 audio=8
