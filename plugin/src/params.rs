@@ -61,11 +61,46 @@ pub const fn host_hash(id: &str) -> u32 {
 fn text0(v: f32) -> String {
     format!("{v:.0}")
 }
-fn text1(v: f32) -> String {
-    format!("{v:.1}")
+/// Whole steps (the display rules); a value off the grid, from a 1.5.3 session, keeps its tenth.
+pub fn whole(v: f32) -> String {
+    // read at the tenth first, so 0.97 is "1" like 1.0, and text to value to text is stable
+    let tenths = (v * 10.0).round();
+    if tenths % 10.0 == 0.0 { format!("{}", tenths / 10.0 + 0.0) } else { format!("{:.1}", tenths / 10.0) }
 }
-fn text2(v: f32) -> String {
-    format!("{v:.2}")
+/// Attack, Release and Transient Speed, with their unit: under 1 ms in microseconds and from 1 s in
+/// seconds, so no value reads 0.x or has four digits.
+pub fn time_text(v: f32) -> String {
+    // each range is chosen on the rounded number, so 99.96 ms is "100 ms", not "100.0 ms"
+    let (us, tenths, ms) = ((v * 1000.0).round(), (v * 10.0).round() / 10.0, v.round());
+    if us < 1000.0 {
+        format!("{us} us")
+    } else if tenths < 100.0 {
+        format!("{tenths:.1} ms")
+    } else if ms < 1000.0 {
+        format!("{ms} ms")
+    } else {
+        format!("{:.2} s", ms / 1000.0)
+    }
+}
+/// Typed times: "500 us" (or "µs") is 0.5 ms, "1 s" 1000 ms, a bare number milliseconds.
+fn parse_time(t: &str) -> Option<f32> {
+    let n = parse(t)?;
+    let unit = t.trim().trim_start_matches(|c: char| c.is_ascii_digit() || c == '.' || c == '-' || c == '+').trim().to_lowercase();
+    match unit.as_str() {
+        "us" | "\u{b5}s" => Some(n / 1000.0),
+        "s" => Some(n * 1000.0),
+        "" | "ms" => Some(n),
+        _ => None,
+    }
+}
+/// Mix, 0..1, as a percent, so no value reads 0.x.
+fn mix_text(v: f32) -> String {
+    format!("{:.0}%", v * 100.0)
+}
+/// Typed mix: "50%" or "50" is half; a value up to 1 without a percent sign, as 1.5.3 read it.
+fn parse_mix(t: &str) -> Option<f32> {
+    let n = parse(t)?;
+    Some(if t.trim_end().ends_with('%') || n > 1.0 { n / 100.0 } else { n })
 }
 /// The leading number of the text, as 1.5.3 read typed values ("-18 dB" is -18).
 fn parse(t: &str) -> Option<f32> {
@@ -80,14 +115,15 @@ const fn pin(p: ParamInfo) -> ParamInfo {
 }
 
 #[allow(clippy::too_many_arguments)] // one row of the table per call reads best as positional
-const fn float(id: &'static str, name: &'static str, min: f32, max: f32, default: f32, unit: Unit, decimals: u8, skew: f32) -> ParamInfo {
-    let text: fn(f32) -> String = match decimals {
-        0 => text0,
-        1 => text1,
-        _ => text2,
-    };
+const fn float(id: &'static str, name: &'static str, min: f32, max: f32, default: f32, unit: Unit, text: fn(f32) -> String, skew: f32) -> ParamInfo {
     let p = ParamInfo::new(id, name, min, max, default, unit).with_text(text, parse).with_normalized_in(HostSpace::CLAP.union(HostSpace::SHELLS));
     pin(if skew == 1.0 { p } else { p.with_taper(Taper::Skew(Skew::new(skew))) })
+}
+
+/// A time with its unit in the text (`time_text`), so hosts show no second "ms" after "us".
+const fn time(id: &'static str, name: &'static str, min: f32, max: f32, default: f32, skew: f32) -> ParamInfo {
+    let p = ParamInfo::new(id, name, min, max, default, Unit::None).with_text(time_text, parse_time).with_normalized_in(HostSpace::CLAP.union(HostSpace::SHELLS));
+    pin(p.with_taper(Taper::Skew(Skew::new(skew))))
 }
 
 const fn choice(id: &'static str, name: &'static str, choices: &'static [&'static str], default: f32) -> ParamInfo {
@@ -100,47 +136,64 @@ const fn toggle(id: &'static str, name: &'static str) -> ParamInfo {
 
 pub static PARAMS: [ParamInfo; COUNT] = [
     choice("algorithmMode", "Algorithm", MODES, 0.0),
-    float("threshold", "Threshold", -60.0, 0.0, -18.0, Unit::Db, 1, 1.0),
-    float("ratio", "Ratio", -2.0, 100.0, 4.0, Unit::None, 1, 0.5),
-    float("attack", "Attack", 0.1, 300.0, 10.0, Unit::Ms, 1, 0.3),
-    float("release", "Release", 5.0, 3000.0, 100.0, Unit::Ms, 0, 0.3),
-    float("knee", "Knee", 0.0, 24.0, 6.0, Unit::Db, 1, 1.0),
-    float("makeupGain", "Makeup Gain", -12.0, 24.0, 0.0, Unit::Db, 1, 1.0),
-    float("mix", "Mix", 0.0, 1.0, 1.0, Unit::None, 2, 1.0),
-    float("harmonic2", "2nd Harmonic", 0.0, 100.0, 0.0, Unit::Percent, 1, 1.0),
-    float("harmonic3", "3rd Harmonic", 0.0, 100.0, 0.0, Unit::Percent, 1, 1.0),
-    float("harmonic4", "4th Harmonic", 0.0, 100.0, 0.0, Unit::Percent, 1, 1.0),
-    float("harmonic5", "5th Harmonic", 0.0, 100.0, 0.0, Unit::Percent, 1, 1.0),
+    float("threshold", "Threshold", -60.0, 0.0, -18.0, Unit::Db, whole, 1.0),
+    float("ratio", "Ratio", -2.0, 100.0, 4.0, Unit::None, whole, 0.5),
+    time("attack", "Attack", 0.1, 300.0, 10.0, 0.3),
+    time("release", "Release", 5.0, 3000.0, 100.0, 0.3),
+    float("knee", "Knee", 0.0, 24.0, 6.0, Unit::Db, whole, 1.0),
+    float("makeupGain", "Makeup Gain", -12.0, 24.0, 0.0, Unit::Db, whole, 1.0),
+    float("mix", "Mix", 0.0, 1.0, 1.0, Unit::None, mix_text, 1.0).with_text(mix_text, parse_mix),
+    float("harmonic2", "2nd Harmonic", 0.0, 100.0, 0.0, Unit::Percent, whole, 1.0),
+    float("harmonic3", "3rd Harmonic", 0.0, 100.0, 0.0, Unit::Percent, whole, 1.0),
+    float("harmonic4", "4th Harmonic", 0.0, 100.0, 0.0, Unit::Percent, whole, 1.0),
+    float("harmonic5", "5th Harmonic", 0.0, 100.0, 0.0, Unit::Percent, whole, 1.0),
     toggle("scEnabled", "Sidechain Enable"),
     toggle("scListen", "Sidechain Listen"),
-    float("scHPFreq", "Sidechain HP Freq", 20.0, 500.0, 150.0, Unit::Hz, 0, 0.3),
+    float("scHPFreq", "Sidechain HP Freq", 20.0, 500.0, 150.0, Unit::Hz, text0, 0.3),
     toggle("autoRelease", "Auto Release"),
     toggle("autoAttack", "Auto Attack"),
     // 1.5
-    float("inputGain", "Input Gain", -24.0, 24.0, 0.0, Unit::Db, 1, 1.0),
-    float("outputGain", "Output Gain", -24.0, 24.0, 0.0, Unit::Db, 1, 1.0),
+    float("inputGain", "Input Gain", -24.0, 24.0, 0.0, Unit::Db, whole, 1.0),
+    float("outputGain", "Output Gain", -24.0, 24.0, 0.0, Unit::Db, whole, 1.0),
     choice("oversampleMode", "Oversample", &["1x", "2x", "4x", "8x"], 1.0),
     choice("oversampleFilter", "Oversample Filter", &["Min Phase", "Lin Phase"], 0.0),
     toggle("transientEnabled", "Transient Enable"),
-    float("transientAttack", "Transient Attack", -100.0, 100.0, 0.0, Unit::Percent, 1, 1.0),
-    float("transientSustain", "Transient Sustain", -100.0, 100.0, 0.0, Unit::Percent, 1, 1.0),
-    float("transientSpeed", "Transient Speed", 0.5, 50.0, 10.0, Unit::Ms, 1, 0.4),
+    float("transientAttack", "Transient Attack", -100.0, 100.0, 0.0, Unit::Percent, whole, 1.0),
+    float("transientSustain", "Transient Sustain", -100.0, 100.0, 0.0, Unit::Percent, whole, 1.0),
+    time("transientSpeed", "Transient Speed", 0.5, 50.0, 10.0, 0.4),
     // 1.5.2
     toggle("autoGain", "Auto Gain"),
     toggle("delta", "Delta Monitor"),
 ];
 
-/// 1.5.3's interval of each parameter (its text shows that many decimals).
-static INTERVAL: [f32; COUNT] = [
+/// The step of each parameter. Whole steps for the dynamics controls, the harmonics and the
+/// transient amounts (the display rules, owner 2026-11-27); 1.5.3 moved those in tenths.
+pub static INTERVAL: [f32; COUNT] = [
+    1.0, 1.0, 1.0, 0.1, 1.0, 1.0, 1.0, 0.01, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.1, 1.0, 1.0,
+];
+/// 1.5.3's steps, for values read from a saved session.
+const INTERVAL_1_5_3: [f32; COUNT] = [
     1.0, 0.1, 0.1, 0.1, 1.0, 0.1, 0.1, 0.01, 0.1, 0.1, 0.1, 0.1, 1.0, 1.0, 1.0, 1.0, 1.0, 0.1, 0.1, 1.0, 1.0, 1.0, 0.1, 0.1, 0.1, 1.0, 1.0,
 ];
 
 /// The value 1.5.3's engine saw for a value set by a host or a state: clamped, NaN rejected, and
 /// snapped to the interval (JUCE's `snapToLegalValue`). `index` must be below `COUNT`.
 pub fn legal(index: usize, value: f32) -> f32 {
+    snap(index, value, INTERVAL[index])
+}
+
+/// A value read from a session: kept where 1.5.3 had it (a -23.7 dB threshold stays -23.7), so
+/// old sessions sound the same; values on the whole grid stay exactly as saved.
+pub fn saved(index: usize, value: f32) -> f32 {
+    let v = legal(index, value);
+    if v == value { v } else { snap(index, value, INTERVAL_1_5_3[index]) }
+}
+
+fn snap(index: usize, value: f32, step: f32) -> f32 {
     let p = &PARAMS[index];
-    let step = INTERVAL[index];
-    let v = p.min + step * ((p.clamp(value) - p.min) / step + 0.5).floor();
+    // JUCE's snapToLegalValue, compiled with a fused multiply-add as 1.5.3 was (arm64): the
+    // defaults land a few 1e-7 above zero, which 1.5.3 saved and showed as "+0.0 dB".
+    let v = step.mul_add(((p.clamp(value) - p.min) / step + 0.5).floor(), p.min);
     if v <= p.min { p.min } else { v.min(p.max) }
 }
 
@@ -182,11 +235,29 @@ mod tests {
                 if p.unit == Unit::Choice || p.unit == Unit::Toggle {
                     continue;
                 }
+                // the display rules (owner, 2026-11-27) changed every other text: tested in
+                // editor::tests::every_control_meets_the_display_rules
+                if p.id != "scHPFreq" {
+                    continue;
+                }
                 for sample in s["samples"].as_array().unwrap() {
                     let v = sample["plain"].as_f64().unwrap() as f32;
                     let plain = if vst3 { p.from_normalized(v) } else { p.from_host(space, v) };
                     assert_eq!(p.format(plain), sample["text"].as_str().unwrap(), "{format} {}", p.id);
                 }
+            }
+        }
+    }
+
+    /// clap-validator's param-conversions: text to value to text is the same text, for values on
+    /// and off the steps.
+    #[test]
+    fn text_survives_a_round_trip() {
+        for p in &PARAMS {
+            for i in 0..=1000 {
+                let text = p.format(p.from_normalized(i as f32 / 1000.0));
+                let back = p.parse(&text).unwrap_or_else(|| panic!("{}: {text:?} does not parse", p.id));
+                assert_eq!(p.format(back), text, "{}", p.id);
             }
         }
     }

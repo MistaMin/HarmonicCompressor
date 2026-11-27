@@ -11,7 +11,7 @@
 //! settings of sessions from before 1.5.3.
 
 use crate::dsp::{MODE_COUNT, mode_defaults};
-use crate::params::{COUNT, PARAMS, defaults, idx, index_of, legal};
+use crate::params::{COUNT, PARAMS, defaults, idx, index_of, saved};
 use openplugin::core::foreign_state::{plist, xml};
 
 const MAGIC: &[u8; 4] = b"HCMP";
@@ -51,12 +51,65 @@ pub fn default_snapshots() -> Snapshots {
     })
 }
 
+/// The editor's look, kept with the session as 1.5.3 kept it in its state's properties: colour mode,
+/// curve shown, editor width and where the four modules were moved.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct UiState {
+    pub colour_mode: i32,
+    pub show_curve: bool,
+    pub editor_width: i32,
+    pub modules: [(i32, i32); 4],
+    /// The meters' scale: `METER_PPM`, `METER_RMS` or `METER_VU` (new in the port; PPM by default).
+    pub meter: i32,
+}
+
+impl Default for UiState {
+    fn default() -> Self {
+        UiState { colour_mode: 0, show_curve: true, editor_width: 1120, modules: [(68, 12), (274, 12), (482, 12), (676, 12)], meter: 0 }
+    }
+}
+
+const MODULE_KEYS: [(&str, &str); 4] = [("modCompX", "modCompY"), ("modHarmX", "modHarmY"), ("modScX", "modScY"), ("modTransX", "modTransY")];
+
+impl UiState {
+    /// 1.5.3's property names and values.
+    fn properties(&self) -> Vec<(&'static str, i32)> {
+        let mut out = vec![("showCurve", i32::from(self.show_curve)), ("colourMode", self.colour_mode), ("editorWidth", self.editor_width), ("meterMode", self.meter)];
+        for (m, (kx, ky)) in MODULE_KEYS.iter().enumerate() {
+            out.push((kx, self.modules[m].0));
+            out.push((ky, self.modules[m].1));
+        }
+        out
+    }
+
+    /// One property; unknown names and unreadable values are ignored, as 1.5.3 fell back to defaults.
+    pub fn set(&mut self, key: &str, value: &str) {
+        let Some(v) = value.trim().parse::<f64>().ok().filter(|v| v.is_finite()).map(|v| v as i32) else { return };
+        match key {
+            "showCurve" => self.show_curve = v != 0,
+            "colourMode" => self.colour_mode = v.clamp(0, 3),
+            "editorWidth" => self.editor_width = v,
+            "meterMode" => self.meter = v.clamp(0, 2),
+            _ => {
+                for (m, (kx, ky)) in MODULE_KEYS.iter().enumerate() {
+                    if key == *kx {
+                        self.modules[m].0 = v;
+                    } else if key == *ky {
+                        self.modules[m].1 = v;
+                    }
+                }
+            }
+        }
+    }
+}
+
 pub struct State {
     pub values: [f32; COUNT],
     pub snapshots: Snapshots,
+    pub ui: UiState,
 }
 
-pub fn encode(values: &[f32; COUNT], snapshots: &Snapshots) -> Vec<u8> {
+pub fn encode(values: &[f32; COUNT], snapshots: &Snapshots, ui: &UiState) -> Vec<u8> {
     let mut out = MAGIC.to_vec();
     out.push(VERSION);
     for (p, v) in PARAMS.iter().zip(values) {
@@ -66,6 +119,9 @@ pub fn encode(values: &[f32; COUNT], snapshots: &Snapshots) -> Vec<u8> {
         for (k, v) in snap.iter().enumerate() {
             out.extend_from_slice(format!("@{m}:{}={v}\n", PARAMS[SNAP[k]].id).as_bytes());
         }
+    }
+    for (key, v) in ui.properties() {
+        out.extend_from_slice(format!("ui.{key}={v}\n").as_bytes());
     }
     out
 }
@@ -88,9 +144,13 @@ fn decode_own(body: &[u8]) -> Option<State> {
     if version != VERSION {
         return None;
     }
-    let mut state = State { values: defaults(), snapshots: default_snapshots() };
+    let mut state = State { values: defaults(), snapshots: default_snapshots(), ui: UiState::default() };
     for line in std::str::from_utf8(text).ok()?.lines() {
         let (key, v) = line.split_once('=')?;
+        if let Some(prop) = key.strip_prefix("ui.") {
+            state.ui.set(prop, v);
+            continue;
+        }
         let v = finite(v)?;
         if let Some(rest) = key.strip_prefix('@') {
             let (m, id) = rest.split_once(':')?;
@@ -100,7 +160,7 @@ fn decode_own(body: &[u8]) -> Option<State> {
                 snap[k] = v;
             }
         } else if let Some(i) = index_of(key) {
-            state.values[i] = legal(i, v);
+            state.values[i] = saved(i, v);
         }
     }
     Some(state)
@@ -117,14 +177,19 @@ pub fn decode_juce(data: &[u8]) -> Option<State> {
     if root.name != "Parameters" {
         return None;
     }
-    let mut state = State { values: defaults(), snapshots: default_snapshots() };
+    let mut state = State { values: defaults(), snapshots: default_snapshots(), ui: UiState::default() };
+    for (key, _) in UiState::default().properties() {
+        if let Some(v) = root.attr(key) {
+            state.ui.set(key, v);
+        }
+    }
     let mut found = 0;
     for param in root.children_named("PARAM") {
         let (Some(id), Some(v)) = (param.attr("id"), param.attr("value").and_then(finite)) else {
             return None;
         };
         if let Some(i) = index_of(id) {
-            state.values[i] = legal(i, v);
+            state.values[i] = saved(i, v);
             found += 1;
         }
     }
@@ -156,19 +221,23 @@ mod tests {
     #[test]
     fn own_state_round_trips() {
         let mut v = defaults();
-        // values as set_param leaves them: snapped to 1.5.3's interval
-        v[idx::THRESHOLD] = legal(idx::THRESHOLD, -23.7);
+        // a threshold from a 1.5.3 session, off the whole-dB grid, and values on it
+        v[idx::THRESHOLD] = saved(idx::THRESHOLD, -23.7);
+        assert!((v[idx::THRESHOLD] + 23.7).abs() < 1e-5, "1.5.3's tenth is kept: {}", v[idx::THRESHOLD]);
+        v[idx::KNEE] = 9.0;
         v[idx::MODE] = 5.0;
         v[idx::DELTA] = 1.0;
-        let v: [f32; COUNT] = std::array::from_fn(|i| legal(i, v[i]));
-        assert_eq!(legal(idx::THRESHOLD, v[idx::THRESHOLD]), v[idx::THRESHOLD], "snapping is idempotent");
+        let v: [f32; COUNT] = std::array::from_fn(|i| saved(i, v[i]));
+        assert_eq!(saved(idx::THRESHOLD, v[idx::THRESHOLD]), v[idx::THRESHOLD], "snapping is idempotent");
         let mut s = default_snapshots();
         s[3][0] = -40.5;
-        let bytes = encode(&v, &s);
+        let ui = UiState { colour_mode: 2, show_curve: false, editor_width: 800, modules: [(16, 13), (436, 13), (16, 420), (419, 420)], meter: 2 };
+        let bytes = encode(&v, &s, &ui);
         let back = decode(&bytes).expect("own state");
         assert_eq!(back.values, v);
         assert_eq!(back.snapshots, s);
-        assert_eq!(encode(&back.values, &back.snapshots), bytes, "resaved byte for byte");
+        assert_eq!(back.ui, ui);
+        assert_eq!(encode(&back.values, &back.snapshots, &back.ui), bytes, "resaved byte for byte");
         assert!(decode(b"junk").is_none());
         assert!(decode(b"HCMP\x09").is_none(), "an unknown version is refused");
         assert!(decode(b"HCMP\x01threshold=NaN\n").is_none(), "a non-number is refused");
@@ -213,6 +282,27 @@ mod tests {
         assert!(decode(&bad).is_none());
         let doc = String::from_utf8_lossy(&set).replace("value=\"-45.0\"", "value=\"x\"");
         assert!(decode(doc.as_bytes()).is_none(), "an unreadable value refuses the whole state");
+    }
+
+    /// 1.5.3's editor kept its look as properties of the `Parameters` element.
+    #[test]
+    fn the_editor_look_loads_from_1_5_3() {
+        let set = capture("harmonic-compressor.clap.blobs/001-set.clap-state.bin");
+        let doc = String::from_utf8_lossy(&set).replacen(
+            "<Parameters>",
+            "<Parameters showCurve=\"0\" colourMode=\"2\" editorWidth=\"800\" modHarmX=\"436\" modHarmY=\"13\">",
+            1,
+        );
+        let mut bytes = doc.into_bytes();
+        let size = (bytes.len() - 8) as u32;
+        bytes[4..8].copy_from_slice(&size.to_le_bytes());
+        let s = decode(&bytes).expect("state with the editor's look");
+        assert_eq!(s.ui.colour_mode, 2);
+        assert!(!s.ui.show_curve);
+        assert_eq!(s.ui.editor_width, 800);
+        assert_eq!(s.ui.modules[1], (436, 13));
+        assert_eq!(s.ui.modules[0], UiState::default().modules[0], "a module 1.5.3 never moved keeps its place");
+        assert_eq!(s.values[idx::THRESHOLD], -45.0);
     }
 
     #[test]

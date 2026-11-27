@@ -249,3 +249,15 @@ set_target_properties(DocScreenshotRender PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED TRUE
     EXCLUDE_FROM_ALL TRUE)
+
+# Renders 1.5.3's editor in fixed states, the reference for the OpenPluginSDK port's editor (2026-11-26).
+add_executable(GuiReferenceRender EXCLUDE_FROM_ALL)
+target_sources(GuiReferenceRender PRIVATE qa/2026-11-26-rust-port/gui/ref_render.cpp)
+target_include_directories(GuiReferenceRender PRIVATE Source
+    $<TARGET_PROPERTY:HarmonicCompressor,INCLUDE_DIRECTORIES>)
+target_link_libraries(GuiReferenceRender PRIVATE HarmonicCompressor
+    juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
+set_target_properties(GuiReferenceRender PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED TRUE
+    EXCLUDE_FROM_ALL TRUE)

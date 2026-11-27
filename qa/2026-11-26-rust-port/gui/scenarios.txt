@@ -1,0 +1,17 @@
+# Editor states rendered by 1.5.3 (ref_render.cpp) and by the port (plugin/examples/gui_render.rs),
+# then compared pixel by pixel (compare.py). One state per line: a name, then settings:
+#   <parameter id>=<plain value>   set before the editor opens
+#   ui.<property>=<value>          a UI property of the saved state (colourMode, showCurve, modCompX, ...)
+#   open=comp,harm,sc,trans        modules opened after the editor opens
+#   scale=<n>                      device pixels per point (default 2)
+# No audio runs, so the meters, history and auto-scale are at rest and both renders are deterministic.
+default
+soft-white      ui.colourMode=1
+cryo-plasma     ui.colourMode=2
+hyperdrive      ui.colourMode=3
+scale-1         scale=1
+modules         open=comp,harm,sc,trans ui.modCompX=16 ui.modCompY=13 ui.modHarmX=436 ui.modHarmY=13 ui.modScX=16 ui.modScY=420 ui.modTransX=419 ui.modTransY=420 harmonic2=35 harmonic4=15 scEnabled=1 scHPFreq=150 transientEnabled=1 transientAttack=35 transientSustain=-15 transientSpeed=10
+modules-white   ui.colourMode=1 open=comp,harm,sc,trans ui.modCompX=16 ui.modCompY=13 ui.modHarmX=436 ui.modHarmY=13 ui.modScX=16 ui.modScY=420 ui.modTransX=419 ui.modTransY=420 harmonic2=35 harmonic3=12 harmonic4=8 scEnabled=1 scListen=1 autoAttack=1
+settings        threshold=-31 ratio=100 makeupGain=6 mix=0.5 inputGain=-3 outputGain=2 autoGain=1 delta=1 oversampleMode=0
+optical         algorithmMode=5 ui.colourMode=3 transientEnabled=1 oversampleMode=3 oversampleFilter=1
+curve-off       ui.showCurve=0 algorithmMode=2 threshold=-6 knee=12

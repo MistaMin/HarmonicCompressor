@@ -25,7 +25,7 @@
       "channel": 0,
       "max_abs_diff": 2.7939677238464355e-7,
       "max_at": 44011,
-      "rms_diff_db": -147.0508294779167,
+      "rms_diff_db": -147.0939143400495,
       "first_differing": {
         "index": 29,
         "original": 0.05668539,
@@ -38,7 +38,7 @@
       "channel": 1,
       "max_abs_diff": 2.942979335784912e-7,
       "max_at": 44019,
-      "rms_diff_db": -147.05141564200804,
+      "rms_diff_db": -147.0944843055685,
       "first_differing": {
         "index": 27,
         "original": 0.06097636,

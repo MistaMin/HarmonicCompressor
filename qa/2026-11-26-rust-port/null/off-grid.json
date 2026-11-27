@@ -23,26 +23,26 @@
   "channels": [
     {
       "channel": 0,
-      "max_abs_diff": 2.1904706954956055e-6,
-      "max_at": 66840,
-      "rms_diff_db": -126.21683777783113,
+      "max_abs_diff": 2.205371856689453e-6,
+      "max_at": 11104,
+      "rms_diff_db": -126.67219941775315,
       "first_differing": {
-        "index": 0,
-        "original": -0.13187413,
-        "port": -0.13187411
+        "index": 2,
+        "original": 0.03596777,
+        "port": 0.035967767
       },
       "first_over_tolerance": null,
       "samples_over_tolerance": 0
     },
     {
       "channel": 1,
-      "max_abs_diff": 2.16066837310791e-6,
-      "max_at": 66868,
-      "rms_diff_db": -126.20459013936514,
+      "max_abs_diff": 2.205371856689453e-6,
+      "max_at": 11098,
+      "rms_diff_db": -126.68323913471289,
       "first_differing": {
         "index": 0,
-        "original": -0.054215375,
-        "port": -0.05421538
+        "original": -0.0541242,
+        "port": -0.05412419
       },
       "first_over_tolerance": null,
       "samples_over_tolerance": 0

@@ -8,20 +8,39 @@
 //! (output minus the aligned dry, or minus the aligned untouched input with Auto Gain on) -> output gain.
 
 pub mod dsp;
+#[cfg(target_os = "macos")]
+pub mod editor;
+#[cfg(target_os = "macos")]
+pub mod gfx;
 pub mod multirate;
 pub mod params;
 pub mod state;
+
+use std::sync::atomic::{AtomicU8, AtomicU32, Ordering};
+use std::sync::{Arc, Mutex};
 
 use dsp::{CompParams, Engine, Loudness, Smoothed, Transient, db_to_gain, gain_to_db};
 use multirate::Multirate;
 use openplugin::core::foreign_state::ForeignStateKind;
 use openplugin::core::{AaxIds, AuIds, Vst3Ids};
+use openplugin::dsp::{Ppm, PpmType, VuIec};
 use openplugin::prelude::*;
 use params::{COUNT, PARAMS, idx};
+use openplugin::core::spsc;
+pub use state::UiState;
 use state::Snapshots;
 
+/// The feature `test-identity` gives a build its own name and ids, so it can be installed beside
+/// the shipped plugin for host tests. Never ship it.
+const TEST_IDENTITY: bool = cfg!(feature = "test-identity");
+const ID_AND_NAME: (&str, &str) = if TEST_IDENTITY {
+    ("com.opengrid.harmoniccompressor.test", "Harmonic Compressor Test")
+} else {
+    ("com.opengrid.harmoniccompressor", "Harmonic Compressor")
+};
+
 pub static INFO: PluginInfo =
-    PluginInfo::new("com.opengrid.harmoniccompressor", "Harmonic Compressor", "OpenGrid", "1.6.0", Category::Dynamics, &PARAMS)
+    PluginInfo::new(ID_AND_NAME.0, ID_AND_NAME.1, "OpenGrid", env!("CARGO_PKG_VERSION"), Category::Dynamics, &PARAMS)
         .with_url("https://github.com/MistaMin/HarmonicCompressor");
 
 /// 1.5.3's buses: main mono or stereo, and a sidechain of the same width that a host may leave off.
@@ -44,10 +63,184 @@ fn clean(x: f32) -> f32 {
 /// After the input stops: the harmonics' 3.5 Hz DC blocker decays below -120 dB in about 0.63 s.
 const TAIL_SECONDS: f32 = 0.7;
 
+/// One block's peaks for the Compression History: input and output (linear), gain reduction (dB),
+/// and the block's length.
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct HistoryFrame {
+    pub input: f32,
+    pub output: f32,
+    pub reduction: f32,
+    pub seconds: f32,
+}
+
+#[derive(Default)]
+struct AtomicF32(AtomicU32);
+impl AtomicF32 {
+    fn new(v: f32) -> Self {
+        AtomicF32(AtomicU32::new(v.to_bits()))
+    }
+    fn get(&self) -> f32 {
+        f32::from_bits(self.0.load(Ordering::Relaxed))
+    }
+    fn set(&self, v: f32) {
+        self.0.store(v.to_bits(), Ordering::Relaxed);
+    }
+}
+
+/// The meter scales the editor offers: PPM and RMS in dBFS, VU in dB VU.
+pub const METER_PPM: usize = 0;
+pub const METER_RMS: usize = 1;
+pub const METER_VU: usize = 2;
+/// 0 VU is a steady sine of -18 dBFS peak, as the SDK's `MeterBank` and 1.5.3's 0 dBu.
+pub const VU_REFERENCE_DBFS: f32 = -18.0;
+
+/// No editor is open: the level meters rest (a PPM's 8x rectifier is a fifth of the plugin's cost).
+const METER_OFF: u8 = u8::MAX;
+
+/// The level meters, input L, R and output L, R, run on every sample of the host rate, one scale at
+/// a time, while an editor shows it:
+/// PPM after IEC 60268-10 Type I (DIN 45406: 5 ms integration, 20 dB return in 1.7 s, a steady
+/// sine reads its peak), RMS over 300 ms (one pole on the power, as the SDK's `MeterBank`; a sine
+/// reads 3 dB under its peak) and VU after IEC 60268-17 (300 ms to 99 %, 1.3 % overshoot).
+struct Levels {
+    ppm: [Ppm; 4],
+    vu: [VuIec; 4],
+    power: [f64; 4],
+    rms_alpha: f64,
+}
+
+impl Levels {
+    fn new(sample_rate: f32) -> Self {
+        Levels {
+            ppm: [Ppm::new(sample_rate, PpmType::Din); 4],
+            vu: std::array::from_fn(|_| VuIec::new(sample_rate)),
+            power: [0.0; 4],
+            rms_alpha: 1.0 - (-1.0 / (f64::from(sample_rate.max(1000.0)) * 0.3)).exp(),
+        }
+    }
+
+    /// One block of the input (`at` 0) or the output (`at` 2) on `scale`; a missing second channel
+    /// is silence.
+    fn feed(&mut self, scale: usize, at: usize, io: &[&mut [f32]], n: usize) {
+        for (ch, x) in io.iter().take(2).enumerate() {
+            let k = at + ch;
+            let x = &x[..n];
+            match scale {
+                METER_PPM => x.iter().for_each(|&s| {
+                    self.ppm[k].next(clean(s));
+                }),
+                METER_VU => x.iter().for_each(|&s| {
+                    self.vu[k].next(clean(s));
+                }),
+                _ => {
+                    let power = &mut self.power[k];
+                    for &s in x {
+                        let s = f64::from(clean(s));
+                        *power += (s * s - *power) * self.rms_alpha;
+                    }
+                    if *power < 1e-30 {
+                        *power = 0.0; // ST-3: no subnormal state
+                    }
+                }
+            }
+        }
+    }
+
+    /// The `scale` meter's reading in its unit (dBFS, dBFS, dB VU), floored at -120 dBFS.
+    fn reading(&self, scale: usize, k: usize) -> f32 {
+        let db = |x: f64| (20.0 * x.max(1e-6).log10()) as f32;
+        match scale {
+            METER_PPM => db(f64::from(self.ppm[k].level())),
+            // VuIec reads a sine's RMS; the VU scale counts its peak (+3.01 dB) re -18 dBFS
+            METER_VU => self.vu[k].level_db() + 20.0 * std::f32::consts::SQRT_2.log10() - VU_REFERENCE_DBFS,
+            _ => db(self.power[k].sqrt()),
+        }
+    }
+
+    fn reset(&mut self) {
+        self.ppm.iter_mut().for_each(Ppm::reset);
+        self.vu.iter_mut().for_each(VuIec::reset);
+        self.power = [0.0; 4];
+    }
+}
+
+/// The readouts 1.5.3 published once per block for its editor (`lastGrDbForUI`, `lastInputPeakDb`,
+/// `lastOutputPeakDb`, `autoGainAppliedDb`), and the level meters (`Levels`) that replace its
+/// peak bars.
+pub struct Meters {
+    gr: AtomicF32,
+    input: AtomicF32,
+    output: AtomicF32,
+    /// [scale][input L, R, output L, R], in the scale's unit.
+    levels: [[AtomicF32; 4]; 3],
+    /// The scale an open editor shows, or `METER_OFF`.
+    watched: AtomicU8,
+    auto_gain: AtomicF32,
+}
+
+impl Default for Meters {
+    fn default() -> Self {
+        Meters {
+            gr: AtomicF32::new(0.0),
+            input: AtomicF32::new(-60.0),
+            output: AtomicF32::new(-60.0),
+            levels: std::array::from_fn(|scale| std::array::from_fn(|_| AtomicF32::new(-120.0 - if scale == METER_VU { VU_REFERENCE_DBFS } else { 0.0 }))),
+            watched: AtomicU8::new(METER_OFF),
+            auto_gain: AtomicF32::new(0.0),
+        }
+    }
+}
+
+impl Meters {
+    pub fn gr_db(&self) -> f32 {
+        self.gr.get()
+    }
+    pub fn last_input_db(&self) -> f32 {
+        self.input.get()
+    }
+    pub fn last_output_db(&self) -> f32 {
+        self.output.get()
+    }
+    /// The `scale` meter's reading of input L, R (`k` 0, 1) or output L, R (2, 3).
+    pub fn level(&self, scale: usize, k: usize) -> f32 {
+        self.levels[scale.min(2)][k.min(3)].get()
+    }
+    /// An editor shows `scale` (it says so on every tick), or none is open: the engine runs that
+    /// meter only. A scale that was not running starts at rest.
+    pub fn watch(&self, scale: Option<usize>) {
+        let now = scale.map_or(METER_OFF, |s| s.min(2) as u8);
+        if self.watched.swap(now, Ordering::Relaxed) != now
+            && let Some(s) = scale
+        {
+            let rest = Meters::default();
+            for k in 0..4 {
+                self.levels[s.min(2)][k].set(rest.level(s, k));
+            }
+        }
+    }
+    pub fn auto_gain_db(&self) -> f32 {
+        self.auto_gain.get()
+    }
+}
+
+/// What the engine shares with its editor. The audio thread writes the meters and the history; the
+/// per-model memory and the look are only touched on the main thread (editor, state).
+pub struct Shared {
+    pub meters: Meters,
+    pub history: Mutex<spsc::Consumer<HistoryFrame>>,
+    pub history_drops: AtomicU32,
+    /// Each model's remembered settings (1.5.3's per-model memory), saved with the session.
+    pub snapshots: Mutex<Snapshots>,
+    pub ui: Mutex<UiState>,
+}
+
 pub struct HarmonicCompressor {
     p: [f32; COUNT],
-    /// Each model's remembered settings (1.5.3's per-model memory), saved with the session.
-    snapshots: Snapshots,
+    shared: Arc<Shared>,
+    history: spsc::Producer<HistoryFrame>,
+    levels: Levels,
+    /// The scale `levels` ran on in the last block.
+    watched: u8,
     engine: Engine,
     /// The wet path, and two chains with the same filters for the dry and the untouched input.
     wet: Multirate,
@@ -74,9 +267,21 @@ pub struct HarmonicCompressor {
 
 impl Default for HarmonicCompressor {
     fn default() -> Self {
+        // 1.5.3's history FIFO held 2048 blocks; with no editor draining it, blocks are dropped
+        let (history, rx) = spsc::channel(2048);
+        let shared = Arc::new(Shared {
+            meters: Meters::default(),
+            history: Mutex::new(rx),
+            history_drops: AtomicU32::new(0),
+            snapshots: Mutex::new(state::default_snapshots()),
+            ui: Mutex::new(UiState::default()),
+        });
         let mut plugin = Self {
             p: params::defaults(),
-            snapshots: state::default_snapshots(),
+            shared,
+            history,
+            levels: Levels::new(48000.0),
+            watched: METER_OFF,
             engine: Engine::default(),
             wet: Multirate::new(48000.0, 1),
             dry_chain: Multirate::new(48000.0, 1),
@@ -119,7 +324,12 @@ impl HarmonicCompressor {
     /// Replaces every value at once (a state load).
     fn apply(&mut self, s: state::State) -> bool {
         self.p = s.values;
-        self.snapshots = s.snapshots;
+        if let Ok(mut snaps) = self.shared.snapshots.lock() {
+            *snaps = s.snapshots;
+        }
+        if let Ok(mut ui) = self.shared.ui.lock() {
+            *ui = s.ui;
+        }
         true
     }
 
@@ -208,6 +418,15 @@ impl HarmonicCompressor {
             self.reference_chain.process(&mut reference[..channels], n, |_| {});
         }
 
+        let watched = self.shared.meters.watched.load(Ordering::Relaxed);
+        if watched != self.watched {
+            self.levels.reset();
+            self.watched = watched;
+        }
+        let scale = usize::from(watched);
+        if watched != METER_OFF {
+            self.levels.feed(scale, 0, io, n);
+        }
         let mut input_peak = [0.0f32; 2];
         for (peak, ch) in input_peak.iter_mut().zip(io.iter()) {
             *peak = ch[..n].iter().fold(0.0, |m, x| m.max(x.abs()));
@@ -311,14 +530,43 @@ impl HarmonicCompressor {
             }
         }
 
+        if watched != METER_OFF {
+            self.levels.feed(scale, 2, io, n);
+        }
+        let mut output_peak = [0.0f32; 2];
+        for (peak, ch) in output_peak.iter_mut().zip(io.iter()) {
+            *peak = ch[..n].iter().fold(0.0, |m, x| m.max(x.abs()));
+        }
         let mut m = MeterFrame::SILENT;
         for ch in 0..2 {
             let src = ch.min(channels - 1);
             m.input_db[ch] = gain_to_db(input_peak[src], -100.0);
-            m.output_db[ch] = gain_to_db(io[src][..n].iter().fold(0.0f32, |a, x| a.max(x.abs())), -100.0);
+            m.output_db[ch] = gain_to_db(output_peak[src], -100.0);
         }
-        m.reduction_db = -gain_to_db(min_gain, -120.0);
+        let reduction = -gain_to_db(min_gain, -120.0);
+        m.reduction_db = reduction;
         self.meters = m;
+        self.publish(input_peak, output_peak, reduction, n);
+    }
+
+    /// The editor's readouts, as 1.5.3's processBlock published them after each block (a second
+    /// channel that a mono layout lacks reads silence there).
+    fn publish(&mut self, input_peak: [f32; 2], output_peak: [f32; 2], reduction: f32, n: usize) {
+        let (input, output) = (input_peak[0].max(input_peak[1]), output_peak[0].max(output_peak[1]));
+        let seconds = n as f32 / self.sample_rate;
+        if self.history.push(HistoryFrame { input, output, reduction, seconds }).is_err() {
+            self.shared.history_drops.fetch_add(1, Ordering::Relaxed);
+        }
+        let meters = &self.shared.meters;
+        meters.gr.set(self.engine.last_gr_db());
+        meters.input.set(gain_to_db(input, -72.0).max(-72.0));
+        meters.output.set(gain_to_db(output, -72.0).max(-72.0));
+        if let Some(levels) = meters.levels.get(usize::from(self.watched)) {
+            for (k, level) in levels.iter().enumerate() {
+                level.set(self.levels.reading(usize::from(self.watched), k));
+            }
+        }
+        meters.auto_gain.set(gain_to_db(self.auto_gain.current(), -100.0));
     }
 }
 
@@ -341,6 +589,7 @@ impl Plugin for HarmonicCompressor {
         }
         self.engine.prepare(sr * factor as f64);
         self.transient.prepare(sr);
+        self.levels = Levels::new(sample_rate);
         self.loudness.prepare(sr);
         self.auto_gain.reset(sr, 0.100);
         self.delta.reset(sr, 0.020);
@@ -359,6 +608,7 @@ impl Plugin for HarmonicCompressor {
         self.reference_chain.reset();
         self.reference_running = false;
         self.transient.reset();
+        self.levels.reset();
         self.loudness.reset();
         self.auto_gain.set_current_and_target(1.0);
         self.delta.set_current_and_target(if self.on(idx::DELTA) { 1.0 } else { 0.0 });
@@ -367,6 +617,7 @@ impl Plugin for HarmonicCompressor {
         self.input_gain.set_current_and_target(db_to_gain(self.p[idx::INPUT_GAIN]));
         self.output_gain.set_current_and_target(db_to_gain(self.p[idx::OUTPUT_GAIN]));
         self.meters = MeterFrame::SILENT;
+        self.shared.meters.auto_gain.set(0.0);
     }
 
     fn set_param(&mut self, id: &str, value: f32) -> bool {
@@ -438,7 +689,14 @@ impl Plugin for HarmonicCompressor {
     }
 
     fn save_state(&mut self) -> Option<Vec<u8>> {
-        Some(state::encode(&self.p, &self.snapshots))
+        let snapshots = self.shared.snapshots.lock().map(|s| *s).unwrap_or_else(|_| state::default_snapshots());
+        let ui = self.shared.ui.lock().map(|u| *u).unwrap_or_default();
+        Some(state::encode(&self.p, &snapshots, &ui))
+    }
+
+    #[cfg(target_os = "macos")]
+    fn editor_state(&self) -> Option<openplugin::core::EditorState> {
+        Some(self.shared.clone())
     }
 
     fn load_state(&mut self, data: &[u8]) -> bool {
@@ -458,24 +716,37 @@ impl Plugin for HarmonicCompressor {
     }
 
     // ---- identity of 1.5.3 ----
+    // A test-identity build pins only its AU code (Hcmt); the SDK derives the rest from its id.
     fn vst3_ids(&self) -> Option<Vst3Ids> {
+        if TEST_IDENTITY {
+            return None;
+        }
         Vst3Ids::from_hex("56535448636D706861726D6F6E696320", "56534548636D706861726D6F6E696320")
     }
 
     fn au_ids(&self) -> Option<AuIds> {
-        Some(AuIds { subtype: *b"Hcmp", manufacturer: *b"OpGr" })
+        Some(AuIds { subtype: if TEST_IDENTITY { *b"Hcmt" } else { *b"Hcmp" }, manufacturer: *b"OpGr" })
     }
 
     fn aax_ids(&self) -> Option<AaxIds> {
         // 1.5.3's AAX plug-in types: 'jcaa' plus the mono (1) or stereo (2) layout in and out.
-        Some(AaxIds { manufacturer: *b"OpGr", product: *b"Hcmp", mono: *b"jcbb", stereo: *b"jccc" })
+        (!TEST_IDENTITY).then_some(AaxIds { manufacturer: *b"OpGr", product: *b"Hcmp", mono: *b"jcbb", stereo: *b"jccc" })
     }
 
     fn lv2_uri(&self) -> Option<&'static str> {
-        Some("urn:opengrid:harmoniccompressor")
+        (!TEST_IDENTITY).then_some("urn:opengrid:harmoniccompressor")
     }
 }
 
+#[cfg(target_os = "macos")]
+openplugin::targets::export_clap!(HarmonicCompressor, editor = editor::make_editor);
+#[cfg(target_os = "macos")]
+openplugin::targets::export_lv2!(HarmonicCompressor, editor = editor::make_editor);
+#[cfg(target_os = "macos")]
+openplugin::targets::export_shell!(HarmonicCompressor, editor = editor::make_editor);
+#[cfg(not(target_os = "macos"))]
 openplugin::targets::export_clap!(HarmonicCompressor);
+#[cfg(not(target_os = "macos"))]
 openplugin::targets::export_lv2!(HarmonicCompressor);
+#[cfg(not(target_os = "macos"))]
 openplugin::targets::export_shell!(HarmonicCompressor);

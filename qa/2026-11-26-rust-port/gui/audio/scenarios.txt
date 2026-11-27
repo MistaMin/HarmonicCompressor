@@ -1,0 +1,1 @@
+soft-white-audio ui.colourMode=1 algorithmMode=5 threshold=-22 ratio=5 makeupGain=0 mix=1 oversampleMode=1 oversampleFilter=0 audio=8

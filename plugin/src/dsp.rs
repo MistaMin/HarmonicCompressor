@@ -147,7 +147,7 @@ pub fn mode_defaults(mode: usize) -> (f32, f32, f32) {
     }
 }
 
-fn slope_of(ratio: f32) -> f32 {
+pub(crate) fn slope_of(ratio: f32) -> f32 {
     if ratio >= 99.5 || ratio.abs() < 0.01 { 1.0 } else { 1.0 - 1.0 / ratio }
 }
 

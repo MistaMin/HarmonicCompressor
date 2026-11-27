@@ -23,9 +23,9 @@
   "channels": [
     {
       "channel": 0,
-      "max_abs_diff": 9.529758244752884e-7,
-      "max_at": 100128,
-      "rms_diff_db": -142.2152490964485,
+      "max_abs_diff": 9.264331310987473e-7,
+      "max_at": 100098,
+      "rms_diff_db": -142.22237020006403,
       "first_differing": {
         "index": 34,
         "original": 0.042452797,
@@ -36,9 +36,9 @@
     },
     {
       "channel": 1,
-      "max_abs_diff": 9.543728083372116e-7,
-      "max_at": 100105,
-      "rms_diff_db": -142.02925551853772,
+      "max_abs_diff": 9.252689778804779e-7,
+      "max_at": 100095,
+      "rms_diff_db": -142.0345690194494,
       "first_differing": {
         "index": 34,
         "original": 0.39024156,
