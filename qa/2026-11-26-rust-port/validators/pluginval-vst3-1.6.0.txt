@@ -10,12 +10,10 @@ lilv_world_load_bundle(): error: Error reading file:///Library/Audio/Plug-Ins/LV
 lilv_world_add_plugin(): warning: Duplicate plugin <https://opengrid.studio/plugins/audiogridder>
 lilv_world_add_plugin(): warning: ... found in file://~/Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/
 lilv_world_add_plugin(): warning: ... and      file:///Library/Audio/Plug-Ins/LV2/OpenGridder.lv2/ (ignored)
-lilv_world_load_bundle(): warning: Ignoring bundle <file:///Library/Audio/Plug-Ins/LV2/Sp9ceVerb.lv2/>
-lilv_world_load_bundle(): note: Newer version of <https://opengrid.studio/plugins/sp9ceverb> loaded from <file://~/Library/Audio/Plug-Ins/LV2/Sp9ceVerb.lv2/>
 lilv_world_add_plugin(): warning: Duplicate plugin <https://github.com/MistaMin/FreEQ>
 lilv_world_add_plugin(): warning: ... found in file://~/Library/Audio/Plug-Ins/LV2/FreEQ.lv2/
 lilv_world_add_plugin(): warning: ... and      file:///Library/Audio/Plug-Ins/LV2/FreEQ.lv2/ (ignored)
-Random seed: 0x1b728b2
+Random seed: 0x3f95c3f
 Validation started
 Strictness level: 10
 -----------------------------------------------------------------

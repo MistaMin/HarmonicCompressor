@@ -105,31 +105,45 @@ dBFS by default, RMS and VU on a switch, 0 VU = -18 dBFS sine.
 
 ## Release preparation (openplugin-dev `prepare-release`, 2026-11-27): not released
 
-Test build: all five formats of 1.5.3 (CLAP, LV2, VST3, AU, AAX), universal, macOS 11.0 minimum,
-ad-hoc signed, nothing installed (`plugin/target/dist-universal`, command in README), on the
-working tree before its commit and SDK `1f608fe` + `editor-pointer-left`. Owner's decisions
-(2026-11-27): version 1.6.0; commit and push; build on the SDK's current `main` plus the view fix,
-committed; Developer ID signing and a test-identity install for host tests.
+Owner's decisions (2026-11-27): version 1.6.0; commit and push; build on the SDK's current `main`
+plus the view fix, committed; Developer ID signing and a test-identity install for host tests.
 
-SDK base since then: branch `editor-pointer-left` `f2e8d15` (`main` `07f97e1` plus the view fix as one
-commit, local). On it: the SDK's editor tests PASS (72 + 12); the plugin's lint, clippy and release
-tests PASS; the null against 1.5.3 PASS (41 cases, 0 failed).
+Release commit: `b88e429` on `rust-port` (pushed). SDK: branch `editor-pointer-left` `f2e8d15` (`main`
+`07f97e1` plus the view fix as one commit; local, not pushed or merged). On that SDK the SDK's own
+editor tests pass (72 + 12).
 
 | Step | Result |
 |---|---|
-| 1. Release commit, full tier on it (RL-1) | NOT DONE: the work is uncommitted; the full tier passed on the working tree (Checks) |
-| 2. Soak at 200 seeds on that commit (RL-1) | NOT DONE: needs the commit |
+| 1. Full tier on the release commit (RL-1) | PASS: T-LINT, T-CLIPPY, T-TEST, T-SOAK (24 seeds), T-FUZZ, T-BENCH, 2066 s, in a clean worktree of `b88e429` (`plugin/target/openplugin-dev/commit-b88e429-full.txt`). The runner's own `--commit` cannot find the SDK (its worktree lacks the untracked `.cargo/config.toml`), so the worktree was made by hand and the report names "the working tree"; the hash is written in the log's first line |
+| 2. Soak at 200 seeds on that commit (RL-1) | PASS: `OPENPLUGIN_SOAK_SEEDS=200`, T-SOAK, 8869 s, same worktree (`commit-b88e429-soak200.txt`) |
 | 3. Version (RL-2) | 1.6.0 (owner), in `Cargo.toml` only (`PluginInfo` reads it); AU component version 67072, above 1.5.3's 66819 |
 | 3. Identities (PR-2) | PASS as built: CLAP id and VST3 class ids (identity tests, `port-scan/`), AU `aufx Hcmp OpGr` (bundle plist), LV2 URI `urn:opengrid:harmoniccompressor` (manifest), AAX `OpGr` / `Hcmp` / `jcbb` / `jccc` (JUCE's 'jcaa' plus the layout index in and out; the validator's `info.productids` aborts in its own DTT layer on this macOS, so not read back) |
-| 4. Every format, universal (RL-5) | PASS: five bundles, `x86_64 arm64`, minos 11.0; `codesign --verify --deep --strict` and the build script's path scan pass (RL-3, ad-hoc) |
-| 4. Developer ID signing, PACE, notarisation | NOT DONE: needs the owner (identity, iLok password) |
-| 5. clap-validator 0.4.1, universal CLAP | PASS: 33 passed, 0 failed, 1 warning (scan time 103 ms at a load average of 180), 10 skipped (`validators/clap-validator-universal.txt`) |
-| 5. pluginval 1.0.4, universal VST3, strictness 10, editor tests | PASS (`validators/pluginval-vst3-universal.txt`) |
-| 5. `lv2_validate`, LV2 bundle | PASS: 0 errors |
-| 5. AAX Validator 2024.6, unsigned bundle from its path | PASS 6/6, the tests 1.5.3 ran: describe_validation (warning: gaps in the algorithm context fields), parameters, parameter_traversal.random.fast, page_table.load, page_table.automation_list, load_unload. Output kept outside the repository (Avid material) |
-| 5. x86_64 slice: `cargo test --release --target x86_64-apple-darwin` under Rosetta | PASS: 37 unit, 7 meter, conformance, host behaviour, every parameter |
-| 5. auval, hosts (REAPER, Logic, Pro Tools) (RL-4) | SKIPPED: needs an installed build |
-| 6. Tag, publish | NOT DONE |
+| 4. Every format, universal (RL-5) | PASS: CLAP, LV2, VST3, AU, AAX from the release commit, `x86_64 arm64`, minos 11.0 (`plugin/target/dist-1.6.0`, command in README) |
+| 4. Signing (RL-3) | Developer ID Application, hardened runtime, timestamp; `codesign --verify --deep --strict` and the build script's path scan pass on all five. NOT DONE: PACE signing of the AAX, notarisation (`spctl` rejects the bundles until then), the installer |
+| 5. clap-validator 0.4.1, signed universal CLAP | PASS: 34 passed, 0 failed, 0 warnings, 10 skipped (`validators/clap-validator-1.6.0.txt`) |
+| 5. pluginval 1.0.4, signed universal VST3, strictness 10, editor tests | SUCCESS (`validators/pluginval-vst3-1.6.0.txt`) |
+| 5. `lv2_validate`, LV2 bundle | PASS: 0 errors among 84 files, 2301 restrictions |
+| 5. AAX Validator 2024.6, signed (not PACE-signed) bundle from its path | PASS 6 of 6 (describe validation, parameters, random parameter traversal, page table load, page table automation list, load and unload); one warning: gaps between the algorithm context fields, "may be a problem on older hosts" (log outside the repository, `plugin/target/openplugin-dev/aaxval-1.6.0/`) |
+| 5. x86_64 slice: `cargo test --release --target x86_64-apple-darwin` under Rosetta (working tree before `1151678`) | PASS: 37 unit, 7 meter, conformance, host behaviour, every parameter |
+| 5. auval (RL-4) | PASS on the test-identity build, `aufx Hcmt OpGr`, user folder (`validators/auval-test-identity.txt`); pluginval AU strictness 10 PASS (`validators/pluginval-au-test-identity.txt`). The shipped code `Hcmp` is not validated: `/Library` holds an older release under it |
+| 5. Host: REAPER 7.80, a separate hidden instance, test-identity build in the user folders (RL-4) | PASS 9/9 each for VST3, CLAP, AU and LV2: loads, finite, not silent, deterministic, editor opens, every parameter changes the sound, every parameter is shown in the GUI, state survives save and reopen, editor reopens (`reaper/`). `lsof` showed the user-folder test bundle loaded. Notes below |
+| 5. Hosts not run | Logic (not installed), Pro Tools (needs the PACE-signed AAX in the system folder), OpenGrid9 |
+| 6. Installer, notarisation, tag, publish | NOT DONE |
+
+Host test notes:
+- The test build is `--features test-identity`: "Harmonic Compressor Test", its own CLAP id, VST3
+  class id and AU code, so it sits beside the shipped plugin. Same DSP, editor and state code.
+- VST3: the REAPER instance that first scanned the new bundle could not add it; the next start
+  could (9/9). Not seen with CLAP or AU.
+- LV2, found and fixed: the test identity's LV2 URI was the bare id the SDK derives (no scheme).
+  REAPER then listed no parameters and saved an empty URI, so the project would not reopen. With
+  `urn:opengrid:harmoniccompressor:test` it passes. The shipped URI always had a scheme.
+- LV2: REAPER lists the SDK's host port "Freewheel" as a parameter and sets it itself; it is
+  excused from the state check (NEW exception, `qa/exceptions.txt`). Setting it by hand changes the
+  first 20 ms of a render (956 samples at -29 dB, the rest equal to -240 dB): the start state, not
+  the sound; the plugin has no offline mode.
+- The editor in REAPER was captured from a hidden window by the suite and looked at (AU): whole-step
+  values, the PPM selector and the readouts draw as in the headless renders. No mouse was used.
 
 Differences from 1.5.3 a release must say or settle:
 - LV2: the bundle folder is `HarmonicCompressor.lv2` (1.5.3: `Harmonic Compressor.lv2`, same URI): an
@@ -145,3 +159,6 @@ Differences from 1.5.3 a release must say or settle:
 - `tests/common/mod.rs`: `latency_depends_on_params` (latency follows oversampling) and
   `max_output` 2e5 (+96 dB designed range); reasons in the file.
 - `null/run.sh`: two cases at 3e-5 instead of 1e-5 (fused multiply-adds in the C++ build).
+- `qa/exceptions.txt`, NEW 2026-11-27: `state: Freewheel` (the LV2 host port REAPER sets itself; above).
+- `params::tests`: 1.5.3's host text is compared only for Sidechain HP Freq, NEW 2026-11-27 (every
+  other text changed on purpose, display rules); `null/run.sh` values sit on both versions' steps.

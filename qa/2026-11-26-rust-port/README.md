@@ -121,7 +121,7 @@ cargo run --release --example frame_time                   # CPU per frame
 
 ## Not done yet
 
-PACE signing and a Pro Tools test of the AAX; notarisation and the installer; Logic and LV2 host
+PACE signing and a Pro Tools test of the AAX; notarisation and the installer; a Logic test (LV2 ran in REAPER); OpenGrid9 host
 tests; a VoiceOver pass; editor timings on a quiet machine; the user manual (still 1.5.3's meters
 and values). The version is 1.6.0 (owner, 2026-11-27). `--features test-identity` builds
 "Harmonic Compressor Test" with its own ids (AU `Hcmt`), to install beside a shipped copy for host
