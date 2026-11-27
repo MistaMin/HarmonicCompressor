@@ -716,7 +716,8 @@ impl Plugin for HarmonicCompressor {
     }
 
     // ---- identity of 1.5.3 ----
-    // A test-identity build pins only its AU code (Hcmt); the SDK derives the rest from its id.
+    // A test-identity build pins its AU code (Hcmt) and an LV2 URI with a scheme (a host cannot
+    // save the bare id the SDK would derive); the SDK derives the rest from its id.
     fn vst3_ids(&self) -> Option<Vst3Ids> {
         if TEST_IDENTITY {
             return None;
@@ -734,7 +735,7 @@ impl Plugin for HarmonicCompressor {
     }
 
     fn lv2_uri(&self) -> Option<&'static str> {
-        (!TEST_IDENTITY).then_some("urn:opengrid:harmoniccompressor")
+        Some(if TEST_IDENTITY { "urn:opengrid:harmoniccompressor:test" } else { "urn:opengrid:harmoniccompressor" })
     }
 }
 

@@ -18,3 +18,7 @@ Transient Speed @ Transient Enable=1.0, Transient Attack=1.0
 # Host sync port, not a plugin parameter: REAPER exposes the LV2 freeWheeling designation
 # port and drives it itself for offline rendering. It has no sound of its own to change.
 audio: Free Wheeling
+# The SDK's LV2 shell names that host port "Freewheel". REAPER sets it itself (on while it
+# renders offline, off otherwise), so its value after a reopen is the host's and not saved plugin
+# state; the plugin ignores the port (it has no set_offline).
+state: Freewheel
