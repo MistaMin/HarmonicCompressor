@@ -11,14 +11,14 @@ its minimum the output level must follow the bursts:
   C  between the bursts        the key is silent: no compression
   D  during the second burst   compressed again
 Pass: B and D are at least 6 dB under C, and no 200 Hz from the key reaches the output.
-Exit 0 when every plugin passed. Needs the plugin-daw-test skill's scripts (PLUGIN_DAW_TEST_SCRIPTS).
+Exit 0 when every plugin passed. PLUGIN_DAW_TEST_SCRIPTS must name the folder that holds reaper_qa.py.
 """
 import math
 import os
 import sys
 import wave
 
-sys.path.insert(0, os.environ.get("PLUGIN_DAW_TEST_SCRIPTS", os.path.expanduser("~/.claude/skills/plugin-daw-test/scripts")))
+sys.path.insert(0, os.environ["PLUGIN_DAW_TEST_SCRIPTS"])  # the folder that holds reaper_qa.py
 import numpy as np  # noqa: E402
 import reaper_qa  # noqa: E402
 

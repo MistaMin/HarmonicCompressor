@@ -1,0 +1,10 @@
+AAX description of the PACE-signed "Harmonic Compressor.aaxplugin" (dist-1.6.0), read with the AAX
+Validator 2024.6 DigiShell (2026-11-27): load_dish aaxh; aaxh.init; aaxh.loadpi <bundle>;
+aaxh.listtypes 0; aaxh.getdescription [0, 0]. Summary (the full dump is kept outside git).
+
+effect:     com.opengrid.harmoniccompressor, name "Harmonic Compressor", category mask 0x10 (dynamics)
+types:      OpGr / Hcmp / jcbb  (native, real time)   mono
+            OpGr / Hcmp / jccc  (native, real time)   stereo
+components: 2, each with AAX_eProperty_SupportsSideChainInput = 1
+page table: "Harmonic CompressorPages.xml"
+AudioSuite: no type

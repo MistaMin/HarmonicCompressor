@@ -1,0 +1,15 @@
+Build environment of Harmonic Compressor 1.6.0 (2026-11-27)
+
+machine: arm64, macOS 15.7.5, Xcode 16.0 Build version 16A242d 
+rust: rustc 1.98.0 (88d9e12ae 2026-08-18); cargo 1.98.0 (797e8a9bc 2026-08-05)
+cmake: cmake version 4.4.3
+source: HarmonicCompressor rust-port 0fea632 (clean worktree); plugin/ is unchanged since b88e429
+OpenPluginSDK: 2969ebb AU: an effect with a sidechain starts with its input element, so a host that only reads the count offers it (branch editor-pointer-left: main 07f97e1 plus two commits, f2e8d15 and 2969ebb; not merged)
+VST 3 SDK: v3.8.1_build_84
+AudioUnitSDK: AudioUnitSDK-1.4.0
+AAX SDK: 2.8.1
+PACE wraptool: wraptool - 6.0.1 GM (b6847, rf802503d, Release, 64 bit, built August 25, 2026)
+crates: plugin/Cargo.lock
+
+build: OpenPluginSDK scripts/build_plugin.sh --editor --tail --aax-pages --ttl-bin lv2_ttl --formats clap,lv2,vst3,au,aax --archs universal, CODESIGN_IDENTITY set (log outside git: plugin/target/openplugin-dev/build-1.6.0-signed.txt)
+AAX: Make-Plugin-Release scripts/sign_aax.sh (aax-sign.log); installer: Scripts/build_installer.sh (pkg-build.log)

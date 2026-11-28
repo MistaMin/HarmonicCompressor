@@ -1,0 +1,4 @@
+~/Library/Audio/Plug-Ins/CLAP/Harmonic Compressor Test.clap/Contents/MacOS/Harmonic Compressor Test
+~/Library/Audio/Plug-Ins/Components/Harmonic Compressor Test.component/Contents/MacOS/Harmonic Compressor Test
+~/Library/Audio/Plug-Ins/LV2/HarmonicCompressorTest.lv2/HarmonicCompressorTest.dylib
+~/Library/Audio/Plug-Ins/VST3/Harmonic Compressor Test.vst3/Contents/MacOS/Harmonic Compressor Test

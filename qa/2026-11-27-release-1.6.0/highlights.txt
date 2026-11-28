@@ -1,0 +1,6 @@
+# Plugin Manager highlights for 1.6.0 (tools/write_opengrid_manifest.py --highlights), at most five.
+Rebuilt in Rust on OpenPluginSDK; 1.5.x sessions and automation load
+New meters: PPM (dBFS), RMS or VU, with whole-number readouts
+Threshold, Ratio, gains and harmonics move in whole steps
+External sidechain in every format, including Audio Unit and AAX
+New oversampling filters; the editor idles at no CPU cost
